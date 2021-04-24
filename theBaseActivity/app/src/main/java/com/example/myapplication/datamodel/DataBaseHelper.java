@@ -88,7 +88,7 @@ public class DataBaseHelper {
      *
      * @param articleBrief 文章简介
      */
-    public void readArticle(ArticleBrief articleBrief){
+    public static void readArticle(ArticleBrief articleBrief){
         //将库中对应的文章设置为已读
         articleBrief.setRead(true);
         articleBrief.update(articleBrief.getId());

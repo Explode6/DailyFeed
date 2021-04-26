@@ -1,10 +1,11 @@
 package com.example.myapplication.datamodel;
 
+import android.media.Image;
+
 import org.litepal.annotation.Column;
 import org.litepal.crud.LitePalSupport;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -20,23 +21,31 @@ public class Channel extends LitePalSupport {
 
     private String title;
 
-    @Column(unique = true)
+    @Column(unique = true, index = true)
     private String rssLink;
 
     private String addressLink;
 
-    private Date lastBuildDate;
+    private String lastBuildDate;
 
     private String description;
 
-    @Column(nullable = true, defaultValue = "")
-    private String image;
+    @Column(nullable = true)
+    private Image image;
 
     private List<ArticleBrief> articleBriefs = new ArrayList<>();
 
-    public Channel() {}
+    public Channel() {
+        //设置默认值
+        this.title = new String("");
+        this.rssLink = new String("");
+        this.addressLink = new String("");
+        this.lastBuildDate = new String("");
+        this.description = new String("");
+        this.image = null;
+    }
 
-    public Channel(String title, String rssLink, String addressLink, Date lastBuildDate, String description, String image) {
+    public Channel(String title, String rssLink, String addressLink, String lastBuildDate, String description, Image image) {
         this.title = title;
         this.rssLink = rssLink;
         this.addressLink = addressLink;
@@ -77,11 +86,11 @@ public class Channel extends LitePalSupport {
         this.addressLink = addressLink;
     }
 
-    public Date getLastBuildDate() {
+    public String getLastBuildDate() {
         return lastBuildDate;
     }
 
-    public void setLastBuildDate(Date lastBuildDate) {
+    public void setLastBuildDate(String lastBuildDate) {
         this.lastBuildDate = lastBuildDate;
     }
 
@@ -93,11 +102,11 @@ public class Channel extends LitePalSupport {
         this.description = description;
     }
 
-    public String getImage() {
+    public Image getImage() {
         return image;
     }
 
-    public void setImage(String image) {
+    public void setImage(Image image) {
         this.image = image;
     }
 }

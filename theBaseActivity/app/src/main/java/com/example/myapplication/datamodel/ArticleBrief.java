@@ -3,13 +3,11 @@ package com.example.myapplication.datamodel;
 import org.litepal.annotation.Column;
 import org.litepal.crud.LitePalSupport;
 
-import java.util.Date;
-
 /**
   * @ClassName： ArticleBrief
   * @Author: Von
   * @Date： 2021/4/24
-  * @Description： 文章简介类，外部可调用的信息有：标题，链接，创作者，推送日期，类别，简介，已读标记
+  * @Description： 文章简介类，外部可调用的信息有：标题，链接，创作者，类别，简介，已读标记
 */
 public class ArticleBrief extends LitePalSupport {
 
@@ -18,12 +16,10 @@ public class ArticleBrief extends LitePalSupport {
 
     private String title;
 
-    @Column(unique = true)
+    @Column(unique = true, index = true)
     private String link;
 
     private String creator;
-
-    private Date pubDate;
 
     private String[] category;
 
@@ -31,18 +27,26 @@ public class ArticleBrief extends LitePalSupport {
 
     private Boolean isRead;
 
+    private long pubTime;
+
     private int content_id;
 
     private int channel_id;
 
-    public ArticleBrief() {}
+    public ArticleBrief() {
+        this.title = new String("");
+        this.link = new String("");
+        this.creator = new String("");
+        this.creator = null;
+        this.description = new String("");
+        this.isRead = false;
+    }
 
-    public ArticleBrief(String title, String link, String creator, Date pubDate, String[] category,
+    public ArticleBrief(String title, String link, String creator, String[] category,
                         String description) {
         this.title = title;
         this.link = link;
         this.creator = creator;
-        this.pubDate = pubDate;
         this.category = category;
         this.description = description;
         //默认未读
@@ -81,12 +85,12 @@ public class ArticleBrief extends LitePalSupport {
         this.creator = creator;
     }
 
-    public Date getPubDate() {
-        return pubDate;
+    protected long getPubTime() {
+        return pubTime;
     }
 
-    public void setPubDate(Date pubDate) {
-        this.pubDate = pubDate;
+    protected void setPubTime(long pubTime) {
+        this.pubTime = pubTime;
     }
 
     public String[] getCategory() {

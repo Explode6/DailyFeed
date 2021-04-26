@@ -12,8 +12,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         //创建数据库用
-        LitePal.getDatabase();
         LitePal.initialize(this);
+        LitePal.getDatabase();
 
 
         setContentView(R.layout.activity_main);

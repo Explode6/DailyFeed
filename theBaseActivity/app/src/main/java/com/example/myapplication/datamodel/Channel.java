@@ -1,10 +1,12 @@
 package com.example.myapplication.datamodel;
 
-import android.media.Image;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 
 import org.litepal.annotation.Column;
 import org.litepal.crud.LitePalSupport;
 
+import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,7 +33,7 @@ public class Channel extends LitePalSupport {
     private String description;
 
     @Column(nullable = true)
-    private Image image;
+    private byte[] image;
 
     private List<ArticleBrief> articleBriefs = new ArrayList<>();
 
@@ -42,16 +44,18 @@ public class Channel extends LitePalSupport {
         this.addressLink = new String("");
         this.lastBuildDate = new String("");
         this.description = new String("");
-        this.image = null;
+        this.image = new byte[]{};
     }
 
-    public Channel(String title, String rssLink, String addressLink, String lastBuildDate, String description, Image image) {
+    public Channel(String title, String rssLink, String addressLink, String lastBuildDate, String description, Bitmap image) {
         this.title = title;
         this.rssLink = rssLink;
         this.addressLink = addressLink;
         this.lastBuildDate = lastBuildDate;
         this.description = description;
-        this.image = image;
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        image.compress(Bitmap.CompressFormat.PNG, 100, baos);
+        this.image = baos.toByteArray();
     }
 
     protected int getId() {
@@ -102,11 +106,14 @@ public class Channel extends LitePalSupport {
         this.description = description;
     }
 
-    public Image getImage() {
-        return image;
+    public Bitmap getImage() {
+        if(this.image.length == 0) return null;
+        return BitmapFactory.decodeByteArray(this.image,0,this.image.length);
     }
 
-    public void setImage(Image image) {
-        this.image = image;
+    public void setImage(Bitmap image) {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        image.compress(Bitmap.CompressFormat.PNG, 100, baos);
+        this.image = baos.toByteArray();
     }
 }

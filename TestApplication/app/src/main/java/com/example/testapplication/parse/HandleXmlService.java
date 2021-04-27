@@ -16,10 +16,23 @@ public class HandleXmlService extends Service {
             @Override
             public void run() {
                 //new XmlHandler("https://www.zhihu.com/rss").startParse();
-                new XmlHandler("http://news.163.com/special/00011K6L/rss_newsattitude.xml").startParse();
-                //new XmlHandler("https://journeybunnies.com/feed/").startParse();
+                //new XmlHandler("http://news.163.com/special/00011K6L/rss_newsattitude.xml").startParse();
+                //new XmlHandler("https://tobiasahlin.com/feed.xml").startParse();
+                new XmlHandler("https://journeybunnies.com/feed/").startParse();
+                //new XmlHandler("https://www.wangyurui.top/index.php/feed/").startParse();
             }
         }).start();
+//        new Thread(new Runnable() {
+//
+//            @Override
+//            public void run() {
+//                //new XmlHandler("https://www.zhihu.com/rss").startParse();
+//                //new XmlHandler("http://news.163.com/special/00011K6L/rss_newsattitude.xml").startParse();
+//                //new XmlHandler("https://tobiasahlin.com/feed.xml").startParse();
+//                //new XmlHandler("https://journeybunnies.com/feed/").startParse();
+//                //new XmlHandler("https://www.wangyurui.top/index.php/feed/").startParse();
+//            }
+//        }).start();
 
     }
 

@@ -9,7 +9,7 @@ import java.util.Date;
   * @ClassName:  Collection
   * @Author:  Von
   * @Date:  2021/4/24
-  * @Description:  收藏类，外部可调用的数据有：标题，链接，创作者，推送日期，类别，简介，内容
+  * @Description:  收藏类，外部可调用的数据有：标题，链接，创作者，收藏日期，类别，简介，内容
 */
 public class Collection extends LitePalSupport {
 
@@ -23,9 +23,9 @@ public class Collection extends LitePalSupport {
 
     private String creator;
 
-    private Date pubDate;
-
     private String[] category;
+
+    private Date collectDate;
 
     private String description;
 
@@ -33,22 +33,21 @@ public class Collection extends LitePalSupport {
 
     public Collection() {}
 
-    public Collection(ArticleBrief articleBrief, String content){
+    public Collection(ArticleBrief articleBrief, String content, Date collectDate){
         this.title = articleBrief.getTitle();
         this.link = articleBrief.getLink();
         this.creator = articleBrief.getCreator();
-        this.pubDate = articleBrief.getPubDate();
         this.category = articleBrief.getCategory();
         this.description = articleBrief.getDescription();
+        this.collectDate = collectDate;
         this.content = content;
     }
 
-    public Collection(String title, String link, String creator, Date pubDate,
+    public Collection(String title, String link, String creator,
                       String[] category, String description, String content) {
         this.title = title;
         this.link = link;
         this.creator = creator;
-        this.pubDate = pubDate;
         this.category = category;
         this.description = description;
         this.content = content;
@@ -82,20 +81,20 @@ public class Collection extends LitePalSupport {
         this.creator = creator;
     }
 
-    public Date getPubDate() {
-        return pubDate;
-    }
-
-    public void setPubDate(Date pubDate) {
-        this.pubDate = pubDate;
-    }
-
     public String[] getCategory() {
         return category;
     }
 
     public void setCategory(String[] category) {
         this.category = category;
+    }
+
+    public Date getCollectDate() {
+        return collectDate;
+    }
+
+    public void setCollectDate(Date collectDate) {
+        this.collectDate = collectDate;
     }
 
     public String getDescription() {

@@ -11,6 +11,8 @@ import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 
+import com.example.testapplication.datamodel.Channel;
+import com.example.testapplication.datamodel.DataBaseHelper;
 import com.example.testapplication.parse.HandleXmlService;
 
 import java.io.ByteArrayOutputStream;
@@ -35,33 +37,14 @@ import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 import org.litepal.LitePal;
 
+/**
+ * @ClassName： MainActivity
+ * @Author SH
+ * @Date： 2021/4/23
+ * @Description： 主界面
+ */
 public class MainActivity extends AppCompatActivity {
     public static final String EXTRA_MESSAGE = "com.example.testapplication.MESSAGE";
-
-
-    //下载Xml
-    public void downloadXml (String path) throws IOException {
-        URL url = new URL(path);
-        URLConnection conn = url.openConnection();
-        InputStream is = conn.getInputStream();
-
-        //截取文件格式
-        String end = path.substring(path.lastIndexOf("."));
-        //打开手机对应的输出流,输出到文件中
-        //File file = new File("Cache_test"+end);
-        //FileOutputStream os = new FileOutputStream(file);
-        FileOutputStream os = this.openFileOutput("Cache_test.xml",Context.MODE_PRIVATE);
-        byte[] buffer = new byte[1024];
-        int len = 0;
-        //从输入中读取数据,读到缓冲区中
-        while((len = is.read(buffer)) > 0)
-        {
-            os.write(buffer,0,len);
-        }
-        //关闭输入输出流
-        is.close();
-        os.close();
-    }
 
     private List<RvItem> itemList = new ArrayList<>();
 
@@ -148,7 +131,30 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    //渲染列表
+    /**
+     * 删库跑路
+     * @param view
+     */
+    public void deleteData(View view){
+        DataBaseHelper dataBaseHelper = new DataBaseHelper();
+        List<Channel> channels = dataBaseHelper.getChannel(0,10);
+        for(Channel channel : channels){
+            dataBaseHelper.removeChannel(channel);
+        }
+    }
+
+    /**
+     * 处理XMl 打开处理Xml的服务
+     * @param view
+     */
+    public void startHandleXml(View view){
+        Intent startIntent = new Intent(this, HandleXmlService.class);
+        startService(startIntent);
+    }
+
+    /**
+     * 渲染列表
+     */
     private void initItemList(){
         for(int i = 0;i<20;i++) {
             RvItem newItem = new RvItem(randomString());
@@ -157,6 +163,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    /**
+     * 随机生成列表内容
+     * @return
+     */
     private String randomString(){
         Random random = new Random();
         int number = random.nextInt(20)+1;
@@ -167,38 +177,66 @@ public class MainActivity extends AppCompatActivity {
         return builder.toString();
     }
 
-    //打开新窗口输出内容
+
+    /**
+     * 打开新窗口输出内容
+     * @param view
+     */
     public void sendMessage(View view) {
         Intent intent = new Intent(this, DisplayMessageActivity.class);
-        EditText editText = (EditText) findViewById(R.id.editText);
-        String message = editText.getText().toString();
-        try {
-            FileInputStream inputStream = this.openFileInput("Cache_test.xml");
-            ByteArrayOutputStream stream = new ByteArrayOutputStream();
-            byte[] buffer = new byte[1024];
-            int length = -1;
-            inputStream.read(buffer);
-            stream.write(buffer,0,1024);
-            //while((length = inputStream.read(buffer))!=-1){
-            //    stream.write(buffer,0,length);
-            //}
-            stream.close();
-            inputStream.close();
-            message = stream.toString();
+        //EditText editText = (EditText) findViewById(R.id.editText);
+        //String message = editText.getText().toString();
+//        try {
+//            FileInputStream inputStream = this.openFileInput("Cache_test.xml");
+//            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+//            byte[] buffer = new byte[1024];
+//            int length = -1;
+//            inputStream.read(buffer);
+//            stream.write(buffer,0,1024);
+//            //while((length = inputStream.read(buffer))!=-1){
+//            //    stream.write(buffer,0,length);
+//            //}
+//            stream.close();
+//            inputStream.close();
+//            message = stream.toString();
+//
+//        } catch (FileNotFoundException e) {
+//            e.printStackTrace();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
 
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        intent.putExtra(EXTRA_MESSAGE,message);
+        //intent.putExtra(EXTRA_MESSAGE,message);
         startActivity(intent);
     }
 
 
-    public void startHandleXml(View view){
-        Intent startIntent = new Intent(this, HandleXmlService.class);
-        startService(startIntent);
+
+    /**
+     * 下载Xml （废弃）
+     * @param path 下载Xml的地址
+     * @throws IOException
+     */
+    public void downloadXml (String path) throws IOException {
+        URL url = new URL(path);
+        URLConnection conn = url.openConnection();
+        InputStream is = conn.getInputStream();
+
+        //截取文件格式
+        String end = path.substring(path.lastIndexOf("."));
+        //打开手机对应的输出流,输出到文件中
+        //File file = new File("Cache_test"+end);
+        //FileOutputStream os = new FileOutputStream(file);
+        FileOutputStream os = this.openFileOutput("Cache_test.xml",Context.MODE_PRIVATE);
+        byte[] buffer = new byte[1024];
+        int len = 0;
+        //从输入中读取数据,读到缓冲区中
+        while((len = is.read(buffer)) > 0)
+        {
+            os.write(buffer,0,len);
+        }
+        //关闭输入输出流
+        is.close();
+        os.close();
     }
 }

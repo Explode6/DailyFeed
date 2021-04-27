@@ -1,7 +1,15 @@
 package com.example.testapplication.parse;
 
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.media.Image;
+import android.provider.ContactsContract;
 import android.util.Log;
+
+import com.example.testapplication.datamodel.ArticleBrief;
+import com.example.testapplication.datamodel.Channel;
+import com.example.testapplication.datamodel.DataBaseHelper;
 
 import org.dom4j.Attribute;
 import org.dom4j.Document;
@@ -11,8 +19,11 @@ import org.dom4j.io.SAXReader;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -27,12 +38,44 @@ import okhttp3.Response;
  * @ClassName： XmlHandler
  * @Author SH
  * @Date： 2021/4/25
- * @Description： 此方法对Xml进行处理，解析相关Xml操作
+ * @Description： 此类对Xml进行处理，解析相关Xml操作
  */
 public class XmlHandler {
     private String url;
+    //创建数据库工具类对象
+    private DataBaseHelper dataBaseHelper = new  DataBaseHelper();
 
     private static final String TAG = "XmlHandler";
+
+    /**
+     * 内部类ImgDownloader
+     * 下载图片线程
+     */
+    private class ImgDownloadThread implements Runnable{
+
+        private Channel channel;
+        private String url;
+
+        ImgDownloadThread(Channel channel,String url){
+            this.channel = channel;
+            this.url = url;
+        }
+
+        @Override
+        public void run() {
+            OkHttpClient client = new OkHttpClient();
+            Request request = new Request.Builder()
+                    .url(url).build();
+            try {
+                Response response = client.newCall(request).execute();
+                byte[] bytes = response.body().bytes();
+                channel.setImage(bytes);
+                dataBaseHelper.addChannel(channel);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 
     public XmlHandler(String url){
         this.url = url ;
@@ -60,6 +103,8 @@ public class XmlHandler {
             }catch (DocumentException e) {
                 e.printStackTrace();
 
+            } catch (SQLException e) {
+                e.printStackTrace();
             }
 
         } catch (IOException e) {
@@ -73,35 +118,98 @@ public class XmlHandler {
      * 提供对XML的解析
      * @param isReader :InputStreamReader
      */
-    public void XmlParse (InputStreamReader isReader) throws IOException, DocumentException {
+    public void XmlParse (InputStreamReader isReader) throws IOException, DocumentException, SQLException {
         //创建Reader对象
         SAXReader reader = new SAXReader();
 
-
         Document document = reader.read(isReader);
-        Element channel = document.getRootElement().element("channel");
-        //获取节点
-        Iterator iterator = channel.elementIterator();
+        //获取channel节点
+        Element channelNode = document.getRootElement().element("channel");
+
+        Channel channel = new Channel();
+
+        //获取channel的子节点
+        Iterator iterator = channelNode.elementIterator();
 
         while(iterator.hasNext()) {
-            Element channelAtr = (Element) iterator.next();
-            List<Attribute> attributes = channelAtr.attributes();
-            Log.d(TAG, "节点名" + channelAtr.getName());
-            Log.d(TAG, "====解析属性===");
-            for (Attribute attribute : attributes) {
-                Log.d(TAG, attribute.getName() + ":" + attribute.getValue());
-            }
-            Log.d(TAG, "节点text:" + channelAtr.getText());
-            Log.d(TAG, "遍历子节点");
-            Iterator itemIterator = channelAtr.elementIterator();
-            while (itemIterator.hasNext()) {
-                Element item = (Element) itemIterator.next();
-                Log.d(TAG, "子节点："+item.getName());
-                if(item.getName() == "description"){
-                    Log.d(TAG,"description:"+item.getText());
+            Element channelSon = (Element) iterator.next();
+            switch (channelSon.getQualifiedName()){
+                //标题
+                case "title":{
+                    channel.setTitle(channelSon.getText());
+                    break;
                 }
+                //原文链接
+                case "link" :{
+                    channel.setAddressLink(channelSon.getText());
+                    break;
+                }
+                //描述
+                case "description" :{
+                    channel.setDescription(channelSon.getText());
+                    break;
+                }
+                //rss链接
+                case "atom:link":{
+                    channel.setRssLink(channelSon.attribute(0).getValue());
+                    dataBaseHelper.addChannel(channel);
+                    break;
+                }
+                //最后建立日期
+                case "lastBuildDate":{
+                    channel.setLastBuildDate(channelSon.getText());
+                    break;
+                }
+                //图片 (设置值为其url)
+                case "image":{
+                    Element url = channelSon.element("url");
+                    new Thread(new ImgDownloadThread(channel,url.getText())).start();
+                    break;
+                }
+                //文章内容项
+                case "item":{
+                    ArticleBrief articleBrief = new ArticleBrief();
+                    Iterator itemIterator = channelSon.elementIterator();
+                    List<String> categoryList = new ArrayList<>();
+
+                    while(itemIterator.hasNext()){
+                        Element articleSon = (Element) itemIterator.next();
+                        switch (articleSon.getQualifiedName()){
+                            case "title":{
+                                articleBrief.setTitle(articleSon.getText());
+                                break;
+                            }
+                            case "link":{
+                                articleBrief.setLink(articleSon.getText());
+                                break;
+                            }
+                            case "dc:creator":{
+                                articleBrief.setCreator(articleSon.getText());
+                                break;
+                            }
+                            case "category":{
+                                categoryList.add(articleSon.getText());
+                                break;
+                            }
+                            case "description":{
+                                articleBrief.setCategory(categoryList.toArray(new String[0]));
+                                articleBrief.setDescription(articleSon.getText());
+                                break;
+                            }
+                            case "content:encoded":{
+                                dataBaseHelper.addArticle(articleBrief,articleSon.getText(),channel);
+                                break;
+                            }
+
+                        }
+                    }
+
+
+                }
+
             }
         }
+        dataBaseHelper.addChannel(channel);
     }
 
 

@@ -3,6 +3,7 @@ package com.example.testapplication.datamodel;
 import org.litepal.LitePal;
 
 import java.sql.SQLException;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -19,8 +20,12 @@ public class DataBaseHelper {
      * @param channel 待添加的频道类
      */
     public static void addChannel(Channel channel){
-        //当channel的rssLink已存在，不会对数据库有改变
-        channel.save();
+        List<Channel> channels = LitePal
+                .where("rssLink = ?", channel.getRssLink())
+                .find(Channel.class);
+        if(channels.isEmpty()) channel.save();
+        //当channel的rssLink已存在，对其进行更新
+        else channel.update(channels.get(0).getId());
     }
 
     /**
@@ -45,6 +50,7 @@ public class DataBaseHelper {
             List<ArticleBrief> articleBriefs = LitePal.where("link = ?", articleBrief.getLink())
                                                         .find(ArticleBrief.class);
             if(!articleBriefs.isEmpty()){
+                //文章已存在, 采取覆盖式更新以更新其id
                 articleBrief.setContent_id(articleBriefs.get(0).getContent_id());
                 articleBrief.setChannel_id(articleBriefs.get(0).getChannel_id());
                 articleContent.update(articleBrief.getContent_id());
@@ -54,14 +60,16 @@ public class DataBaseHelper {
                 articleBrief.setChannel_id(channels.get(0).getId());
                 articleBrief.setContent_id(articleContent.getId());
             }
+            articleBrief.setPubTime(System.currentTimeMillis());
             articleBrief.save();
+
             //同步收藏表中的内容
             if(LitePal.where("link = ?", articleBrief.getLink())
                     .find(Collection.class)
                     .isEmpty())
                 return;
-            LitePal.deleteAll("link = ?",articleBrief.getLink());
-            Collection collection = new Collection(articleBrief, content);
+            LitePal.deleteAll(Collection.class, "link = ?", articleBrief.getLink());
+            Collection collection = new Collection(articleBrief, content, new Date(System.currentTimeMillis()));
             collection.save();
         }
     }
@@ -78,7 +86,7 @@ public class DataBaseHelper {
         if(articleContent == null) throw new SQLException("文章内容不存在");
         String content  = articleContent.getContent();
         //构造收藏类对象
-        Collection collection = new Collection(articleBrief, content);
+        Collection collection = new Collection(articleBrief, content, new Date(System.currentTimeMillis()));
         //将收藏类保存入库
         collection.save();
     }
@@ -87,11 +95,17 @@ public class DataBaseHelper {
      * 设置某篇文章为已读
      *
      * @param articleBrief 文章简介
+     * @throws SQLException 该文章不存在库中
      */
-    public static void readArticle(ArticleBrief articleBrief){
+    public static void readArticle(ArticleBrief articleBrief) throws SQLException {
+        //查询表中是否有对应的文章
+        ArticleBrief articleBrief1 = LitePal.find(ArticleBrief.class, articleBrief.getId());
+        if (articleBrief1==null) throw new SQLException("该文章不存在");
         //将库中对应的文章设置为已读
-        articleBrief.setRead(true);
-        articleBrief.update(articleBrief.getId());
+        else {
+            articleBrief1.setRead(true);
+            articleBrief1.update(articleBrief1.getId());
+        }
     }
 
     /**
@@ -102,9 +116,45 @@ public class DataBaseHelper {
      * @return the list<Channel>
      */
     public static List<Channel> getChannel(int offset, int limit){
-        return LitePal.offset(offset)
+        return LitePal
+                .offset(offset)
                 .limit(limit)
                 .find(Channel.class);
+    }
+
+    /**
+     * 根据频道的rssLink查询其上次的推送时间
+     *
+     * @param rssLink 频道的rssLink
+     * @return String 返回频道的上次推送时间
+     * @throws SQLException 频道rssLink不存在库中
+     */
+    public static String getChannelDateByRssLink(String rssLink) throws SQLException {
+        List<Channel> channels = LitePal
+                .select("lastBuildDate")
+                .where("rssLink = ?", rssLink)
+                .find(Channel.class);
+        if (channels.isEmpty()) throw new SQLException("不存在该频道");
+        else return channels.get(0).getLastBuildDate();
+    }
+
+    /**
+     * 根据频道的rssLink更新其推送时间
+     *
+     * @param rssLink 频道的rssLink
+     * @param lastBuildDate 新的推送时间
+     * @throws SQLException 频道rssLink不存在库中
+     */
+
+    public static void updateChannelDateByRssLink(String rssLink, String lastBuildDate) throws SQLException {
+        List<Channel> channels = LitePal
+                .where("rssLink = ?", rssLink)
+                .find(Channel.class);
+        if (channels.isEmpty()) throw new SQLException("不存在该频道");
+        else {
+            channels.get(0).setLastBuildDate(lastBuildDate);
+            channels.get(0).update(channels.get(0).getId());
+        }
     }
 
     /**
@@ -116,9 +166,9 @@ public class DataBaseHelper {
      * @return the list<ArticleBrief>
      */
     public static List<ArticleBrief> getArticleBriefsFromChannel(Channel resChannel, int offset, int limit){
-        //按日期降序返回对应channel的ArticleBrief列表
+        //按id降序，最后更新时间降序返回对应channel的ArticleBrief列表
         return LitePal.where("channel_id = ?", Integer.toString(resChannel.getId()))
-                .order("date desc")
+                .order("id desc, pubTime asc")
                 .offset(offset)
                 .limit(limit)
                 .find(ArticleBrief.class);

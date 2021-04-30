@@ -21,7 +21,7 @@ public class ArticleBrief extends LitePalSupport {
 
     private String creator;
 
-    private String[] category;
+    private String category;
 
     private String description;
 
@@ -37,7 +37,7 @@ public class ArticleBrief extends LitePalSupport {
         this.title = new String("");
         this.link = new String("");
         this.creator = new String("");
-        this.creator = null;
+        this.category = new String("");
         this.description = new String("");
         this.isRead = false;
     }
@@ -47,7 +47,7 @@ public class ArticleBrief extends LitePalSupport {
         this.title = title;
         this.link = link;
         this.creator = creator;
-        this.category = category;
+        this.setCategory(category);
         this.description = description;
         //默认未读
         this.isRead = false;
@@ -94,11 +94,12 @@ public class ArticleBrief extends LitePalSupport {
     }
 
     public String[] getCategory() {
-        return category;
+        return this.category.split(",");
     }
 
     public void setCategory(String[] category) {
-        this.category = category;
+        this.category = new String("");
+        for(String s:category) this.category += s + ",";
     }
 
     public String getDescription() {

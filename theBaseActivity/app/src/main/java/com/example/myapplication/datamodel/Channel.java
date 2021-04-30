@@ -2,6 +2,8 @@ package com.example.myapplication.datamodel;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.util.Base64;
+import android.util.Log;
 
 import org.litepal.annotation.Column;
 import org.litepal.crud.LitePalSupport;
@@ -33,7 +35,7 @@ public class Channel extends LitePalSupport {
     private String description;
 
     @Column(nullable = true)
-    private byte[] image;
+    private String image;
 
     private List<ArticleBrief> articleBriefs = new ArrayList<>();
 
@@ -44,18 +46,16 @@ public class Channel extends LitePalSupport {
         this.addressLink = new String("");
         this.lastBuildDate = new String("");
         this.description = new String("");
-        this.image = new byte[]{};
+        this.image = null;
     }
 
-    public Channel(String title, String rssLink, String addressLink, String lastBuildDate, String description, Bitmap image) {
+    public Channel(String title, String rssLink, String addressLink, String lastBuildDate, String description, byte[] image) {
         this.title = title;
         this.rssLink = rssLink;
         this.addressLink = addressLink;
         this.lastBuildDate = lastBuildDate;
         this.description = description;
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        image.compress(Bitmap.CompressFormat.PNG, 100, baos);
-        this.image = baos.toByteArray();
+        this.setImage(image);
     }
 
     protected int getId() {
@@ -106,14 +106,12 @@ public class Channel extends LitePalSupport {
         this.description = description;
     }
 
-    public Bitmap getImage() {
-        if(this.image.length == 0) return null;
-        return BitmapFactory.decodeByteArray(this.image,0,this.image.length);
+    public byte[] getImage() {
+        if(this.image.isEmpty()) return null;
+        return Base64.decode(this.image, Base64.DEFAULT);
     }
 
-    public void setImage(Bitmap image) {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        image.compress(Bitmap.CompressFormat.PNG, 100, baos);
-        this.image = baos.toByteArray();
+    public void setImage(byte[] image) {
+        this.image = Base64.encodeToString(image, Base64.DEFAULT);
     }
 }

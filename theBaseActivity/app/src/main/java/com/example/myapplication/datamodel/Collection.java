@@ -23,7 +23,7 @@ public class Collection extends LitePalSupport {
 
     private String creator;
 
-    private String[] category;
+    private String category;
 
     private Date collectDate;
 
@@ -37,7 +37,7 @@ public class Collection extends LitePalSupport {
         this.title = articleBrief.getTitle();
         this.link = articleBrief.getLink();
         this.creator = articleBrief.getCreator();
-        this.category = articleBrief.getCategory();
+        this.setCategory(articleBrief.getCategory());
         this.description = articleBrief.getDescription();
         this.collectDate = collectDate;
         this.content = content;
@@ -48,7 +48,7 @@ public class Collection extends LitePalSupport {
         this.title = title;
         this.link = link;
         this.creator = creator;
-        this.category = category;
+        this.setCategory(category);
         this.description = description;
         this.content = content;
     }
@@ -82,11 +82,12 @@ public class Collection extends LitePalSupport {
     }
 
     public String[] getCategory() {
-        return category;
+        return this.category.split(",");
     }
 
     public void setCategory(String[] category) {
-        this.category = category;
+        this.category = new String("");
+        for(String s:category) this.category += s + ",";
     }
 
     public Date getCollectDate() {

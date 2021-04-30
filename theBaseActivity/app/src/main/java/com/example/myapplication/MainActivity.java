@@ -15,7 +15,6 @@ public class MainActivity extends AppCompatActivity {
         LitePal.initialize(this);
         LitePal.getDatabase();
 
-
         setContentView(R.layout.activity_main);
     }
 }

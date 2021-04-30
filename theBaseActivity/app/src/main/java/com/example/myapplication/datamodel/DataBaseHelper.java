@@ -168,7 +168,7 @@ public class DataBaseHelper {
     public static List<ArticleBrief> getArticleBriefsFromChannel(Channel resChannel, int offset, int limit){
         //按id降序，最后更新时间降序返回对应channel的ArticleBrief列表
         return LitePal.where("channel_id = ?", Integer.toString(resChannel.getId()))
-                .order("id desc pubTime asc")
+                .order("id desc, pubTime asc")
                 .offset(offset)
                 .limit(limit)
                 .find(ArticleBrief.class);
@@ -220,6 +220,17 @@ public class DataBaseHelper {
         List<Collection> collections = LitePal.where("link = ?", articleBrief.getLink())
                 .find(Collection.class);
         return !collections.isEmpty();
+    }
+
+    /**
+     * 根据模糊的文章标题查询收藏
+     *
+     * @param vagueTitle
+     * @return the List<Collection>
+     */
+    public static List<Collection> searchCollection(String vagueTitle){
+        return LitePal.where("title like ?", "%"+vagueTitle+"%")
+                .find(Collection.class);
     }
 
     /**

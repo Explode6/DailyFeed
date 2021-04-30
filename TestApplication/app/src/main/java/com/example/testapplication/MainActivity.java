@@ -4,19 +4,24 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.IBinder;
+import android.os.RemoteException;
 import android.util.Log;
 import android.view.View;
-import android.widget.EditText;
 
+import com.example.testapplication.datamodel.ArticleBrief;
 import com.example.testapplication.datamodel.Channel;
+import com.example.testapplication.datamodel.Collection;
 import com.example.testapplication.datamodel.DataBaseHelper;
+import com.example.testapplication.parse.DataCallback;
+import com.example.testapplication.parse.DataService;
 import com.example.testapplication.parse.HandleXmlService;
 
-import java.io.ByteArrayOutputStream;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -47,6 +52,12 @@ public class MainActivity extends AppCompatActivity {
     public static final String EXTRA_MESSAGE = "com.example.testapplication.MESSAGE";
 
     private List<RvItem> itemList = new ArrayList<>();
+
+    /**
+     * 数据服务的引用
+     */
+    //private DataService dataService;
+    public IMyAidlInterface myAidlInterface;
 
     String TAG = "PARSE XML" ;
 
@@ -89,6 +100,38 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * 完善ServiceConnection接口
+     */
+    ServiceConnection conn = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, final IBinder service) {
+            myAidlInterface = IMyAidlInterface.Stub.asInterface(service);
+            try {
+                myAidlInterface.registerCallback(new DataCallback.Stub() {
+                    @Override
+                    public void onSuccess() throws RemoteException {
+                        Log.d(TAG,"Success");
+                    }
+
+                    @Override
+                    public void onFailure() throws RemoteException {
+                        Log.d(TAG,"Failure");
+                    }
+
+                    @Override
+                    public void onError() throws RemoteException {
+
+                    }
+                });
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) { }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -98,17 +141,6 @@ public class MainActivity extends AppCompatActivity {
         LitePal.initialize(this);
         LitePal.getDatabase();
 
-        //Channel test = new Channel("111","222","333",new Date(),"555","123");
-
-        //DataBaseHelper.addChannel(test);
-
-        //List<Channel> channels = DataBaseHelper.getChannel(0,1);
-
-        //for(Channel channel:channels){
-        //    Log.d("DATABASETEST","title:"+ channel.getTitle());
-        //    Log.d("DATABASETEST","description:"+ channel.getDescription());
-        //}
-
         initItemList();
         RecyclerView RV = (RecyclerView)findViewById(R.id.RecyclerView);
         StaggeredGridLayoutManager layoutManager = new StaggeredGridLayoutManager(2,StaggeredGridLayoutManager.VERTICAL);
@@ -116,20 +148,44 @@ public class MainActivity extends AppCompatActivity {
         RV.setLayoutManager(layoutManager);
         MyRVAdapter adapter = new MyRVAdapter(itemList);
         RV.setAdapter(adapter);
-//        new Thread(new Runnable() {
-//            @Override
-//            public void run() {
-//                try {
-//                    //downloadXml("http://news.163.com/special/00011K6L/rss_newsattitude.xml");
-//                    XmlParse("Cache_test.xml");
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//        }).start();
-
-
+        Intent intent = new Intent(this, DataService.class);
+        bindService(intent,conn,Context.BIND_AUTO_CREATE);
     }
+
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        // 释放服务
+        if(conn != null){
+            unbindService(conn);
+            conn = null;
+        }
+    }
+
+    /**
+     * 数据服务测试
+     * @param view
+     */
+    public void startDataService(View view){
+        try {
+            //myAidlInterface.downloadParseXml("https://tobiasahlin.com/feed.xml");
+            //myAidlInterface.downloadParseXml("https://journeybunnies.com/feed/");
+            List<Channel> channels =  myAidlInterface.getChannel(0,10);
+            for(Channel channel : channels){
+                Log.d(TAG,channel.getTitle());
+            }
+            List<ArticleBrief> articleBriefs = myAidlInterface.getArticleBriefsFromChannel(channels.get(0),0,10);
+            myAidlInterface.collectArticle(articleBriefs.get(2));
+            List<Collection> collections =  myAidlInterface.getCollection(0,10);
+            for(Collection collection:collections){
+                Log.d(TAG,collection.getTitle());
+            }
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
+
 
     /**
      * 删库跑路
@@ -177,13 +233,13 @@ public class MainActivity extends AppCompatActivity {
         return builder.toString();
     }
 
-
     /**
      * 打开新窗口输出内容
      * @param view
      */
     public void sendMessage(View view) {
         Intent intent = new Intent(this, DisplayMessageActivity.class);
+        startActivity(intent);
         //EditText editText = (EditText) findViewById(R.id.editText);
         //String message = editText.getText().toString();
 //        try {
@@ -207,8 +263,19 @@ public class MainActivity extends AppCompatActivity {
 //        }
 
         //intent.putExtra(EXTRA_MESSAGE,message);
+
+    }
+
+    /**
+     * 打开webView
+     * @param view
+     */
+    public void openWebView(View view){
+        Intent intent = new Intent(this,WebViewActivity.class);
         startActivity(intent);
     }
+
+
 
 
 

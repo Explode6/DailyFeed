@@ -1,5 +1,8 @@
 package com.example.testapplication.datamodel;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import org.litepal.annotation.Column;
 import org.litepal.crud.LitePalSupport;
 
@@ -9,7 +12,7 @@ import org.litepal.crud.LitePalSupport;
   * @Date： 2021/4/24
   * @Description： 文章简介类，外部可调用的信息有：标题，链接，创作者，类别，简介，已读标记
 */
-public class ArticleBrief extends LitePalSupport {
+public class ArticleBrief extends LitePalSupport implements Parcelable {
 
     @Column(unique = true)
     private int id;
@@ -21,7 +24,7 @@ public class ArticleBrief extends LitePalSupport {
 
     private String creator;
 
-    private String[] category;
+    private String category;
 
     private String description;
 
@@ -37,7 +40,7 @@ public class ArticleBrief extends LitePalSupport {
         this.title = new String("");
         this.link = new String("");
         this.creator = new String("");
-        this.creator = null;
+        this.category = new String("");
         this.description = new String("");
         this.isRead = false;
     }
@@ -47,10 +50,27 @@ public class ArticleBrief extends LitePalSupport {
         this.title = title;
         this.link = link;
         this.creator = creator;
-        this.category = category;
+        this.setCategory(category);
         this.description = description;
         //默认未读
         this.isRead = false;
+    }
+
+    //序列化使用
+    public ArticleBrief(int id,String title, String link, String creator, String category,
+                        String description,Boolean isRead,long pubTime,int content_id,int channel_id) {
+        this.id = id;
+        this.title = title;
+        this.link = link;
+        this.creator = creator;
+        this.category = category;
+        this.description = description;
+        //默认未读
+        this.isRead = isRead;
+        this.pubTime = pubTime;
+        this.content_id = content_id;
+        this.channel_id = channel_id;
+
     }
 
     protected int getId() {
@@ -94,11 +114,12 @@ public class ArticleBrief extends LitePalSupport {
     }
 
     public String[] getCategory() {
-        return category;
+        return this.category.split(",");
     }
 
     public void setCategory(String[] category) {
-        this.category = category;
+        this.category = new String("");
+        for(String s:category) this.category += s + ",";
     }
 
     public String getDescription() {
@@ -132,4 +153,45 @@ public class ArticleBrief extends LitePalSupport {
     protected void setChannel_id(int channel_id) {
         this.channel_id = channel_id;
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(id);
+        dest.writeString(title);
+        dest.writeString(link);
+        dest.writeString(creator);
+        dest.writeString(category);
+        dest.writeString(description);
+        dest.writeBoolean(isRead);
+        dest.writeLong(pubTime);
+        dest.writeInt(content_id);
+        dest.writeInt(channel_id);
+    }
+
+    public static final Creator<ArticleBrief> CREATOR = new Creator<ArticleBrief>() {
+        @Override
+        public ArticleBrief createFromParcel(Parcel source) {
+            int id = source.readInt();
+            String title = source.readString();
+            String link = source.readString();
+            String creator = source.readString();
+            String category = source.readString();
+            String description = source.readString();
+            Boolean isRead = source.readBoolean();
+            Long pubTime = source.readLong();
+            int content_id = source.readInt();
+            int channel_id = source.readInt();
+            return new ArticleBrief(id,title,link,creator,category,description,isRead,pubTime,content_id,channel_id);
+        }
+
+        @Override
+        public ArticleBrief[] newArray(int size) {
+            return new ArticleBrief[size];
+        }
+    };
 }

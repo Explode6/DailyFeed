@@ -42,8 +42,6 @@ import okhttp3.Response;
  */
 public class XmlHandler {
     private String url;
-    //创建数据库工具类对象
-    private DataBaseHelper dataBaseHelper = new  DataBaseHelper();
 
     private static final String TAG = "XmlHandler";
 
@@ -70,7 +68,7 @@ public class XmlHandler {
                 Response response = client.newCall(request).execute();
                 byte[] bytes = response.body().bytes();
                 channel.setImage(bytes);
-                dataBaseHelper.addChannel(channel);
+                DataBaseHelper.addChannel(channel);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -82,7 +80,7 @@ public class XmlHandler {
     }
 
     /**
-     * 下载xml并且解析
+     * 下载xml并且解析，将相关数据存放在数据库之中
      */
     public void startParse(){
         OkHttpClient client = new OkHttpClient();
@@ -113,12 +111,11 @@ public class XmlHandler {
 
     }
 
-
     /**
      * 提供对XML的解析
      * @param isReader :InputStreamReader
      */
-    public void XmlParse (InputStreamReader isReader) throws IOException, DocumentException, SQLException {
+    private void XmlParse (InputStreamReader isReader) throws IOException, DocumentException, SQLException {
         //创建Reader对象
         SAXReader reader = new SAXReader();
 
@@ -152,7 +149,7 @@ public class XmlHandler {
                 //rss链接
                 case "atom:link":{
                     channel.setRssLink(channelSon.attribute(0).getValue());
-                    dataBaseHelper.addChannel(channel);
+                    DataBaseHelper.addChannel(channel);
                     break;
                 }
                 //最后建立日期
@@ -171,6 +168,7 @@ public class XmlHandler {
                     ArticleBrief articleBrief = new ArticleBrief();
                     Iterator itemIterator = channelSon.elementIterator();
                     List<String> categoryList = new ArrayList<>();
+                    String content = "";
 
                     while(itemIterator.hasNext()){
                         Element articleSon = (Element) itemIterator.next();
@@ -194,24 +192,24 @@ public class XmlHandler {
                             case "description":{
                                 articleBrief.setCategory(categoryList.toArray(new String[0]));
                                 articleBrief.setDescription(articleSon.getText());
+                                content = articleSon.getText();
                                 break;
                             }
                             case "content:encoded":{
-                                dataBaseHelper.addArticle(articleBrief,articleSon.getText(),channel);
+                                content = articleSon.getText();
                                 break;
                             }
 
                         }
                     }
-
-
+                    //最后添加
+                    DataBaseHelper.addArticle(articleBrief,content,channel);
                 }
 
             }
         }
-        dataBaseHelper.addChannel(channel);
+        DataBaseHelper.addChannel(channel);
     }
-
 
 
     /**
@@ -219,7 +217,7 @@ public class XmlHandler {
      * @param in: The BufferedInputStream to be Detect
      * @return 编码格式名称
      */
-    public String charsetDetect(BufferedInputStream in) {
+    private String charsetDetect(BufferedInputStream in) {
 
         String _charset="";
         try {

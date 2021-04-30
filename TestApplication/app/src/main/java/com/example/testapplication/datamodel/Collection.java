@@ -1,5 +1,8 @@
 package com.example.testapplication.datamodel;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import org.litepal.annotation.Column;
 import org.litepal.crud.LitePalSupport;
 
@@ -11,7 +14,7 @@ import java.util.Date;
   * @Date:  2021/4/24
   * @Description:  收藏类，外部可调用的数据有：标题，链接，创作者，收藏日期，类别，简介，内容
 */
-public class Collection extends LitePalSupport {
+public class Collection extends LitePalSupport implements Parcelable {
 
     @Column(unique = true)
     private int id;
@@ -23,7 +26,7 @@ public class Collection extends LitePalSupport {
 
     private String creator;
 
-    private String[] category;
+    private String category;
 
     private Date collectDate;
 
@@ -37,7 +40,7 @@ public class Collection extends LitePalSupport {
         this.title = articleBrief.getTitle();
         this.link = articleBrief.getLink();
         this.creator = articleBrief.getCreator();
-        this.category = articleBrief.getCategory();
+        this.setCategory(articleBrief.getCategory());
         this.description = articleBrief.getDescription();
         this.collectDate = collectDate;
         this.content = content;
@@ -48,7 +51,20 @@ public class Collection extends LitePalSupport {
         this.title = title;
         this.link = link;
         this.creator = creator;
+        this.setCategory(category);
+        this.description = description;
+        this.content = content;
+    }
+
+    //parcel专用
+    public Collection(int id,String title, String link, String creator,
+                      String category, Date date,String description, String content) {
+        this.id = id;
+        this.title = title;
+        this.link = link;
+        this.creator = creator;
         this.category = category;
+        this.collectDate = date;
         this.description = description;
         this.content = content;
     }
@@ -82,11 +98,12 @@ public class Collection extends LitePalSupport {
     }
 
     public String[] getCategory() {
-        return category;
+        return this.category.split(",");
     }
 
     public void setCategory(String[] category) {
-        this.category = category;
+        this.category = new String("");
+        for(String s:category) this.category += s + ",";
     }
 
     public Date getCollectDate() {
@@ -112,4 +129,41 @@ public class Collection extends LitePalSupport {
     public void setContent(String content) {
         this.content = content;
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(id);
+        dest.writeString(title);
+        dest.writeString(link);
+        dest.writeString(creator);
+        dest.writeString(category);
+        dest.writeValue(collectDate);
+        dest.writeString(description);
+        dest.writeString(content);
+    }
+
+    public static final Creator<Collection> CREATOR = new Creator<Collection>() {
+        @Override
+        public Collection createFromParcel(Parcel source) {
+            int id = source.readInt();
+            String title = source.readString();
+            String link = source.readString();
+            String creator = source.readString();
+            String category = source.readString();
+            Date collectDate = (Date) source.readValue(Date.class.getClassLoader());
+            String description = source.readString();
+            String content = source.readString();
+            return new Collection(id,title,link,creator,category,collectDate,description,content);
+        }
+
+        @Override
+        public Collection[] newArray(int size) {
+            return new Collection[size];
+        }
+    };
 }

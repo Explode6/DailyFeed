@@ -16,14 +16,14 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <service
-            android:name=".parse.DataService"
+            android:name=".model.parse.DataService"
             android:enabled="true"
             android:exported="true"
             android:process=":dataService"
             ></service>
 
         <service
-            android:name=".parse.HandleXmlService"
+            android:name=".model.parse.HandleXmlService"
             android:enabled="true"
             android:exported="true" />
 

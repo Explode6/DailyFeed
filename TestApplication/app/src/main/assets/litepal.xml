@@ -3,9 +3,9 @@
     <dbname value="test"></dbname>
     <version value="3"></version>
     <list>
-        <mapping class="com.example.testapplication.datamodel.Channel"></mapping>
-        <mapping class="com.example.testapplication.datamodel.Collection"></mapping>
-        <mapping class="com.example.testapplication.datamodel.ArticleBrief"></mapping>
-        <mapping class="com.example.testapplication.datamodel.ArticleContent"></mapping>
+        <mapping class="com.example.testapplication.model.datamodel.Channel"></mapping>
+        <mapping class="com.example.testapplication.model.datamodel.Collection"></mapping>
+        <mapping class="com.example.testapplication.model.datamodel.ArticleBrief"></mapping>
+        <mapping class="com.example.testapplication.model.datamodel.ArticleContent"></mapping>
     </list>
 </litepal>

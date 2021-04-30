@@ -1,11 +1,11 @@
 // IMyAidlInterface.aidl
 package com.example.testapplication;
 
-import com.example.testapplication.parse.DataCallback;
+import com.example.testapplication.model.parse.DataCallback;
 
-import com.example.testapplication.datamodel.Channel;
-import com.example.testapplication.datamodel.ArticleBrief;
-import com.example.testapplication.datamodel.Collection;
+import com.example.testapplication.model.datamodel.Channel;
+import com.example.testapplication.model.datamodel.ArticleBrief;
+import com.example.testapplication.model.datamodel.Collection;
 
 // Declare any non-default types here with import statements
 

@@ -1,8 +1,6 @@
 package com.example.testapplication;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
 import android.content.ComponentName;
 import android.content.Context;
@@ -14,32 +12,20 @@ import android.os.RemoteException;
 import android.util.Log;
 import android.view.View;
 
-import com.example.testapplication.datamodel.ArticleBrief;
-import com.example.testapplication.datamodel.Channel;
-import com.example.testapplication.datamodel.Collection;
-import com.example.testapplication.datamodel.DataBaseHelper;
-import com.example.testapplication.parse.DataCallback;
-import com.example.testapplication.parse.DataService;
-import com.example.testapplication.parse.HandleXmlService;
+import com.example.testapplication.model.datamodel.ArticleBrief;
+import com.example.testapplication.model.datamodel.Channel;
+import com.example.testapplication.model.datamodel.Collection;
+import com.example.testapplication.model.datamodel.DataBaseHelper;
+import com.example.testapplication.model.parse.DataCallback;
+import com.example.testapplication.model.parse.DataService;
 
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Random;
 
-import org.dom4j.Attribute;
-import org.dom4j.Document;
-import org.dom4j.DocumentException;
-import org.dom4j.Element;
-import org.dom4j.io.SAXReader;
 import org.litepal.LitePal;
 
 /**

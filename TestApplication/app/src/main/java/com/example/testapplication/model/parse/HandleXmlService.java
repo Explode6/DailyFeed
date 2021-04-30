@@ -1,4 +1,4 @@
-package com.example.testapplication.parse;
+package com.example.testapplication.model.parse;
 
 import android.app.Service;
 import android.content.Intent;

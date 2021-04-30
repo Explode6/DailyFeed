@@ -1,5 +1,5 @@
 // DataCallback.aidl
-package com.example.testapplication.parse;
+package com.example.testapplication.model.parse;
 
 
 interface DataCallback {

@@ -1,12 +1,11 @@
-package com.example.testapplication.parse;
+package com.example.testapplication.model.parse;
 
 import android.os.RemoteException;
 
 import com.example.testapplication.IMyAidlInterface;
-import com.example.testapplication.datamodel.ArticleBrief;
-import com.example.testapplication.datamodel.Channel;
-import com.example.testapplication.datamodel.Collection;
-import com.example.testapplication.datamodel.DataBaseHelper;
+import com.example.testapplication.model.datamodel.ArticleBrief;
+import com.example.testapplication.model.datamodel.Channel;
+import com.example.testapplication.model.datamodel.Collection;
 
 import java.sql.SQLException;
 import java.util.List;

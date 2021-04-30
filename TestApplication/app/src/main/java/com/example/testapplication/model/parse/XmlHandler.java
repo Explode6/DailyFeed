@@ -1,17 +1,10 @@
-package com.example.testapplication.parse;
+package com.example.testapplication.model.parse;
 
 
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.media.Image;
-import android.provider.ContactsContract;
-import android.util.Log;
+import com.example.testapplication.model.datamodel.ArticleBrief;
+import com.example.testapplication.model.datamodel.Channel;
+import com.example.testapplication.model.datamodel.DataBaseHelper;
 
-import com.example.testapplication.datamodel.ArticleBrief;
-import com.example.testapplication.datamodel.Channel;
-import com.example.testapplication.datamodel.DataBaseHelper;
-
-import org.dom4j.Attribute;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
@@ -19,7 +12,6 @@ import org.dom4j.io.SAXReader;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 
 import java.sql.SQLException;

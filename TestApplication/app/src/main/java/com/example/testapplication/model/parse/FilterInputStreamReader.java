@@ -1,4 +1,4 @@
-package com.example.testapplication.parse;
+package com.example.testapplication.model.parse;
 
 import java.io.IOException;
 import java.io.InputStream;

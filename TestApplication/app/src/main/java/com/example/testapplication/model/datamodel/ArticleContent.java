@@ -1,4 +1,4 @@
-package com.example.testapplication.datamodel;
+package com.example.testapplication.model.datamodel;
 
 import org.litepal.annotation.Column;
 import org.litepal.crud.LitePalSupport;

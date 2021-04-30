@@ -1,15 +1,11 @@
-package com.example.testapplication.datamodel;
+package com.example.testapplication.model.datamodel;
 
-import android.media.Image;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Base64;
 
 import org.litepal.annotation.Column;
 import org.litepal.crud.LitePalSupport;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
   * @ClassName： Channel

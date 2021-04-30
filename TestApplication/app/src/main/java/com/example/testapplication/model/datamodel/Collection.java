@@ -1,4 +1,4 @@
-package com.example.testapplication.datamodel;
+package com.example.testapplication.model.datamodel;
 
 import android.os.Parcel;
 import android.os.Parcelable;

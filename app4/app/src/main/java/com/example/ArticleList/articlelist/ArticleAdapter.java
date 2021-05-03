@@ -1,5 +1,6 @@
 package com.example.ArticleList.articlelist;
 
+import android.content.Context;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,7 +12,8 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.ArticleList.Data.Article;
+import com.bumptech.glide.Glide;
+import com.example.ArticleList.Data.ArticleBrief;
 import com.example.ArticleList.R;
 
 import java.util.List;
@@ -20,26 +22,32 @@ import java.util.List;
  * @ClassName ArticleAdapter
  * @Author HaoHaoGe
  * @Date 2021/4/25
- * @Description
+ * @Description 文章适配器用于展示文章简介页面的recyclerView，
+ * 其中implements View.OnClickListener是用于感知每一项的点击，从而判断是否为侧滑
  */
-public class ArticleAdapter extends RecyclerView.Adapter<ArticleAdapter.ViewHolder> implements View.OnClickListener {
+public class ArticleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements View.OnClickListener {
 
-    private List<Article> mArticleList;
+    private List<ArticleBrief> mArticleBriefList;
+
+    private static int ITEM_TYPE = 0;
+    private static int ITEM_TYPE_LOAD = 1;
+    private static int ITEM_TYPE_END = 2;
 
     private OnDeleteClickListener mDeleteClickListener;
     private OnItemClickListener mListener;
+
+    private FooterHolder mFooterHolder;
+
+    private Context mContext;
+
     @Override
     public void onClick(View view) {
         if(mListener != null){
             mListener.onItemClick(this, view, (Integer)view.getTag());
         }
     }
-    public void setOnItemClickListener(OnItemClickListener listener){
-        this.mListener = listener;
-    }
 
-
-    static class ViewHolder extends RecyclerView.ViewHolder{
+    static public class ViewHolder extends RecyclerView.ViewHolder{
         ImageView articleImage = null;
         TextView articleTitle = null;
         TextView articleBrief = null;
@@ -68,64 +76,182 @@ public class ArticleAdapter extends RecyclerView.Adapter<ArticleAdapter.ViewHold
         }
     };
 
-    public ArticleAdapter(List<Article> articleList){
-        mArticleList = articleList;
+    public static class FooterHolder extends RecyclerView.ViewHolder{
+        TextView textView = null;
+        public FooterHolder(View view) {
+            super(view);
+            textView = view.findViewById(R.id.footer_text);
+        }
     }
 
-    public void changeData(List<Article> articleList){
-        mArticleList = articleList;
+    public ArticleAdapter(List<ArticleBrief> articleBriefList){
+        mArticleBriefList = articleBriefList;
     }
+
+
 
     @NonNull
     @Override
-    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(
-                R.layout.article_item,
-                parent,
-                false);
+    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        if(mContext == null){
+            mContext = parent.getContext();
+        }
+        //文章加载完了，显示footerView
+        if(viewType == ITEM_TYPE_END){
+            View footerView = LayoutInflater.from(mContext).inflate(
+                    R.layout.article_footer,
+                    parent,
+                    false);
+            mFooterHolder = new FooterHolder(footerView);
+            return mFooterHolder;
+        }
+        //加载正常的文章item
+        else{
+            View view = LayoutInflater.from(parent.getContext()).inflate(
+                    R.layout.article_item,
+                    parent,
+                    false);
 
-        view.setOnClickListener(this);
-        ViewHolder viewHolder = new ViewHolder(view);
-        return viewHolder;
+            view.setOnClickListener(this);
+            ViewHolder viewHolder = new ViewHolder(view);
+            return viewHolder;
+        }
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        Article article = mArticleList.get(position);
-        holder.itemView.setTag(position);
-        holder.articleImage.setImageResource(article.getImageId());
-        holder.articleTitle.setText(article.getTitle());
-        holder.articleBrief.setText(article.getBrief());
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
+        if(holder instanceof ViewHolder){
+            ArticleBrief articleBrief = mArticleBriefList.get(position);
 
-        View view = holder.getView(R.id.delete_collection);
-        view.setTag(position);
-        if(!view.hasOnClickListeners()){
-            view.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    if(mDeleteClickListener != null){
-                        mDeleteClickListener.onDeleteClick(view, (Integer) view.getTag());
+
+
+            holder.itemView.setTag(position);
+
+
+
+            String url = "http://cn.bing.com/az/hprichbg/rb/Dongdaemun_ZH-CN10736487148_1920x1080.jpg";
+            Glide.with(mContext).load(url).into(((ViewHolder) holder).articleImage);
+            //Glide.with(mContext).load("http://cn.bing.com/az/hprichbg/rb/Dongdaemun_ZH-CN10736487148_1920x1080.jpg").into(((ViewHolder) holder).articleImage);
+            //test下面这句是对的，上面这句用来尝试解析URL显示图片
+
+
+
+
+
+            //((ViewHolder)holder).articleImage.setImageResource(articleBrief.getImageId());
+            ((ViewHolder)holder).articleTitle.setText(articleBrief.getTitle());
+            ((ViewHolder)holder).articleBrief.setText(articleBrief.getDescription());
+
+
+            /**
+             * 绑定删除按钮的点击事件，需要在view层实现
+             *
+             */
+            View view = ((ViewHolder)holder).getView(R.id.delete_collection);
+            view.setTag(position);
+            if (!view.hasOnClickListeners()) {
+                view.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        if (mDeleteClickListener != null) {
+                            mDeleteClickListener.onDeleteClick(view, (Integer) view.getTag());
+                        }
                     }
-                }
-            });
+                });
+            }
+        }else if(holder instanceof FooterHolder){
+            //test应该不需要这句
+            //((FooterHolder)holder).textView.setText("下拉加载更多");
         }
     }
 
     @Override
     public int getItemCount() {
-        return mArticleList.size();
+        return mArticleBriefList.size() + 1;
     }
 
+
+    /**
+     * 暴露删除的点击事件给view层，让view层自定义删除操作
+     *
+     * @param listener 也就是下方定义的OnDeleteClickListener接口
+     */
+    public void setOnDeleteClickListener(OnDeleteClickListener listener){
+        this.mDeleteClickListener = listener;
+    }
+    public interface OnDeleteClickListener{
+        void onDeleteClick(View view, int position);
+    }
+
+    /**
+     * 暴露文章的点击事件给view层，让view层实现点击文章进入文章详情页
+     *
+     * @param listener 也就是下方定义的OItemClickListener接口
+     */
+    public void setOnItemClickListener(OnItemClickListener listener){
+        this.mListener = listener;
+    }
     public interface OnItemClickListener{
         void onItemClick(RecyclerView.Adapter adapter, View v, int postion);
     }
 
 
-    public void setOnDeleteClickListener(OnDeleteClickListener listener){
-        this.mDeleteClickListener = listener;
+
+
+
+    /**
+     * 第一次加载数据时，直接替换原有的list然后刷新recyclerView
+     * 用于刷新时重新加载数据
+     *
+     * @param articleBriefList onresume方法调用时，得到的最开始的10篇文章
+     */
+    public void changeData(List<ArticleBrief> articleBriefList){
+        mArticleBriefList = articleBriefList;
     }
 
-    public interface OnDeleteClickListener{
-        void onDeleteClick(View view, int position);
+    /**
+     * 下拉加载更多时，拉取到新的数据，直接append在list后面
+     *
+     * @param articleBriefList the article list
+     */
+    public void addArticleList(List<ArticleBrief> articleBriefList){
+        mArticleBriefList.addAll(articleBriefList);
+    }
+
+
+
+    /**
+     * 重写getItemViewType，用来判定是否为recyclerView底部
+     * 注意：这里的position是不是下标？用不用-1？
+     */
+    @Override
+    public int getItemViewType(int position) {
+        //如果已经在底部，将viewType置为1
+        if(position == mArticleBriefList.size() - 1){
+            return ITEM_TYPE_LOAD;
+        }else if(position == mArticleBriefList.size()){
+            return ITEM_TYPE_END;
+        }else{
+            return ITEM_TYPE;
+        }
+    }
+
+
+    /*
+     *获取点击时的文章
+     */
+    public String getArticleBrief(int position){
+        return mArticleBriefList.get(position).getTitle();
+    }
+
+    public void setNotice(){
+        if(mFooterHolder != null) {
+            mFooterHolder.textView.setText("我也是有底线的");
+        }
+    }
+    public void setFirstNotice(){
+        if(mFooterHolder != null) {
+            mFooterHolder.textView.setText("加载更多");
+        }
     }
 }

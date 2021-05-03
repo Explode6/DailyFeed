@@ -8,8 +8,10 @@ import android.view.VelocityTracker;
 import android.view.View;
 import android.view.ViewConfiguration;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.Scroller;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -214,4 +216,5 @@ public class SlideRecyclerView extends RecyclerView {
             mFlingView.scrollTo(0, 0);
         }
     }
+
 }

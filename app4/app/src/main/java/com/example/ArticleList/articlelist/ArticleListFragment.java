@@ -12,8 +12,9 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import com.example.ArticleList.Data.Article;
+import com.example.ArticleList.Data.ArticleBrief;
 import com.example.ArticleList.R;
 
 import java.util.ArrayList;
@@ -43,7 +44,7 @@ public class ArticleListFragment extends Fragment implements ArticleListContract
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mArticleAdapter = new ArticleAdapter(new ArrayList<Article>());
+        mArticleAdapter = new ArticleAdapter(new ArrayList<ArticleBrief>());
     }
 
     @Override
@@ -55,30 +56,64 @@ public class ArticleListFragment extends Fragment implements ArticleListContract
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View root = inflater.inflate(R.layout.article_list_frag, container, false);
-        SlideRecyclerView slideRecyclerView = (SlideRecyclerView)root.findViewById(R.id.article_list_slideview);
+        final View root = inflater.inflate(R.layout.article_list_frag, container, false);
+
+        final SwipeRefreshLayout swipeRefreshLayout = root.findViewById(R.id.refresh_layout);
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                mPresent.reLoadArticle();
+                Toast.makeText(root.getContext(), "刷新成功", Toast.LENGTH_SHORT).show();
+                swipeRefreshLayout.setRefreshing(false);
+            }
+        });
+        final SlideRecyclerView slideRecyclerView = (SlideRecyclerView)root.findViewById(R.id.article_list_slideview);
         slideRecyclerView.setAdapter(mArticleAdapter);
-        //可能错了
         LinearLayoutManager layoutManager = new LinearLayoutManager(slideRecyclerView.getContext(), RecyclerView.VERTICAL, false);
+
         mArticleAdapter.setOnItemClickListener(new ArticleAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(RecyclerView.Adapter adapter, View v, int postion) {
-                Toast.makeText(v.getContext(), "Switch to the last activity", Toast.LENGTH_LONG).show();
+                String name = mArticleAdapter.getArticleBrief(postion);
+                Toast.makeText(v.getContext(), "Switch to "+name + "'s activity", Toast.LENGTH_SHORT).show();
             }
         });
         mArticleAdapter.setOnDeleteClickListener(new ArticleAdapter.OnDeleteClickListener() {
             @Override
             public void onDeleteClick(View view, int position) {
-                Toast.makeText(view.getContext(), "add this article to my collection", Toast.LENGTH_LONG).show();
+                Toast.makeText(view.getContext(), "add this article to my collection", Toast.LENGTH_SHORT).show();
             }
         });
+
+
         slideRecyclerView.setLayoutManager(layoutManager);
+        slideRecyclerView.addOnScrollListener(new LoadMoreOnScrollListener(){
+            @Override
+            public void loadMoreArticle() {
+                boolean completeLoad = mPresent.loadArticle();
+                if(!completeLoad) {
+                    Toast.makeText(root.getContext(), "加载成功", Toast.LENGTH_SHORT).show();
+                }else{
+                    mArticleAdapter.setNotice();
+                }
+            }
+        });
 
         return root;
     }
 
-    public void showArticleList(List<Article> articleList){
-        mArticleAdapter.changeData(articleList);
-        mArticleAdapter.notifyDataSetChanged();
+    public void showArticleList(List<ArticleBrief> articleBriefList, int begin, int size){
+        mArticleAdapter.addArticleList(articleBriefList);
+        //这个方法刷新方式是添加，如果可以的话，用这个代替下面的函数，还未尝试
+        mArticleAdapter.notifyItemRangeInserted(begin, size);
+//        //下面是直接重新加载，保证对，先不用
+//        mArticleAdapter.notifyDataSetChanged();
     }
+
+    public void refreshArticleList(List<ArticleBrief> articleBriefList){
+        mArticleAdapter.changeData(articleBriefList);
+        mArticleAdapter.notifyDataSetChanged();
+        mArticleAdapter.setFirstNotice();
+    }
+
 }

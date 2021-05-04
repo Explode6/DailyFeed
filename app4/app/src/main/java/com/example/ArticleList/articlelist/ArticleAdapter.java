@@ -1,5 +1,6 @@
 package com.example.ArticleList.articlelist;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
@@ -13,10 +14,16 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
+import com.bumptech.glide.request.RequestOptions;
+import com.bumptech.glide.request.transition.DrawableCrossFadeFactory;
 import com.example.ArticleList.Data.ArticleBrief;
 import com.example.ArticleList.R;
 
 import java.util.List;
+
+import static com.example.ArticleList.R.color.colorPrimary;
 
 /**
  * @ClassName ArticleAdapter
@@ -35,6 +42,7 @@ public class ArticleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     private OnDeleteClickListener mDeleteClickListener;
     private OnItemClickListener mListener;
+    private OnMarkReadClickListener mMarkReadClickListener;
 
     private FooterHolder mFooterHolder;
 
@@ -52,6 +60,7 @@ public class ArticleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         TextView articleTitle = null;
         TextView articleBrief = null;
         Button deleteCollection = null;
+        Button markRead = null;
 
         private SparseArray<View> mViews;
 
@@ -64,6 +73,7 @@ public class ArticleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             articleTitle = (TextView) view.findViewById(R.id.artitle_title);
             articleBrief = (TextView) view.findViewById(R.id.artitle_brief);
             deleteCollection = (Button) view.findViewById(R.id.delete_collection);
+            markRead = (Button)view.findViewById(R.id.mark_as_read);
         }
 
         View getView(int viewId){
@@ -118,43 +128,79 @@ public class ArticleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         }
     }
 
+
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         if(holder instanceof ViewHolder){
+
             ArticleBrief articleBrief = mArticleBriefList.get(position);
-
-
-
             holder.itemView.setTag(position);
 
 
+            //设置ArticleBrief的图片样式
+            //如果有图片的话需要用url加载图片
+            if(articleBrief.isHavingImage()) {
+                ((ViewHolder) holder).articleImage.setVisibility(View.VISIBLE);
+                RequestOptions options = new RequestOptions()
+                        //还未加载完成时，用isLoading作为占位图
+                        .placeholder(R.drawable.article_image_isloading)
+                        //加载失败用error图占位
+                        .error(R.drawable.article_image_error);
+                Glide.with(mContext)
+                        .load(articleBrief.getImageId())
+                        .apply(options)
+                        .into(((ViewHolder) holder).articleImage);
+            }
+            //如果这篇文章没有图片，则不需显示图片
+            else{
+                ((ViewHolder) holder).articleImage.setVisibility(View.GONE);
+            }
 
-            String url = "http://cn.bing.com/az/hprichbg/rb/Dongdaemun_ZH-CN10736487148_1920x1080.jpg";
-            Glide.with(mContext).load(url).into(((ViewHolder) holder).articleImage);
-            //Glide.with(mContext).load("http://cn.bing.com/az/hprichbg/rb/Dongdaemun_ZH-CN10736487148_1920x1080.jpg").into(((ViewHolder) holder).articleImage);
-            //test下面这句是对的，上面这句用来尝试解析URL显示图片
-
-
-
-
-
-            //((ViewHolder)holder).articleImage.setImageResource(articleBrief.getImageId());
+            if(articleBrief.isRead()){
+                ((ViewHolder) holder).articleTitle.setTextColor(mContext.getResources().getColor(R.color.brief_or_isread_gray));
+            }else{
+                ((ViewHolder) holder).articleTitle.setTextColor(mContext.getResources().getColor(R.color.colorPrimaryDark));
+            }
             ((ViewHolder)holder).articleTitle.setText(articleBrief.getTitle());
             ((ViewHolder)holder).articleBrief.setText(articleBrief.getDescription());
 
+            if(articleBrief.isCollected()) {
+                ((ViewHolder) holder).deleteCollection.setText("取消收藏");
+            }else{
+                ((ViewHolder) holder).deleteCollection.setText("收藏");
+            }
 
+            if(articleBrief.isRead()) {
+                ((ViewHolder) holder).markRead.setText("已读");
+            }else{
+                ((ViewHolder) holder).markRead.setText("未读");
+            }
             /**
              * 绑定删除按钮的点击事件，需要在view层实现
              *
              */
-            View view = ((ViewHolder)holder).getView(R.id.delete_collection);
-            view.setTag(position);
-            if (!view.hasOnClickListeners()) {
-                view.setOnClickListener(new View.OnClickListener() {
+            View collectionView = ((ViewHolder)holder).getView(R.id.delete_collection);
+            collectionView.setTag(position);
+            if (!collectionView.hasOnClickListeners()) {
+                collectionView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         if (mDeleteClickListener != null) {
                             mDeleteClickListener.onDeleteClick(view, (Integer) view.getTag());
+                        }
+                    }
+                });
+            }
+
+
+            View markView = ((ViewHolder)holder).getView(R.id.mark_as_read);
+            markView.setTag(position);
+            if (!markView.hasOnClickListeners()) {
+                markView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        if (mMarkReadClickListener != null) {
+                            mMarkReadClickListener.onMarkReadClick(view, (Integer) view.getTag());
                         }
                     }
                 });
@@ -193,6 +239,18 @@ public class ArticleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     }
     public interface OnItemClickListener{
         void onItemClick(RecyclerView.Adapter adapter, View v, int postion);
+    }
+
+    /**
+     * 暴露标记已读的点击事件给view层，让view层实现点击文章进入文章详情页
+     *
+     * @param listener 也就是下方定义的OnMarkReadClickListener接口
+     */
+    public void setOnMarkReadClickListener(OnMarkReadClickListener listener){
+        this.mMarkReadClickListener = listener;
+    }
+    public interface OnMarkReadClickListener{
+        void onMarkReadClick(View v, int postion);
     }
 
 
@@ -244,14 +302,23 @@ public class ArticleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         return mArticleBriefList.get(position).getTitle();
     }
 
-    public void setNotice(){
+    public void setLoadCompletely(){
         if(mFooterHolder != null) {
             mFooterHolder.textView.setText("我也是有底线的");
         }
     }
-    public void setFirstNotice(){
+    public void setLoadFirstly(){
         if(mFooterHolder != null) {
             mFooterHolder.textView.setText("加载更多");
         }
+    }
+
+
+    public void setRead(int position){
+        mArticleBriefList.get(position).switchRead();
+    }
+
+    public void setCollected(int position){
+        mArticleBriefList.get(position).switchCollected();
     }
 }

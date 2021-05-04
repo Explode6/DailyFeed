@@ -3,6 +3,7 @@ package com.example.ArticleList.articlelist;
 import android.content.Context;
 import android.graphics.Rect;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.VelocityTracker;
 import android.view.View;
@@ -214,7 +215,35 @@ public class SlideRecyclerView extends RecyclerView {
     public void closeMenu() {
         if (mFlingView != null && mFlingView.getScrollX() != 0) {
             mFlingView.scrollTo(0, 0);
+            //mScroller.startScroll(mMenuViewWidth, 0, -mMenuViewWidth, 0, 2000);
         }
     }
 
+
+    static public abstract class LoadMoreOnScrollListener extends RecyclerView.OnScrollListener {
+        private boolean isSlidingUpward = false;
+
+        @Override
+        public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
+            super.onScrollStateChanged(recyclerView, newState);
+            LinearLayoutManager layoutManager = (LinearLayoutManager)recyclerView.getLayoutManager();;
+
+            if(newState == RecyclerView.SCROLL_STATE_IDLE){
+                int lastItemPosition = layoutManager.findLastCompletelyVisibleItemPosition();
+                int itemCount = layoutManager.getItemCount();
+
+                if(lastItemPosition == itemCount - 1 && isSlidingUpward){
+                    loadMoreArticle();
+                }
+            }
+        }
+
+        @Override
+        public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+            super.onScrolled(recyclerView, dx, dy);
+            isSlidingUpward = dy > 0;
+        }
+
+        public abstract void loadMoreArticle();
+    }
 }

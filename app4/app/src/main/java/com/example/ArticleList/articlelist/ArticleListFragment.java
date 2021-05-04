@@ -1,6 +1,7 @@
 package com.example.ArticleList.articlelist;
 
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,6 +17,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.ArticleList.Data.ArticleBrief;
 import com.example.ArticleList.R;
+import com.example.ArticleList.lastactivity.LastActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -73,28 +75,38 @@ public class ArticleListFragment extends Fragment implements ArticleListContract
 
         mArticleAdapter.setOnItemClickListener(new ArticleAdapter.OnItemClickListener() {
             @Override
-            public void onItemClick(RecyclerView.Adapter adapter, View v, int postion) {
-                String name = mArticleAdapter.getArticleBrief(postion);
-                Toast.makeText(v.getContext(), "Switch to "+name + "'s activity", Toast.LENGTH_SHORT).show();
+            public void onItemClick(RecyclerView.Adapter adapter, View v, int position) {
+                String name = mArticleAdapter.getArticleBrief(position);
+                markReadAndRefresh(position);
+
+                Intent intent = new Intent(root.getContext(), LastActivity.class);
+                intent.putExtra("title", name);
+                startActivity(intent);
+
             }
         });
         mArticleAdapter.setOnDeleteClickListener(new ArticleAdapter.OnDeleteClickListener() {
             @Override
             public void onDeleteClick(View view, int position) {
-                Toast.makeText(view.getContext(), "add this article to my collection", Toast.LENGTH_SHORT).show();
+                addCollectionAndRefresh(position);
+            }
+        });
+        mArticleAdapter.setOnMarkReadClickListener(new ArticleAdapter.OnMarkReadClickListener() {
+            @Override
+            public void onMarkReadClick(View view, int position) {
+                markReadAndRefresh(position);
             }
         });
 
-
         slideRecyclerView.setLayoutManager(layoutManager);
-        slideRecyclerView.addOnScrollListener(new LoadMoreOnScrollListener(){
+        slideRecyclerView.addOnScrollListener(new SlideRecyclerView.LoadMoreOnScrollListener(){
             @Override
             public void loadMoreArticle() {
                 boolean completeLoad = mPresent.loadArticle();
                 if(!completeLoad) {
                     Toast.makeText(root.getContext(), "加载成功", Toast.LENGTH_SHORT).show();
                 }else{
-                    mArticleAdapter.setNotice();
+                    mArticleAdapter.setLoadCompletely();
                 }
             }
         });
@@ -104,16 +116,22 @@ public class ArticleListFragment extends Fragment implements ArticleListContract
 
     public void showArticleList(List<ArticleBrief> articleBriefList, int begin, int size){
         mArticleAdapter.addArticleList(articleBriefList);
-        //这个方法刷新方式是添加，如果可以的话，用这个代替下面的函数，还未尝试
         mArticleAdapter.notifyItemRangeInserted(begin, size);
-//        //下面是直接重新加载，保证对，先不用
-//        mArticleAdapter.notifyDataSetChanged();
     }
 
     public void refreshArticleList(List<ArticleBrief> articleBriefList){
         mArticleAdapter.changeData(articleBriefList);
         mArticleAdapter.notifyDataSetChanged();
-        mArticleAdapter.setFirstNotice();
+        mArticleAdapter.setLoadFirstly();
     }
 
+    public void markReadAndRefresh(int position){
+        mArticleAdapter.setRead(position);
+        mArticleAdapter.notifyItemChanged(position);
+    }
+
+    public void addCollectionAndRefresh(int position){
+        mArticleAdapter.setCollected(position);
+        mArticleAdapter.notifyItemRemoved(position);
+    }
 }

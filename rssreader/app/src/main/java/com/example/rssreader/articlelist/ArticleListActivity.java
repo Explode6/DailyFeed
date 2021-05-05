@@ -3,6 +3,7 @@ package com.example.rssreader.articlelist;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 import com.example.rssreader.Data.ShuhaoJiekou;
 import com.example.rssreader.R;
@@ -20,6 +21,11 @@ public class ArticleListActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.article_list_act);
+
+        Toolbar toolbar = (Toolbar)findViewById(R.id.main_toolbar);
+        //为toolbar引入actionbar的功能
+        setSupportActionBar(toolbar);
+
 
         //单例模式创建fragment界面并绑定到布局上
         ArticleListFragment articleListFragment =

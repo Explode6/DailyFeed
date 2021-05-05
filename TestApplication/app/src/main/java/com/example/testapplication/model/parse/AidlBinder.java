@@ -19,33 +19,20 @@ import java.util.List;
 class AidlBinder extends IMyAidlInterface.Stub {
     private DataService dataService;
 
-    private DataCallback dataCallback;
-
     public AidlBinder(DataService service){
         this.dataService = service;
     }
 
+
     /**
      * 下载解析Xml，解析后数据会进入数据库
      * @param url
-     * @throws RemoteException
-     */
-    @Override
-    public void downloadParseXml(String url) throws RemoteException {
-        dataService.parseXml(url);
-    }
-
-    /**
-     * 注册回调函数
-     * 注意！！！！！
-     * 在使用此类前需要调用这个方法，将回调函数注册，否则会出现闪退情况。
      * @param dataCallback
      * @throws RemoteException
      */
     @Override
-    public void registerCallback(DataCallback dataCallback) throws RemoteException {
-        if(dataCallback == null) return;
-        this.dataCallback = dataCallback;
+    public void downloadParseXml(String url,DataCallback dataCallback) throws RemoteException {
+        dataService.parseXml(url,dataCallback);
     }
 
     /**
@@ -62,10 +49,11 @@ class AidlBinder extends IMyAidlInterface.Stub {
     /**
      * 通过文字简介收藏某篇文章
      * @param articleBrief
+     * @param dataCallback
      * @throws RemoteException
      */
     @Override
-    public void collectArticle(ArticleBrief articleBrief) throws RemoteException {
+    public void collectArticle(ArticleBrief articleBrief,DataCallback dataCallback) throws RemoteException {
         try {
             dataService.collectArticle(articleBrief);
             dataCallback.onSuccess();
@@ -78,10 +66,11 @@ class AidlBinder extends IMyAidlInterface.Stub {
     /**
      * 设置某篇文章为已读
      * @param articleBrief
+     * @param dataCallback
      * @throws RemoteException
      */
     @Override
-    public void readArticle(ArticleBrief articleBrief) throws RemoteException {
+    public void readArticle(ArticleBrief articleBrief,DataCallback dataCallback) throws RemoteException {
         try {
             dataService.readArticle(articleBrief);
             dataCallback.onSuccess();
@@ -94,11 +83,12 @@ class AidlBinder extends IMyAidlInterface.Stub {
     /**
      * 根据频道的rssLink查询其上次的推送时间
      * @param rssLink
+     * @param dataCallback
      * @return
      * @throws RemoteException
      */
     @Override
-    public String getChannelDateByRssLink(String rssLink) throws RemoteException {
+    public String getChannelDateByRssLink(String rssLink,DataCallback dataCallback) throws RemoteException {
         try {
             String res = dataService.getChannelDateByRssLink(rssLink);
             dataCallback.onSuccess();
@@ -115,10 +105,11 @@ class AidlBinder extends IMyAidlInterface.Stub {
      * 根据频道的rssLink更新其推送时间
      * @param rssLink
      * @param lastBuildDate
+     * @param dataCallback
      * @throws RemoteException
      */
     @Override
-    public void updateChannelDateByRssLink(String rssLink, String lastBuildDate) throws RemoteException {
+    public void updateChannelDateByRssLink(String rssLink, String lastBuildDate,DataCallback dataCallback) throws RemoteException {
         try {
             dataService.updateChannelDateByRssLink(rssLink,lastBuildDate);
             dataCallback.onSuccess();
@@ -144,11 +135,12 @@ class AidlBinder extends IMyAidlInterface.Stub {
     /**
      * 获取文章简介对应的文章内容
      * @param articleBrief
+     * @param dataCallback
      * @return
      * @throws RemoteException
      */
     @Override
-    public String getContentOfArticleBrief(ArticleBrief articleBrief) throws RemoteException {
+    public String getContentOfArticleBrief(ArticleBrief articleBrief,DataCallback dataCallback) throws RemoteException {
         try {
             String res = dataService.getContentOfArticleBrief(articleBrief);
             dataCallback.onSuccess();
@@ -186,7 +178,7 @@ class AidlBinder extends IMyAidlInterface.Stub {
     /**
      * 根据文章简介判断某文章是否被收藏
      * @param articleBrief
-     * @return
+     * @return 是否收藏
      * @throws RemoteException
      */
     @Override
@@ -197,10 +189,11 @@ class AidlBinder extends IMyAidlInterface.Stub {
     /**
      * 取消收藏
      * @param collection
+     * @param dataCallback
      * @throws RemoteException
      */
     @Override
-    public void removeCollection(Collection collection) throws RemoteException {
+    public void removeCollection(Collection collection,DataCallback dataCallback) throws RemoteException {
         try {
             dataService.removeCollection(collection);
             dataCallback.onSuccess();

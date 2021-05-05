@@ -31,4 +31,15 @@
         app:layout_constraintStart_toEndOf="@+id/star"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <Button
+        android:id="@+id/activity2"
+        android:layout_width="150dp"
+        android:layout_height="57dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="20dp"
+        android:onClick="openNewActivity"
+        android:text="activity2"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/star" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

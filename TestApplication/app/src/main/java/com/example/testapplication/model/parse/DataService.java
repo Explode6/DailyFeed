@@ -3,12 +3,18 @@ package com.example.testapplication.model.parse;
 import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
+import android.os.RemoteException;
+
+import androidx.annotation.NonNull;
 
 import com.example.testapplication.model.datamodel.ArticleBrief;
 import com.example.testapplication.model.datamodel.Channel;
 import com.example.testapplication.model.datamodel.Collection;
 import com.example.testapplication.model.datamodel.DataBaseHelper;
 
+import org.dom4j.DocumentException;
+
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -158,12 +164,22 @@ public class DataService extends Service {
     private class parseXmlThread implements Runnable{
         private String url;
 
-        parseXmlThread(String url){
+        private DataCallback dataCallback;
+
+        parseXmlThread(String url,DataCallback dataCallback){
             this.url = url;
+            this.dataCallback = dataCallback;
         }
         @Override
         public void run() {
-            new XmlHandler(url).startParse();
+
+            try {
+                new XmlHandler(url).startParse(dataCallback);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+
+
         }
     }
 
@@ -171,15 +187,13 @@ public class DataService extends Service {
      * 下载解析Xml
      * @param url
      */
-    public void parseXml(String url){
-        new Thread(new parseXmlThread(url)).start();
-
+    public void parseXml(String url,DataCallback dataCallback){
+        new Thread(new parseXmlThread(url,dataCallback)).start();
     }
 
     @Override
     public IBinder onBind(Intent intent) {
         return aidlBinder;
-        //return new DataBinder();
     }
 
 

@@ -50,26 +50,6 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onServiceConnected(ComponentName name, final IBinder service) {
             myAidlInterface = IMyAidlInterface.Stub.asInterface(service);
-            try {
-                myAidlInterface.registerCallback(new DataCallback.Stub() {
-                    @Override
-                    public void onSuccess() throws RemoteException {
-                        Log.d(TAG,"Success");
-                    }
-
-                    @Override
-                    public void onFailure() throws RemoteException {
-                        Log.d(TAG,"Failure");
-                    }
-
-                    @Override
-                    public void onError() throws RemoteException {
-
-                    }
-                });
-            } catch (RemoteException e) {
-                e.printStackTrace();
-            }
         }
 
         @Override
@@ -120,6 +100,15 @@ public class MainActivity extends AppCompatActivity {
         } catch (RemoteException e) {
             e.printStackTrace();
         }
+    }
+
+    /**
+     * 测试两个activity能否同时绑定一个service
+     * @param view
+     */
+    public void openNewActivity(View view){
+        Intent intent = new Intent(this,MainActivity2.class);
+        startActivity(intent);
     }
 
 

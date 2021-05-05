@@ -1,6 +1,8 @@
 package com.example.testapplication.model.parse;
 
 
+import android.os.RemoteException;
+
 import com.example.testapplication.model.datamodel.ArticleBrief;
 import com.example.testapplication.model.datamodel.Channel;
 import com.example.testapplication.model.datamodel.DataBaseHelper;
@@ -74,7 +76,7 @@ public class XmlHandler {
     /**
      * 下载xml并且解析，将相关数据存放在数据库之中
      */
-    public void startParse(){
+    public void startParse(DataCallback dataCallback) throws RemoteException {
         OkHttpClient client = new OkHttpClient();
         Request request = new Request.Builder()
                 .url(url).build();
@@ -90,15 +92,19 @@ public class XmlHandler {
 
             try{
                 XmlParse(responseDataReader);
+                dataCallback.onSuccess();
             }catch (DocumentException e) {
                 e.printStackTrace();
+                dataCallback.onFailure();
 
             } catch (SQLException e) {
                 e.printStackTrace();
+                dataCallback.onFailure();
             }
 
         } catch (IOException e) {
             e.printStackTrace();
+            dataCallback.onFailure();
         }
 
     }

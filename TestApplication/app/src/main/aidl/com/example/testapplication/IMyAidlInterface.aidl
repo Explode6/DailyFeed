@@ -10,29 +10,24 @@ import com.example.testapplication.model.datamodel.Collection;
 // Declare any non-default types here with import statements
 
 interface IMyAidlInterface {
-    /**
-     * Demonstrates some basic types that you can use as parameters
-     * and return values in AIDL.
-     */
-    void downloadParseXml(String url);
 
-    void registerCallback(in DataCallback dataCallback);
+    void downloadParseXml(String url,in DataCallback dataCallback);
 
     List<Channel> getChannel(int offset, int limit);
     /**
     * 收藏文章
     **/
-    void collectArticle(in ArticleBrief articleBrief);
+    void collectArticle(in ArticleBrief articleBrief,in DataCallback dataCallback);
 
-    void readArticle(in ArticleBrief articleBrief);
+    void readArticle(in ArticleBrief articleBrief,in DataCallback dataCallback);
 
-    String getChannelDateByRssLink(String rssLink);
+    String getChannelDateByRssLink(String rssLink,in DataCallback dataCallback);
 
-    void updateChannelDateByRssLink(String rssLink, String lastBuildDate);
+    void updateChannelDateByRssLink(String rssLink, String lastBuildDate,in DataCallback dataCallback);
 
     List<ArticleBrief> getArticleBriefsFromChannel(in Channel resChannel, int offset, int limit);
 
-    String getContentOfArticleBrief(in ArticleBrief articleBrief);
+    String getContentOfArticleBrief(in ArticleBrief articleBrief,in DataCallback dataCallback);
 
     Channel getChannelOfArticle(in ArticleBrief articleBrief);
 
@@ -40,7 +35,7 @@ interface IMyAidlInterface {
 
     boolean isCollect(in ArticleBrief articleBrief);
 
-    void removeCollection(in Collection collection);
+    void removeCollection(in Collection collection,in DataCallback dataCallback);
 
     void removeChannel(in Channel channel);
 

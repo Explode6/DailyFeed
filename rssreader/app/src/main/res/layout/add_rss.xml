@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:minWidth="200dp"
+    >
+    <Button
+        android:layout_width="15dp"
+        android:layout_height="15dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginRight="5dp"
+        android:background="@drawable/add_icon"
+        android:textSize="5sp"
+        android:layout_gravity="top|right"
+        />
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+        android:text="添加订阅"
+        android:gravity="center"
+        android:textSize="20sp"
+        android:minHeight="40dp"/>
+    <EditText
+        android:id="@+id/rss_link"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="2dp"
+        android:layout_margin="5dp"
+        android:minHeight="40dp"
+        android:hint="RSS链接"
+        android:textSize="20sp"
+        />
+    <Button
+        android:id="@+id/add_rss_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+        android:layout_gravity="center"
+        android:text="添加"
+        android:textSize="15sp"
+        android:layout_marginTop="5dp"/>
+
+</LinearLayout>

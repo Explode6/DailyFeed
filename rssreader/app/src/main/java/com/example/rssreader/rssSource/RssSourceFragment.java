@@ -10,7 +10,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -85,7 +84,6 @@ public class RssSourceFragment extends Fragment implements RssSourceContract.Rss
                     //提高性能，一次点击只通知适配器一个item发生变化
                     rssSrcAdapter.notifyItemChanged(pos);
                 }else{
-                    Toast.makeText(getContext(),"Hello", Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(getContext(), ArticleListActivity.class);
                     startActivity(intent);
                 }
@@ -172,7 +170,6 @@ public class RssSourceFragment extends Fragment implements RssSourceContract.Rss
                     //提高性能，一次点击只通知适配器一个item发生变化
                     rssSrcAdapter.notifyItemChanged(pos);
                 }else{
-                    Toast.makeText(getContext(),"Hello", Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(getContext(), ArticleListActivity.class);
                     startActivity(intent);
                 }
@@ -195,7 +192,6 @@ public class RssSourceFragment extends Fragment implements RssSourceContract.Rss
                     //提高性能，一次点击只通知适配器一个item发生变化
                     rssSrcAdapter.notifyItemChanged(pos);
                 }else{
-                    Toast.makeText(getContext(),"Hello", Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(getContext(), ArticleListActivity.class);
                     startActivity(intent);
                 }

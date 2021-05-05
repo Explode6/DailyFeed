@@ -1,9 +1,7 @@
 package com.example.rssreader.rssSource;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -29,7 +27,6 @@ import com.google.android.material.navigation.NavigationView;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Iterator;
 import java.util.List;
 
 public class RssSourceFragment extends Fragment implements RssSourceContract.RssSourceView {
@@ -158,7 +155,7 @@ public class RssSourceFragment extends Fragment implements RssSourceContract.Rss
     }
 
     @Override
-    public void convertToList(List<RssSource>list) {
+    public void convertToList(List<RssSource> list) {
         layoutManager = new GridLayoutManager(this.getContext(), 1);
         rssView.setLayoutManager(layoutManager);
         rssSrcAdapter = new RssSrcAdapter(list, false, canEdit);
@@ -180,7 +177,7 @@ public class RssSourceFragment extends Fragment implements RssSourceContract.Rss
     }
 
     @Override
-    public void convertToGrid(List<RssSource>list) {
+    public void convertToGrid(List<RssSource> list) {
         layoutManager = new GridLayoutManager(this.getContext(), 2);
         rssView.setLayoutManager(layoutManager);
         rssSrcAdapter = new RssSrcAdapter(list, true, canEdit);
@@ -212,7 +209,7 @@ public class RssSourceFragment extends Fragment implements RssSourceContract.Rss
     }
 
     @Override
-    public void loadRecyclerView(List<RssSource>list) {
+    public void loadRecyclerView(List<RssSource> list) {
         this.rssSrcAdapter.setRssSourceList(list);
         refreshView();
     }
@@ -272,7 +269,7 @@ public class RssSourceFragment extends Fragment implements RssSourceContract.Rss
                                         //设置为用户选择的时间
                                         calendar.set(Calendar.HOUR, dialog.getHour());
                                         calendar.set(Calendar.MINUTE, dialog.getMinute());
-                                        AlarmUtil.startNoticeService(getContext(),calendar.getTimeInMillis(),NoticeService.class,"com.ryantang.service.PollingService");
+                                        AlarmUtil.startNoticeService(getContext(),calendar.getTimeInMillis(), NoticeService.class,"com.ryantang.service.PollingService");
                                         dialog.dismiss();
                                         break;
                                     case R.id.cancel_time_choose_btn:

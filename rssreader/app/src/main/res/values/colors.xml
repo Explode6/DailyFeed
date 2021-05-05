@@ -18,4 +18,6 @@
     <color name="darkslategray">#2F4F4F</color><!--暗瓦灰色 -->
     <color name="red">#FF0000</color><!--红色 -->
     <color name="yellow">#FFFF00</color><!--黄色 -->
+    <color name="colorAccent">#FFFF00</color><!--黄色 -->
+
 </resources>

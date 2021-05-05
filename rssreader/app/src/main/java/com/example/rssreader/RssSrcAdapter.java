@@ -1,7 +1,6 @@
 package com.example.rssreader;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,12 +22,12 @@ public class RssSrcAdapter extends RecyclerView.Adapter<RssSrcAdapter.ViewHolder
     private RssOnClickListener rssOnClickListener;
     private RssLongClickListener rssLongClickListener;
 
-    public RssSrcAdapter(List<RssSource>list, boolean type, boolean canEdit){
+    public RssSrcAdapter(List<RssSource> list, boolean type, boolean canEdit){
         this.mainType = type;
         this.rssSourceList = list;
         this.canEdit = canEdit;
     }
-    public void setRssSourceList(List<RssSource>list){
+    public void setRssSourceList(List<RssSource> list){
         this.rssSourceList = list;
     }
     //暴露给外部的子项点击事件接口
@@ -156,7 +155,7 @@ public class RssSrcAdapter extends RecyclerView.Adapter<RssSrcAdapter.ViewHolder
      */
     public void delSelectedItems(){
         //遍历迭代器，从列表中删除被选中的子项
-        Iterator<RssSource>iterator = rssSourceList.iterator();
+        Iterator<RssSource> iterator = rssSourceList.iterator();
         while(iterator.hasNext()){
             RssSource rssSource = iterator.next();
             if(rssSource.getSelected() == true){

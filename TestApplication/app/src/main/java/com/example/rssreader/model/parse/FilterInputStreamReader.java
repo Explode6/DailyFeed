@@ -1,4 +1,4 @@
-package com.example.testapplication.model.parse;
+package com.example.rssreader.model.parse;
 
 import java.io.IOException;
 import java.io.InputStream;

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.testapplication">
+    package="com.example.rssreader">
 
     <uses-permission android:name="android.permission.WAKE_LOCK" />
 
@@ -19,15 +19,15 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity2"></activity>
+        <activity android:name="com.example.rssreader.MainActivity2"></activity>
 
         <service
-            android:name=".model.parse.DataService"
+            android:name="com.example.rssreader.model.parse.DataService"
             android:enabled="true"
             android:exported="true"
             android:process=":dataService" />
 
-        <activity android:name=".MainActivity">
+        <activity android:name="com.example.rssreader.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

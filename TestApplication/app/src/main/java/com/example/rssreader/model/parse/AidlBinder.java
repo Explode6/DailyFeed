@@ -1,11 +1,11 @@
-package com.example.testapplication.model.parse;
+package com.example.rssreader.model.parse;
 
 import android.os.RemoteException;
 
-import com.example.testapplication.IMyAidlInterface;
-import com.example.testapplication.model.datamodel.ArticleBrief;
-import com.example.testapplication.model.datamodel.Channel;
-import com.example.testapplication.model.datamodel.Collection;
+import com.example.rssreader.IMyAidlInterface;
+import com.example.rssreader.model.datamodel.ArticleBrief;
+import com.example.rssreader.model.datamodel.Channel;
+import com.example.rssreader.model.datamodel.Collection;
 
 import java.sql.SQLException;
 import java.util.List;

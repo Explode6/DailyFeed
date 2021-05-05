@@ -1,4 +1,4 @@
-package com.example.testapplication.model.datamodel;
+package com.example.rssreader.model.datamodel;
 
 import org.litepal.annotation.Column;
 import org.litepal.crud.LitePalSupport;

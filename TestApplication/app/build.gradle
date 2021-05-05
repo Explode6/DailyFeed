@@ -4,7 +4,7 @@ android {
     compileSdkVersion 30
     buildToolsVersion "30.0.3"
     defaultConfig {
-        applicationId "com.example.testapplication"
+        applicationId "com.example.rssreader"
         minSdkVersion 29
         targetSdkVersion 30
         versionCode 1

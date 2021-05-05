@@ -1,5 +1,5 @@
 // DataCallback.aidl
-package com.example.testapplication.model.parse;
+package com.example.rssreader.model.parse;
 
 
 interface DataCallback {

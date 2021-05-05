@@ -1,4 +1,4 @@
-package com.example.testapplication;
+package com.example.rssreader;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -12,9 +12,8 @@ import android.os.RemoteException;
 import android.util.Log;
 import android.view.View;
 
-import com.example.testapplication.model.datamodel.Channel;
-import com.example.testapplication.model.parse.DataCallback;
-import com.example.testapplication.model.parse.DataService;
+import com.example.rssreader.model.datamodel.Channel;
+import com.example.rssreader.model.parse.DataService;
 
 import java.util.List;
 

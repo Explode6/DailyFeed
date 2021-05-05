@@ -1,11 +1,11 @@
 // IMyAidlInterface.aidl
-package com.example.testapplication;
+package com.example.rssreader;
 
-import com.example.testapplication.model.parse.DataCallback;
+import com.example.rssreader.model.parse.DataCallback;
 
-import com.example.testapplication.model.datamodel.Channel;
-import com.example.testapplication.model.datamodel.ArticleBrief;
-import com.example.testapplication.model.datamodel.Collection;
+import com.example.rssreader.model.datamodel.Channel;
+import com.example.rssreader.model.datamodel.ArticleBrief;
+import com.example.rssreader.model.datamodel.Collection;
 
 // Declare any non-default types here with import statements
 

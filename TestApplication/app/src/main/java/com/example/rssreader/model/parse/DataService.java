@@ -1,20 +1,15 @@
-package com.example.testapplication.model.parse;
+package com.example.rssreader.model.parse;
 
 import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
 import android.os.RemoteException;
 
-import androidx.annotation.NonNull;
+import com.example.rssreader.model.datamodel.ArticleBrief;
+import com.example.rssreader.model.datamodel.Channel;
+import com.example.rssreader.model.datamodel.Collection;
+import com.example.rssreader.model.datamodel.DataBaseHelper;
 
-import com.example.testapplication.model.datamodel.ArticleBrief;
-import com.example.testapplication.model.datamodel.Channel;
-import com.example.testapplication.model.datamodel.Collection;
-import com.example.testapplication.model.datamodel.DataBaseHelper;
-
-import org.dom4j.DocumentException;
-
-import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
 

@@ -1,4 +1,4 @@
-package com.example.testapplication;
+package com.example.rssreader;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -12,12 +12,12 @@ import android.os.RemoteException;
 import android.util.Log;
 import android.view.View;
 
-import com.example.testapplication.model.datamodel.ArticleBrief;
-import com.example.testapplication.model.datamodel.Channel;
-import com.example.testapplication.model.datamodel.Collection;
-import com.example.testapplication.model.datamodel.DataBaseHelper;
-import com.example.testapplication.model.parse.DataCallback;
-import com.example.testapplication.model.parse.DataService;
+import com.example.rssreader.model.datamodel.ArticleBrief;
+import com.example.rssreader.model.datamodel.Channel;
+import com.example.rssreader.model.datamodel.Collection;
+import com.example.rssreader.model.datamodel.DataBaseHelper;
+import com.example.rssreader.model.parse.DataCallback;
+import com.example.rssreader.model.parse.DataService;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -85,7 +85,22 @@ public class MainActivity extends AppCompatActivity {
      */
     public void startDataService(View view){
         try {
-            //myAidlInterface.downloadParseXml("https://tobiasahlin.com/feed.xml");
+//            myAidlInterface.downloadParseXml("https://tobiasahlin.com/feed.xml", new DataCallback.Stub() {
+//                @Override
+//                public void onSuccess() throws RemoteException {
+//
+//                }
+//
+//                @Override
+//                public void onFailure() throws RemoteException {
+//
+//                }
+//
+//                @Override
+//                public void onError() throws RemoteException {
+//
+//                }
+//            });
             //myAidlInterface.downloadParseXml("https://journeybunnies.com/feed/");
             List<Channel> channels =  myAidlInterface.getChannel(0,10);
             for(Channel channel : channels){

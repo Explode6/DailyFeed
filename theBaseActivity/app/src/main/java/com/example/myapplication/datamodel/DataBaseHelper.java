@@ -3,7 +3,6 @@ package com.example.myapplication.datamodel;
 import org.litepal.LitePal;
 
 import java.sql.SQLException;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -53,48 +52,73 @@ public class DataBaseHelper {
                 //文章已存在, 采取覆盖式更新以更新其id
                 articleBrief.setContent_id(articleBriefs.get(0).getContent_id());
                 articleBrief.setChannel_id(articleBriefs.get(0).getChannel_id());
+                articleBrief.setCollect(articleBriefs.get(0).getCollect());
                 articleContent.update(articleBrief.getContent_id());
                 LitePal.delete(ArticleBrief.class, articleBriefs.get(0).getId());
             }else {
+                //文章不存在, 直接添加
                 articleContent.save();
                 articleBrief.setChannel_id(channels.get(0).getId());
                 articleBrief.setContent_id(articleContent.getId());
             }
             articleBrief.setPubTime(System.currentTimeMillis());
             articleBrief.save();
-
-            //同步收藏表中的内容
-            if(LitePal.where("link = ?", articleBrief.getLink())
-                    .find(Collection.class)
-                    .isEmpty())
-                return;
-            LitePal.deleteAll(Collection.class, "link = ?", articleBrief.getLink());
-            Collection collection = new Collection(articleBrief, content, new Date(System.currentTimeMillis()));
-            collection.save();
         }
     }
 
     /**
-     * 通过文字简介收藏某篇文章
+     * 通过文章简介收藏某篇文章
      *
-     * @param articleBrief 文章简介
+     * @param articleBrief 对应的文章简介
      * @throws SQLException 文章简介对应的文章内容不存在
      */
     public static void collectArticle(ArticleBrief articleBrief) throws SQLException {
-        //查表找到文章的内容
-        ArticleContent articleContent = LitePal.find(ArticleContent.class, articleBrief.getContent_id());
-        if(articleContent == null) throw new SQLException("文章内容不存在");
-        String content  = articleContent.getContent();
-        //构造收藏类对象
-        Collection collection = new Collection(articleBrief, content, new Date(System.currentTimeMillis()));
-        //将收藏类保存入库
-        collection.save();
+        //查表找到文章简介
+        ArticleBrief articleBrief1 = LitePal.find(ArticleBrief.class, articleBrief.getId());
+        if(articleBrief1 == null) throw new SQLException("对应的文章简介不存在");
+        //更新对应的收藏标识
+        articleBrief1.setCollect(true);
+        articleBrief1.update(articleBrief.getId());
+    }
+
+    /**
+     * 添加文章的全局评论到数据库中
+     *
+     * @param articleBrief 对应的文章简介
+     * @param comment 评论内容
+     * @throws SQLException 对应的文章简介不在数据库中
+     */
+    public static void addGlobalCommentToArticle(ArticleBrief articleBrief, String comment) throws SQLException {
+        //查表确认对应的ArticleBrief
+        ArticleBrief articleBrief1 = LitePal.find(ArticleBrief.class, articleBrief.getContent_id());
+        if(articleBrief1 == null) throw new SQLException("文章不存在");
+        //封装评论添加到库中
+        GlobalComment globalComment = new GlobalComment(articleBrief1.getId(), comment);
+        globalComment.save();
+    }
+
+    /**
+     * 添加对文章的部分内容的局部评论到数据库中
+     *
+     * @param articleBrief 对应的文章简介
+     * @param localContent 选中的文章部分内容
+     * @param comment 评论的内容
+     * @throws SQLException 对应的文章简介不在数据库中
+     */
+    public static void addLocalCommentToArticle(ArticleBrief articleBrief,
+                                                String localContent, String comment) throws SQLException{
+        //查表确认对应的ArticleBrief
+        ArticleBrief articleBrief1 = LitePal.find(ArticleBrief.class, articleBrief.getContent_id());
+        if(articleBrief1 == null) throw new SQLException("文章不存在");
+        //封装评论添加到库中
+        LocalComment localComment = new LocalComment(articleBrief1.getId(), localContent, comment);
+        localComment.save();
     }
 
     /**
      * 设置某篇文章为已读
      *
-     * @param articleBrief 文章简介
+     * @param articleBrief 对应的文章简介
      * @throws SQLException 该文章不存在库中
      */
     public static void readArticle(ArticleBrief articleBrief) throws SQLException {
@@ -104,7 +128,7 @@ public class DataBaseHelper {
         //将库中对应的文章设置为已读
         else {
             articleBrief1.setRead(true);
-            articleBrief1.update(articleBrief1.getId());
+            articleBrief1.update(articleBrief.getId());
         }
     }
 
@@ -145,7 +169,6 @@ public class DataBaseHelper {
      * @param lastBuildDate 新的推送时间
      * @throws SQLException 频道rssLink不存在库中
      */
-
     public static void updateChannelDateByRssLink(String rssLink, String lastBuildDate) throws SQLException {
         List<Channel> channels = LitePal
                 .where("rssLink = ?", rssLink)
@@ -192,9 +215,14 @@ public class DataBaseHelper {
      *
      * @param articleBrief 文章简介
      * @return Channel 源频道对象
+     * @throws SQLException 对应的文章简介不存在
      */
-    public static Channel getChannelOfArticle(ArticleBrief articleBrief){
-        return LitePal.find(Channel.class, articleBrief.getChannel_id());
+    public static Channel getChannelOfArticle(ArticleBrief articleBrief) throws SQLException {
+        //查询对应库中的文章简介
+        ArticleBrief articleBrief1 = LitePal.find(ArticleBrief.class, articleBrief.getId());
+        if(articleBrief1 == null ) throw new SQLException("对应文章简介不存在");
+        if(articleBrief1.getChannel_id() == -1) return null;
+        else return LitePal.find(Channel.class, articleBrief.getChannel_id());
     }
 
     /**
@@ -202,47 +230,91 @@ public class DataBaseHelper {
      *
      * @param offset 查询偏移量
      * @param limit 查询返回的最大数目
-     * @return list<Collection>
+     * @return list<ArticleBrief>
      */
-    public static List<Collection> getCollection(int offset, int limit){
+    public static List<ArticleBrief> getCollection(int offset, int limit){
         return LitePal.offset(offset)
                 .limit(limit)
-                .find(Collection.class);
+                .where("isCollect = true")
+                .find(ArticleBrief.class);
     }
 
     /**
-     * 根据文章简介判断某文章是否被收藏
+     * 根据文章简介判断某文章是否被收藏, 以数据库中的数据为准
      *
      * @param articleBrief 文章简介
      * @return the boolean
      */
-    public static Boolean isCollect(ArticleBrief articleBrief){
-        List<Collection> collections = LitePal.where("link = ?", articleBrief.getLink())
-                .find(Collection.class);
-        return !collections.isEmpty();
+    public static Boolean isCollect(ArticleBrief articleBrief) throws SQLException {
+        //查询表中的文章简介是否被收藏
+        ArticleBrief articleBrief1 = LitePal.find(ArticleBrief.class, articleBrief.getId());
+        if(articleBrief1 == null) throw new SQLException("对应文章简介不存在");
+        return articleBrief1.getCollect();
     }
 
     /**
      * 根据模糊的文章标题查询收藏
      *
-     * @param vagueTitle
-     * @return the List<Collection>
+     * @param vagueTitle 部分标题
+     * @return the List<ArticleBrief>
      */
-    public static List<Collection> searchCollection(String vagueTitle){
-        return LitePal.where("title like ?", "%"+vagueTitle+"%")
-                .find(Collection.class);
+    public static List<ArticleBrief> searchCollection(String vagueTitle){
+        return LitePal.where("title like ? and isCollect = true", "%"+vagueTitle+"%")
+                .find(ArticleBrief.class);
     }
+
+    /**
+     * 查找对应文章的所有全局评论
+     *
+     * @param articleBrief 对应文章简介
+     * @return the List<GlobalComment>
+     * @throws SQLException 对应的文章简介不存在
+     */
+    public List<GlobalComment> getGlobalCommentsOfArticle(ArticleBrief articleBrief) throws SQLException {
+        //查表确认对应的ArticleBrief
+        ArticleBrief articleBrief1 = LitePal.find(ArticleBrief.class, articleBrief.getId());
+        if(articleBrief1 == null) throw new SQLException("文章不存在");
+        return LitePal.where("articleBriefId = ?", Integer.toString(articleBrief1.getId()))
+                .find(GlobalComment.class);
+    }
+
+    /**
+     * 返回对应文章的所有局部评论
+     *
+     * @param articleBrief 对应的文章简介
+     * @return the List<LocalComment>
+     * @throws SQLException 对应的文章简介不存在
+     */
+    public List<LocalComment> getLocalCommentsOfArticle(ArticleBrief articleBrief) throws SQLException{
+        //查表确认对应的ArticleBrief
+        ArticleBrief articleBrief1 = LitePal.find(ArticleBrief.class, articleBrief.getId());
+        if(articleBrief1 == null) throw new SQLException("文章不存在");
+        return LitePal.where("articleBriefId = ?", Integer.toString(articleBrief1.getId()))
+                .find(LocalComment.class);
+    }
+
 
     /**
      * 取消收藏
      *
-     * @param collection 目标文章
+     * @param articleBrief 目标文章简介
      * @throws SQLException 删除出现错误
      */
-    public static void removeCollection(Collection collection) throws SQLException {
-        int rows = LitePal.delete(Collection.class, collection.getId());
-        //当被删除的item数不为1时，均属于出错
-        if(rows != 1) throw new SQLException("删除出错");
+    public static void removeCollection(ArticleBrief articleBrief) throws SQLException {
+        //查找库中对应的文章简介
+        ArticleBrief articleBrief1 = LitePal.find(ArticleBrief.class, articleBrief.getId());
+        if(articleBrief1 == null) throw new SQLException("对应文章简介不存在");
+        if(articleBrief1.getChannel_id() < 0){
+            //清除channel已经被取消订阅的ArticleBrief对应的内容和评论
+            LitePal.delete(ArticleContent.class, articleBrief1.getContent_id());
+            LitePal.deleteAll(GlobalComment.class, "articleBriefId = ?", Integer.toString(articleBrief1.getId()));
+            LitePal.deleteAll(LocalComment.class, "articleBriefId = ?", Integer.toString(articleBrief1.getId()));
+            LitePal.delete(ArticleBrief.class, articleBrief1.getId());
+        }else {
+            //取消收藏
+            articleBrief1.setCollect(false);
+            articleBrief1.update(articleBrief.getId());
+        }
     }
 
     /**
@@ -252,13 +324,22 @@ public class DataBaseHelper {
      */
     public static void removeChannel(Channel channel){
         try {
-            //找到对应频道的所有文章简介
+            //找到对应频道的所有未被收藏的文章简介
             List<ArticleBrief> articleBriefs = LitePal.select("id","content_id")
-                    .where("channel_id = ?", Integer.toString(channel.getId()))
+                    .where("channel_id = ? and isCollect = false", Integer.toString(channel.getId()))
                     .find(ArticleBrief.class);
-            //删除所有文章内容和文章简介
+            //初始化对应频道被收藏文章的channelId，保持数据库一致性
+            ArticleBrief articleBrief1 = new ArticleBrief();
+            articleBrief1.setChannel_id(-1);
+            articleBrief1.updateAll("channel_id = ? and isCollect = true", Integer.toString(channel.getId()));
+            //清除未被收藏的文章
             for(ArticleBrief articleBrief: articleBriefs){
+                //删除对应文章内容
                 LitePal.delete(ArticleContent.class, articleBrief.getContent_id());
+                //删除对应文章的评论
+                LitePal.deleteAll(GlobalComment.class, "articleBriefId = ?", Integer.toString(articleBrief.getId()));
+                LitePal.deleteAll(LocalComment.class, "articleBriefId = ?", Integer.toString(articleBrief.getId()));
+                //删除对应简介
                 LitePal.delete(ArticleBrief.class, articleBrief.getId());
             }
             //删除频道
@@ -269,13 +350,49 @@ public class DataBaseHelper {
     }
 
     /**
-     * 清除缓存的文章
+     * 删除某个全局评论
+     *
+     * @param globalComment 对应的全局评论
+     * @throws SQLException 对应的全局评论不存在
+     */
+    public static void deleteGlobalComment(GlobalComment globalComment) throws SQLException {
+        //查表确认对应的GlobalComment
+        GlobalComment globalComment1 = LitePal.find(GlobalComment.class, globalComment.getId());
+        if(globalComment1 == null) throw new SQLException("该评论不存在");
+        //删除全局评论
+        LitePal.delete(GlobalComment.class, globalComment1.getId());
+    }
+
+    /**
+     * 删除某个局部评论
+     *
+     * @param localComment 对应的局部评论
+     * @throws SQLException 对应的局部评论不存在
+     */
+    public static void deleteLocalComment(LocalComment localComment)throws SQLException{
+        //查表确认对应的LocalComment
+        LocalComment localComment1 = LitePal.find(LocalComment.class, localComment.getId());
+        if(localComment1 == null) throw new SQLException("该评论不存在");
+        //删除局部评论
+        LitePal.delete(LocalComment.class, localComment1.getId());
+    }
+
+    /**
+     * 清除未被收藏的缓存文章
      */
     public static void clearStorage(){
-        //清除所有未收藏的文章
         try {
-            LitePal.deleteAll(ArticleBrief.class);
-            LitePal.deleteAll(ArticleContent.class);
+            //清除所有未收藏的文章及其对应的评论
+            List<ArticleBrief> articleBriefs = LitePal.where("isCollect = false").find(ArticleBrief.class);
+            for (ArticleBrief articleBrief:articleBriefs){
+                //清除内容
+                LitePal.delete(ArticleContent.class,articleBrief.getContent_id());
+                //清除评论
+                LitePal.deleteAll(GlobalComment.class, "articleBriefId = ?", Integer.toString(articleBrief.getId()));
+                LitePal.deleteAll(LocalComment.class, "articleBriefId = ?", Integer.toString(articleBrief.getId()));
+                //清除简介
+                LitePal.delete(ArticleBrief.class,articleBrief.getId());
+            }
         }catch (Exception e){
             e.printStackTrace();
         }

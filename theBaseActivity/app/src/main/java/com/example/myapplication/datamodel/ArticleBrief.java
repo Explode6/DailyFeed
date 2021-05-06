@@ -1,5 +1,8 @@
 package com.example.myapplication.datamodel;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import org.litepal.annotation.Column;
 import org.litepal.crud.LitePalSupport;
 
@@ -19,6 +22,9 @@ public class ArticleBrief extends LitePalSupport {
     @Column(unique = true, index = true)
     private String link;
 
+    @Column(nullable = true)
+    private String firstPhoto;
+
     private String creator;
 
     private String category;
@@ -26,6 +32,8 @@ public class ArticleBrief extends LitePalSupport {
     private String description;
 
     private Boolean isRead;
+
+    private Boolean isCollect;
 
     private long pubTime;
 
@@ -39,18 +47,23 @@ public class ArticleBrief extends LitePalSupport {
         this.creator = new String("");
         this.category = new String("");
         this.description = new String("");
+        this.firstPhoto = null;
+        //默认未读未收藏
         this.isRead = false;
+        this.isCollect = false;
     }
 
     public ArticleBrief(String title, String link, String creator, String[] category,
-                        String description) {
+                        String description, @Nullable String firstPhoto) {
         this.title = title;
         this.link = link;
         this.creator = creator;
         this.setCategory(category);
         this.description = description;
-        //默认未读
+        this.firstPhoto = firstPhoto;
+        //默认未读未收藏
         this.isRead = false;
+        this.isCollect = false;
     }
 
     protected int getId() {
@@ -110,6 +123,14 @@ public class ArticleBrief extends LitePalSupport {
         this.description = description;
     }
 
+    public String getFirstPhoto() {
+        return firstPhoto;
+    }
+
+    public void setFirstPhoto(String firstPhoto) {
+        this.firstPhoto = firstPhoto;
+    }
+
     protected int getContent_id() {
         return content_id;
     }
@@ -124,6 +145,14 @@ public class ArticleBrief extends LitePalSupport {
 
     public void setRead(Boolean read) {
         isRead = read;
+    }
+
+    public Boolean getCollect() {
+        return isCollect;
+    }
+
+    public void setCollect(Boolean collect) {
+        isCollect = collect;
     }
 
     protected int getChannel_id() {

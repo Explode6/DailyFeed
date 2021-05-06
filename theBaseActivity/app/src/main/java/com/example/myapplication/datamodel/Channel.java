@@ -5,6 +5,8 @@ import android.graphics.BitmapFactory;
 import android.util.Base64;
 import android.util.Log;
 
+import androidx.annotation.Nullable;
+
 import org.litepal.annotation.Column;
 import org.litepal.crud.LitePalSupport;
 
@@ -49,7 +51,7 @@ public class Channel extends LitePalSupport {
         this.image = null;
     }
 
-    public Channel(String title, String rssLink, String addressLink, String lastBuildDate, String description, byte[] image) {
+    public Channel(String title, String rssLink, String addressLink, String lastBuildDate, String description, @Nullable byte[] image) {
         this.title = title;
         this.rssLink = rssLink;
         this.addressLink = addressLink;

@@ -7,5 +7,7 @@
         <mapping class="com.example.myapplication.datamodel.Collection"></mapping>
         <mapping class="com.example.myapplication.datamodel.ArticleBrief"></mapping>
         <mapping class="com.example.myapplication.datamodel.ArticleContent"></mapping>
+        <mapping class="com.example.myapplication.datamodel.GlobalComment"></mapping>
+        <mapping class="com.example.myapplication.datamodel.LocalComment"></mapping>
     </list>
 </litepal>

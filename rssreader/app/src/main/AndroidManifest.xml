@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.rssreader">
+<<<<<<< HEAD
 
     <uses-permission android:name="android.permission.WAKE_LOCK" />
 
@@ -21,20 +22,40 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
+=======
+    <uses-permission android:name="android.permission.INTERNET" />
+    <application
+        android:usesCleartextTraffic="true"
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="Best Reader"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme">
+>>>>>>> HaoHaoGe
         <activity android:name=".rssSource.RssSourceActivity"
             android:theme="@style/RssSourceTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+<<<<<<< HEAD
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
+=======
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".MainActivity">
+        </activity>
+>>>>>>> HaoHaoGe
         <activity android:name="com.example.rssreader.lastactivity.LastActivity"></activity>
         <activity android:name="com.example.rssreader.articlelist.ArticleListActivity"></activity>
         <service android:name=".rssSource.NoticeService">
             <intent-filter>
                 <action android:name="com.ryantang.service.PollingService"/>
+<<<<<<< HEAD
             </intent-filter>
         </service>
         <service
@@ -44,6 +65,9 @@
             android:process=":dataService" />
 
 
+=======
+            </intent-filter></service>
+>>>>>>> HaoHaoGe
     </application>
 
 </manifest>

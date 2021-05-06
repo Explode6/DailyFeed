@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+<<<<<<< HEAD
 <shape xmlns:android="http://schemas.android.com/apk/res/android" >
     //这里是Linearlayout布局的背景颜色
     <solid android:color="#FFFFFF" />
@@ -15,4 +16,12 @@
     //角的话，里边有参数可以单独设置
     <corners android:radius="10dp" />
 
+=======
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <stroke
+        android:width="1dp"
+        android:color="@color/dayBlackNightGray"/>
+    <solid
+        android:color="@color/dayGrayNightBlack"/>
+>>>>>>> HaoHaoGe
 </shape>

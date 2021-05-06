@@ -6,17 +6,26 @@
     android:minWidth="200dp"
     >
     <Button
+<<<<<<< HEAD
+=======
+        android:id="@+id/close_add_rss_dialog_btn"
+>>>>>>> HaoHaoGe
         android:layout_width="15dp"
         android:layout_height="15dp"
         android:layout_marginTop="5dp"
         android:layout_marginRight="5dp"
+<<<<<<< HEAD
         android:background="@drawable/add_icon"
         android:textSize="5sp"
+=======
+        android:background="@drawable/close_icon"
+>>>>>>> HaoHaoGe
         android:layout_gravity="top|right"
         />
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+<<<<<<< HEAD
         android:layout_margin="5dp"
         android:text="添加订阅"
         android:gravity="center"
@@ -31,15 +40,50 @@
         android:minHeight="40dp"
         android:hint="RSS链接"
         android:textSize="20sp"
+=======
+        android:text="添加订阅"
+        android:gravity="center"
+        android:textSize="20sp"
+        android:textColor="@color/dayBlackNightGray"
+        />
+    <EditText
+        android:id="@+id/rss_link"
+        android:layout_width="350dp"
+        android:layout_height="wrap_content"
+        android:paddingLeft="2dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="25dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:minHeight="40dp"
+        android:hint="RSS链接"
+        android:textSize="20sp"
+        android:maxLines="1"
+        android:background="@drawable/fillet_button"
+>>>>>>> HaoHaoGe
         />
     <Button
         android:id="@+id/add_rss_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+<<<<<<< HEAD
         android:layout_margin="5dp"
         android:layout_gravity="center"
         android:text="添加"
         android:textSize="15sp"
         android:layout_marginTop="5dp"/>
+=======
+        android:layout_gravity="center_horizontal"
+        android:text="添加"
+        android:textSize="15sp"
+        android:layout_marginBottom="10dp"
+        android:minWidth="0dp"
+        android:minHeight="0dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        android:paddingRight="25dp"
+        android:paddingLeft="25dp"
+        android:background="@drawable/fillet_button"/>
+>>>>>>> HaoHaoGe
 
 </LinearLayout>

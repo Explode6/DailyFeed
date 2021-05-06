@@ -1,5 +1,6 @@
 package com.example.rssreader.articlelist;
 
+
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -14,6 +15,14 @@ import com.example.rssreader.Data.ShuhaoJiekou;
 import com.example.rssreader.IMyAidlInterface;
 import com.example.rssreader.R;
 import com.example.rssreader.model.parse.DataService;
+
+import android.os.Bundle;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+import com.example.rssreader.Data.ShuhaoJiekou;
+import com.example.rssreader.R;
+
 import com.example.rssreader.util.ActivityUtil;
 
 /**
@@ -23,6 +32,7 @@ public class ArticleListActivity extends AppCompatActivity {
 
     private ArticleListPresenter mArticleListPresenter;
     private ShuhaoJiekou shuhaoJiekou;
+
 
 
 
@@ -50,10 +60,13 @@ public class ArticleListActivity extends AppCompatActivity {
 
 
 
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.article_list_act);
+
 
         Toolbar toolbar = (Toolbar)findViewById(R.id.main_toolbar);
         //为toolbar引入actionbar的功能
@@ -74,6 +87,7 @@ public class ArticleListActivity extends AppCompatActivity {
 
 
 
+
         Intent intent = new Intent(this, DataService.class);
         bindService(intent,conn, Context.BIND_AUTO_CREATE);
     }
@@ -87,6 +101,7 @@ public class ArticleListActivity extends AppCompatActivity {
             unbindService(conn);
             conn = null;
         }
+
     }
 
 }

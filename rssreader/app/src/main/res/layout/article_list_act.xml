@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+<<<<<<< HEAD
     android:orientation="vertical"
     tools:context=".articlelist.ArticleListActivity">
 
@@ -24,6 +25,10 @@
     </androidx.appcompat.widget.Toolbar>
 
 
+=======
+    tools:context=".articlelist.ArticleListActivity">
+
+>>>>>>> HaoHaoGe
     <FrameLayout
         android:id="@+id/artlist_frag"
         android:layout_width="match_parent"

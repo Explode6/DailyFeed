@@ -1,4 +1,4 @@
-package com.example.myapplication.datamodel;
+package com.example.rssreader.model.datamodel;
 
 import android.provider.ContactsContract;
 

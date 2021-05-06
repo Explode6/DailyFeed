@@ -3,6 +3,8 @@ package com.example.rssreader.model.datamodel;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import androidx.annotation.Nullable;
+
 import org.litepal.annotation.Column;
 import org.litepal.crud.LitePalSupport;
 

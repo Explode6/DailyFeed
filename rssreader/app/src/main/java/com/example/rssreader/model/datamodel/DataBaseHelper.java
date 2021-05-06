@@ -1,4 +1,10 @@
-package com.example.myapplication.datamodel;
+package com.example.rssreader.model.datamodel;
+
+import com.example.rssreader.model.datamodel.ArticleBrief;
+import com.example.rssreader.model.datamodel.ArticleContent;
+import com.example.rssreader.model.datamodel.Channel;
+import com.example.rssreader.model.datamodel.GlobalComment;
+import com.example.rssreader.model.datamodel.LocalComment;
 
 import org.litepal.LitePal;
 

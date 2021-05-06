@@ -5,7 +5,6 @@ import android.os.RemoteException;
 import com.example.rssreader.IMyAidlInterface;
 import com.example.rssreader.model.datamodel.ArticleBrief;
 import com.example.rssreader.model.datamodel.Channel;
-import com.example.rssreader.model.datamodel.Collection;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -159,8 +158,16 @@ class AidlBinder extends IMyAidlInterface.Stub {
      * @throws RemoteException
      */
     @Override
-    public Channel getChannelOfArticle(ArticleBrief articleBrief) throws RemoteException {
-        return dataService.getChannelOfArticle(articleBrief);
+    public Channel getChannelOfArticle(ArticleBrief articleBrief,DataCallback dataCallback) throws RemoteException {
+        try {
+            Channel res = dataService.getChannelOfArticle(articleBrief);
+            dataCallback.onSuccess();
+            return res;
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+            dataCallback.onFailure();
+            return null;
+        }
     }
 
     /**
@@ -170,10 +177,6 @@ class AidlBinder extends IMyAidlInterface.Stub {
      * @return
      * @throws RemoteException
      */
-    @Override
-    public List<Collection> getCollection(int offset, int limit) throws RemoteException {
-        return dataService.getCollection(offset,limit);
-    }
 
     /**
      * 根据文章简介判断某文章是否被收藏
@@ -182,8 +185,16 @@ class AidlBinder extends IMyAidlInterface.Stub {
      * @throws RemoteException
      */
     @Override
-    public boolean isCollect(ArticleBrief articleBrief) throws RemoteException {
-        return dataService.isCollect(articleBrief);
+    public boolean isCollect(ArticleBrief articleBrief,DataCallback dataCallback) throws RemoteException {
+        try {
+            boolean res = dataService.isCollect(articleBrief);
+            dataCallback.onSuccess();
+            return res;
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+            dataCallback.onFailure();
+            return false;
+        }
     }
 
     /**
@@ -192,16 +203,6 @@ class AidlBinder extends IMyAidlInterface.Stub {
      * @param dataCallback
      * @throws RemoteException
      */
-    @Override
-    public void removeCollection(Collection collection,DataCallback dataCallback) throws RemoteException {
-        try {
-            dataService.removeCollection(collection);
-            dataCallback.onSuccess();
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
-            dataCallback.onFailure();
-        }
-    }
 
     /**
      * 取消订阅某频道

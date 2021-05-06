@@ -5,7 +5,6 @@ import com.example.rssreader.model.parse.DataCallback;
 
 import com.example.rssreader.model.datamodel.Channel;
 import com.example.rssreader.model.datamodel.ArticleBrief;
-import com.example.rssreader.model.datamodel.Collection;
 
 // Declare any non-default types here with import statements
 
@@ -29,13 +28,9 @@ interface IMyAidlInterface {
 
     String getContentOfArticleBrief(in ArticleBrief articleBrief,in DataCallback dataCallback);
 
-    Channel getChannelOfArticle(in ArticleBrief articleBrief);
+    Channel getChannelOfArticle(in ArticleBrief articleBrief,in DataCallback dataCallback);
 
-    List<Collection> getCollection(int offset, int limit);
-
-    boolean isCollect(in ArticleBrief articleBrief);
-
-    void removeCollection(in Collection collection,in DataCallback dataCallback);
+    boolean isCollect(in ArticleBrief articleBrief,in DataCallback dataCallback);
 
     void removeChannel(in Channel channel);
 

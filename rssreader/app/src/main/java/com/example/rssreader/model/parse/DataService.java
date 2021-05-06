@@ -7,7 +7,6 @@ import android.os.RemoteException;
 
 import com.example.rssreader.model.datamodel.ArticleBrief;
 import com.example.rssreader.model.datamodel.Channel;
-import com.example.rssreader.model.datamodel.Collection;
 import com.example.rssreader.model.datamodel.DataBaseHelper;
 
 import java.sql.SQLException;
@@ -101,7 +100,7 @@ public class DataService extends Service {
      * @param articleBrief 文章简介
      * @return Channel 源频道对象
      */
-    public Channel getChannelOfArticle(ArticleBrief articleBrief){
+    public Channel getChannelOfArticle(ArticleBrief articleBrief) throws SQLException {
         return DataBaseHelper.getChannelOfArticle(articleBrief);
     }
 
@@ -112,9 +111,7 @@ public class DataService extends Service {
      * @param limit 查询返回的最大数目
      * @return list<Collection>
      */
-    public List<Collection> getCollection(int offset, int limit){
-        return DataBaseHelper.getCollection(offset,limit);
-    }
+
 
     /**
      * 根据文章简介判断某文章是否被收藏
@@ -122,7 +119,7 @@ public class DataService extends Service {
      * @param articleBrief 文章简介
      * @return boolean
      */
-    public boolean isCollect(ArticleBrief articleBrief){
+    public boolean isCollect(ArticleBrief articleBrief) throws SQLException {
         return DataBaseHelper.isCollect(articleBrief);
     }
 
@@ -132,9 +129,6 @@ public class DataService extends Service {
      * @param collection 目标文章
      * @throws SQLException 删除出现错误
      */
-    public void removeCollection(Collection collection) throws SQLException {
-        DataBaseHelper.removeCollection(collection);
-    }
 
     /**
      * 取消订阅某频道

@@ -14,7 +14,6 @@ import android.view.View;
 
 import com.example.rssreader.model.datamodel.ArticleBrief;
 import com.example.rssreader.model.datamodel.Channel;
-import com.example.rssreader.model.datamodel.Collection;
 import com.example.rssreader.model.datamodel.DataBaseHelper;
 import com.example.rssreader.model.parse.DataCallback;
 import com.example.rssreader.model.parse.DataService;
@@ -108,10 +107,6 @@ public class MainActivity extends AppCompatActivity {
             }
             List<ArticleBrief> articleBriefs = myAidlInterface.getArticleBriefsFromChannel(channels.get(0),0,10);
             //myAidlInterface.collectArticle(articleBriefs.get(2));
-            List<Collection> collections =  myAidlInterface.getCollection(0,10);
-            for(Collection collection:collections){
-                Log.d(TAG,collection.getTitle());
-            }
         } catch (RemoteException e) {
             e.printStackTrace();
         }

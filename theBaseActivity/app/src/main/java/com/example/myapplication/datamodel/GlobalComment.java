@@ -3,6 +3,8 @@ package com.example.myapplication.datamodel;
 import org.litepal.annotation.Column;
 import org.litepal.crud.LitePalSupport;
 
+import java.util.Date;
+
 /**
  * @ClassName: GlobalComment
  * @Author: Von
@@ -18,14 +20,18 @@ public class GlobalComment extends LitePalSupport {
 
     private String comment;
 
+    private Date date;
+
     public GlobalComment(){
         this.articleBriefId = -1;
         this.comment = "";
+        this.date = null;
     }
 
-    public GlobalComment(int articleBriefId, String comment) {
+    public GlobalComment(int articleBriefId, String comment, Date date) {
         this.articleBriefId = articleBriefId;
         this.comment = comment;
+        this.date = date;
     }
 
     protected int getId() {
@@ -46,5 +52,13 @@ public class GlobalComment extends LitePalSupport {
 
     public void setComment(String comment) {
         this.comment = comment;
+    }
+
+    public Date getDate() {
+        return date;
+    }
+
+    public void setDate(Date date) {
+        this.date = date;
     }
 }

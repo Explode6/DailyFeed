@@ -3,6 +3,7 @@ package com.example.myapplication.datamodel;
 import org.litepal.LitePal;
 
 import java.sql.SQLException;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -86,14 +87,15 @@ public class DataBaseHelper {
      *
      * @param articleBrief 对应的文章简介
      * @param comment 评论内容
+     * @param date 评论时间
      * @throws SQLException 对应的文章简介不在数据库中
      */
-    public static void addGlobalCommentToArticle(ArticleBrief articleBrief, String comment) throws SQLException {
+    public static void addGlobalCommentToArticle(ArticleBrief articleBrief, String comment, Date date) throws SQLException {
         //查表确认对应的ArticleBrief
         ArticleBrief articleBrief1 = LitePal.find(ArticleBrief.class, articleBrief.getContent_id());
         if(articleBrief1 == null) throw new SQLException("文章不存在");
         //封装评论添加到库中
-        GlobalComment globalComment = new GlobalComment(articleBrief1.getId(), comment);
+        GlobalComment globalComment = new GlobalComment(articleBrief1.getId(), comment, date);
         globalComment.save();
     }
 
@@ -103,15 +105,16 @@ public class DataBaseHelper {
      * @param articleBrief 对应的文章简介
      * @param localContent 选中的文章部分内容
      * @param comment 评论的内容
+     * @param date 评论时间
      * @throws SQLException 对应的文章简介不在数据库中
      */
     public static void addLocalCommentToArticle(ArticleBrief articleBrief,
-                                                String localContent, String comment) throws SQLException{
+                                                String localContent, String comment, Date date) throws SQLException{
         //查表确认对应的ArticleBrief
         ArticleBrief articleBrief1 = LitePal.find(ArticleBrief.class, articleBrief.getContent_id());
         if(articleBrief1 == null) throw new SQLException("文章不存在");
         //封装评论添加到库中
-        LocalComment localComment = new LocalComment(articleBrief1.getId(), localContent, comment);
+        LocalComment localComment = new LocalComment(articleBrief1.getId(), localContent, comment, date);
         localComment.save();
     }
 

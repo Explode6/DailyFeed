@@ -1,15 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.rssreader">
+
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+
+    <uses-feature android:name="android.hardware.type.watch" />
+
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+
     <application
+        android:name="org.litepal.LitePalApplication"
         android:usesCleartextTraffic="true"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
-        android:label="Best Reader"
+        android:label="Daily Feed"
+        android:networkSecurityConfig="@xml/network_security_config"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+
         <activity android:name=".rssSource.RssSourceActivity"
             android:theme="@style/RssSourceTheme">
             <intent-filter>
@@ -18,14 +29,21 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".MainActivity">
-        </activity>
+
         <activity android:name="com.example.rssreader.lastactivity.LastActivity"></activity>
         <activity android:name="com.example.rssreader.articlelist.ArticleListActivity"></activity>
         <service android:name=".rssSource.NoticeService">
             <intent-filter>
                 <action android:name="com.ryantang.service.PollingService"/>
-            </intent-filter></service>
+            </intent-filter>
+        </service>
+        <service
+            android:name="com.example.rssreader.model.parse.DataService"
+            android:enabled="true"
+            android:exported="true"
+            android:process=":dataService" />
+
+
     </application>
 
 </manifest>

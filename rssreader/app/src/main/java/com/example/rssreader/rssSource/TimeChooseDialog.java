@@ -1,6 +1,5 @@
 package com.example.rssreader.rssSource;
 
-import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.view.LayoutInflater;

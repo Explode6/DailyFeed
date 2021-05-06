@@ -18,8 +18,10 @@ import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.rssreader.BottomPopupWindow;
 import com.example.rssreader.R;
 import com.example.rssreader.RssSource;
+import com.example.rssreader.RssSrcAdapter;
 import com.example.rssreader.articlelist.ArticleListActivity;
 import com.google.android.material.navigation.NavigationView;
 
@@ -32,7 +34,6 @@ public class RssSourceFragment extends Fragment implements RssSourceContract.Rss
     private RssSrcAdapter rssSrcAdapter;    //显示RSS源的适配器
     private GridLayoutManager layoutManager;   //布局管理器
     private BottomPopupWindow bottomPopupWindow;    //底部弹窗
-    private AddRssSourceDialog addRssSourceDialog;  //添加RSS源的弹窗
     private RecyclerView rssView;
     private boolean canEdit = false;    //是否进入编辑模式
     private Button listBtn;   //选择列表布局按钮
@@ -91,8 +92,6 @@ public class RssSourceFragment extends Fragment implements RssSourceContract.Rss
         editBtn = (Button)root.findViewById(R.id.edit_rss_source_btn);
         //绑定底部弹窗
         setBottomWindow();
-        //绑定添加RSS源的弹窗
-        setAddRssSrcDialog();
         //监听按钮点击事件
         listBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -156,7 +155,7 @@ public class RssSourceFragment extends Fragment implements RssSourceContract.Rss
     }
 
     @Override
-    public void convertToList(List<RssSource>list) {
+    public void convertToList(List<RssSource> list) {
         layoutManager = new GridLayoutManager(this.getContext(), 1);
         rssView.setLayoutManager(layoutManager);
         rssSrcAdapter = new RssSrcAdapter(list, false, canEdit);
@@ -178,7 +177,7 @@ public class RssSourceFragment extends Fragment implements RssSourceContract.Rss
     }
 
     @Override
-    public void convertToGrid(List<RssSource>list) {
+    public void convertToGrid(List<RssSource> list) {
         layoutManager = new GridLayoutManager(this.getContext(), 2);
         rssView.setLayoutManager(layoutManager);
         rssSrcAdapter = new RssSrcAdapter(list, true, canEdit);
@@ -210,7 +209,7 @@ public class RssSourceFragment extends Fragment implements RssSourceContract.Rss
     }
 
     @Override
-    public void loadRecyclerView(List<RssSource>list) {
+    public void loadRecyclerView(List<RssSource> list) {
         this.rssSrcAdapter.setRssSourceList(list);
         refreshView();
     }
@@ -270,10 +269,10 @@ public class RssSourceFragment extends Fragment implements RssSourceContract.Rss
                                         //设置为用户选择的时间
                                         calendar.set(Calendar.HOUR, dialog.getHour());
                                         calendar.set(Calendar.MINUTE, dialog.getMinute());
-                                        AlarmUtil.startNoticeService(getContext(),calendar.getTimeInMillis(),NoticeService.class,"com.ryantang.service.PollingService");
+                                        AlarmUtil.startNoticeService(getContext(),calendar.getTimeInMillis(), NoticeService.class,"com.ryantang.service.PollingService");
                                         dialog.dismiss();
                                         break;
-                                    case R.id.close_time_choose_dialog_btn:
+                                    case R.id.cancel_time_choose_btn:
                                         dialog.dismiss();
                                         break;
                                 }
@@ -289,15 +288,5 @@ public class RssSourceFragment extends Fragment implements RssSourceContract.Rss
                 return true;
             }
         });
-    }
-
-    @Override
-    public void setAddRssSrcDialog() {
-        addRssSourceDialog = new AddRssSourceDialog(getActivity());
-    }
-
-    @Override
-    public void showAddRssSrcDialog() {
-        addRssSourceDialog.show();
     }
 }

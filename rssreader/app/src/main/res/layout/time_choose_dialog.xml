@@ -3,54 +3,34 @@
     android:orientation="vertical"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:background="@drawable/border"
     >
-    <Button
-        android:id="@+id/close_time_choose_dialog_btn"
-        android:layout_width="15dp"
-        android:layout_height="15dp"
-        android:layout_marginTop="5dp"
-        android:layout_marginRight="5dp"
-        android:background="@drawable/close_icon"
-        android:layout_gravity="top|right"
-        />
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="定时更新"
-        android:textColor="@color/dayBlackNightGray"
-        android:textSize="20sp"
-        android:gravity="center_horizontal"/>
+
     <TimePicker
         android:id="@+id/time_choose"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:timePickerMode="spinner"/>
-
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:orientation="horizontal">
         <Button
             android:id="@+id/time_chosen_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:background="@drawable/fillet_button"
-            android:minWidth="0dp"
-            android:minHeight="0dp"
-            android:paddingTop="8dp"
-            android:paddingBottom="8dp"
-            android:paddingRight="25dp"
-            android:paddingLeft="25dp"
             android:text="确定"/>
+        <Button
+            android:id="@+id/cancel_time_choose_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="取消"/>
+    </LinearLayout>
     <Button
         android:id="@+id/close_time_choose"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="关闭服务"
-        android:textColor="@color/red"
-        android:layout_gravity="center_horizontal"
-        android:background="@color/dayWhiteNightBlack"
-        android:layout_marginTop="15dp"
-        android:layout_marginBottom="20dp"
-        android:layout_marginLeft="1dp"
-        android:layout_marginRight="1dp"/>
+        android:layout_alignParentBottom="true"/>
 </LinearLayout>

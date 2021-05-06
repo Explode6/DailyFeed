@@ -1,4 +1,4 @@
-package com.example.rssreader;
+package com.example.rssreader.rssSource;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -11,6 +11,9 @@ import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.rssreader.R;
+import com.example.rssreader.RssSource;
+
 import java.util.Iterator;
 import java.util.List;
 
@@ -22,12 +25,12 @@ public class RssSrcAdapter extends RecyclerView.Adapter<RssSrcAdapter.ViewHolder
     private RssOnClickListener rssOnClickListener;
     private RssLongClickListener rssLongClickListener;
 
-    public RssSrcAdapter(List<RssSource> list, boolean type, boolean canEdit){
+    public RssSrcAdapter(List<RssSource>list, boolean type, boolean canEdit){
         this.mainType = type;
         this.rssSourceList = list;
         this.canEdit = canEdit;
     }
-    public void setRssSourceList(List<RssSource> list){
+    public void setRssSourceList(List<RssSource>list){
         this.rssSourceList = list;
     }
     //暴露给外部的子项点击事件接口
@@ -155,7 +158,7 @@ public class RssSrcAdapter extends RecyclerView.Adapter<RssSrcAdapter.ViewHolder
      */
     public void delSelectedItems(){
         //遍历迭代器，从列表中删除被选中的子项
-        Iterator<RssSource> iterator = rssSourceList.iterator();
+        Iterator<RssSource>iterator = rssSourceList.iterator();
         while(iterator.hasNext()){
             RssSource rssSource = iterator.next();
             if(rssSource.getSelected() == true){

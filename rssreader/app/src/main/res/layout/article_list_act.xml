@@ -4,25 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     tools:context=".articlelist.ArticleListActivity">
-
-    <androidx.appcompat.widget.Toolbar
-        android:id="@+id/article_list_toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:background="?attr/colorPrimary">
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:text="文章内容"
-            android:textColor="#000000"
-            android:textSize="26dp"
-            android:textStyle="bold" />
-    </androidx.appcompat.widget.Toolbar>
-
 
     <FrameLayout
         android:id="@+id/artlist_frag"

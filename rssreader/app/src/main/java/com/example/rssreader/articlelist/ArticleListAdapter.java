@@ -153,7 +153,7 @@ public class ArticleListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             if(articleBrief.isRead()){
                 ((ViewHolder) holder).articleTitle.setTextColor(mContext.getResources().getColor(R.color.brief_or_isread_gray));
             }else{
-                ((ViewHolder) holder).articleTitle.setTextColor(mContext.getResources().getColor(R.color.toolbarTextColor));
+                ((ViewHolder) holder).articleTitle.setTextColor(mContext.getResources().getColor(R.color.colorPrimaryDark));
             }
             ((ViewHolder)holder).articleTitle.setText(articleBrief.getTitle());
             ((ViewHolder)holder).articleBrief.setText(articleBrief.getDescription());

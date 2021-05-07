@@ -1,5 +1,6 @@
 package com.example.rssreader.rssSource;
 
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -12,7 +13,7 @@ import com.example.rssreader.R;
 
 public class TimeChooseDialog extends Dialog {
     private View view;
-    private Button cancelBtn;
+    private Button closeBtn;
     private Button okBtn;
     private Button openOrCloseBtn;
 
@@ -43,8 +44,8 @@ public class TimeChooseDialog extends Dialog {
     }
     //设置按钮监听事件
     public void setListener(View.OnClickListener itemsListener){
-        cancelBtn = (Button)view.findViewById(R.id.cancel_time_choose_btn);
-        cancelBtn.setOnClickListener(itemsListener);
+        closeBtn = (Button)view.findViewById(R.id.close_time_choose_dialog_btn);
+        closeBtn.setOnClickListener(itemsListener);
         okBtn = (Button)view.findViewById(R.id.time_chosen_btn);
         okBtn.setOnClickListener(itemsListener);
         openOrCloseBtn = (Button)view.findViewById(R.id.close_time_choose);

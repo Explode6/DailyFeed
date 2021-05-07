@@ -47,6 +47,7 @@ public class RssSourceActivity extends AppCompatActivity {
 
     private DrawerLayout mDrawerLayout; //侧滑菜单
     private NavigationView navView; //侧滑菜单的导航栏
+    RssSourceFragment rssSourceFragment;
     private RssSourcePresenterImpl rssSourcePresenter;
 
 
@@ -73,6 +74,9 @@ public class RssSourceActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_rss_source);
+        //获取数据库
+        LitePal.initialize(this);
+        LitePal.getDatabase();
         Toolbar toolbar = (Toolbar)findViewById(R.id.main_toolbar);
         //为toolbar引入actionbar的功能
         setSupportActionBar(toolbar);
@@ -92,7 +96,7 @@ public class RssSourceActivity extends AppCompatActivity {
         navView = (NavigationView)findViewById(R.id.nav_view);
 
        //新建Fragment
-        RssSourceFragment rssSourceFragment = (RssSourceFragment)getSupportFragmentManager().findFragmentById(R.id.contentFrame);
+        rssSourceFragment = (RssSourceFragment)getSupportFragmentManager().findFragmentById(R.id.contentFrame);
         if(rssSourceFragment == null){
             rssSourceFragment = RssSourceFragment.newInstance();
             ActivityUtil.addFragmentToActivity(getSupportFragmentManager(),rssSourceFragment, R.id.contentFrame);
@@ -129,7 +133,7 @@ public class RssSourceActivity extends AppCompatActivity {
                 mDrawerLayout.openDrawer(GravityCompat.START);
                 break;
             case R.id.addButton:
-                startDataService();
+                rssSourceFragment.showAddRssSrcDialog();
                 break;
             default:
                 break;

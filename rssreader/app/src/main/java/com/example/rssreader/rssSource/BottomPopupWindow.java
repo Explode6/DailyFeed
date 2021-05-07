@@ -1,4 +1,4 @@
-package com.example.rssreader;
+package com.example.rssreader.rssSource;
 
 import android.content.Context;
 import android.graphics.drawable.ColorDrawable;
@@ -8,6 +8,8 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.PopupWindow;
 
+import com.example.rssreader.R;
+
 public class BottomPopupWindow extends PopupWindow {
     private Context mContext;
     private View view;
@@ -15,7 +17,7 @@ public class BottomPopupWindow extends PopupWindow {
     private Button selectAllBtn, cancelBtn, delBtn;
 
     public BottomPopupWindow(Context mContext, View.OnClickListener itemsOnClick){
-        this.view = LayoutInflater.from(mContext).inflate(R.layout.main_bottom_window, null);
+        this.view = LayoutInflater.from(mContext).inflate(R.layout.rss_bottom_window, null);
         selectAllBtn = (Button)view.findViewById(R.id.select_all_btn);
         cancelBtn = (Button)view.findViewById(R.id.cancel_btn);
         delBtn = (Button)view.findViewById(R.id.del_rss_btn);

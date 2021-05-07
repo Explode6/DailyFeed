@@ -202,8 +202,8 @@ public class RssSourceActivity extends AppCompatActivity {
             }
             List<ArticleBrief> articleBriefs = myAidlInterface.getArticleBriefsFromChannel(channels.get(0),0,10);
             //myAidlInterface.collectArticle(articleBriefs.get(2));
-            List<Collection> collections =  myAidlInterface.getCollection(0,10);
-            for(Collection collection:collections){
+            List<ArticleBrief> collections =  myAidlInterface.getCollection(0,10);
+            for(ArticleBrief collection:collections){
                 Log.d(TAG,collection.getTitle());
             }
         } catch (RemoteException e) {

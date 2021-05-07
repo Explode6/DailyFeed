@@ -36,4 +36,5 @@ dependencies {
     implementation 'androidx.cardview:cardview:1.0.0'
     implementation 'androidx.appcompat:appcompat:1.1.0-alpha05'
     compile 'com.github.bumptech.glide:glide:4.0.0'
+    api 'com.tencent.mm.opensdk:wechat-sdk-android-without-mta:+'
 }

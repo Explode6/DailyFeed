@@ -3,6 +3,7 @@ package com.example.rssreader.model.datamodel;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+
 import androidx.annotation.Nullable;
 
 import org.litepal.annotation.Column;
@@ -23,6 +24,7 @@ public class ArticleBrief extends LitePalSupport implements Parcelable {
 
     @Column(unique = true, index = true)
     private String link;
+
 
     @Column(nullable = true)
     private String firstPhoto;
@@ -192,13 +194,17 @@ public class ArticleBrief extends LitePalSupport implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeInt(id);
         dest.writeString(title);
+
         dest.writeString(firstPhoto);
+
         dest.writeString(link);
         dest.writeString(creator);
         dest.writeString(category);
         dest.writeString(description);
         dest.writeBoolean(isRead);
+
         dest.writeBoolean(isCollect);
+
         dest.writeLong(pubTime);
         dest.writeInt(content_id);
         dest.writeInt(channel_id);
@@ -209,7 +215,9 @@ public class ArticleBrief extends LitePalSupport implements Parcelable {
         public ArticleBrief createFromParcel(Parcel source) {
             int id = source.readInt();
             String title = source.readString();
+
             String firstPhoto = source.readString();
+
             String link = source.readString();
             String creator = source.readString();
             String category = source.readString();
@@ -220,6 +228,7 @@ public class ArticleBrief extends LitePalSupport implements Parcelable {
             int content_id = source.readInt();
             int channel_id = source.readInt();
             return new ArticleBrief(id,title,firstPhoto,link,creator,category,description,isRead,isCollect,pubTime,content_id,channel_id);
+
         }
 
         @Override

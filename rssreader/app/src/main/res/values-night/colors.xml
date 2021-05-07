@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#000000</color>
+    <color name="colorPrimaryDark">#000000</color>
+    <color name="navItemTextColor">#FFFFFF</color>
+    <color name="toolbarTextColor">#FFFFFF</color>
+    <color name="navBackgroundColor">#000000</color>
+    <color name="rssSourceViewColor">#000000</color>
+    <color name="rssSourceItemColor">#80000000</color>
+    <color name="rssSourceItemTextColor">#FFFFFF</color>
+    <color name="btnPressedBackgroundColor">#F5F5F5</color>
+    <color name="btnTextColor">#FFFFFF</color>
+    <color name="dayBlackNightWhite">#FFFFFF</color>
+    <color name="dayBlackNightGray">#F5F5F5</color>
+    <color name="dayWhiteNightBlack">#000000</color>
+    <color name="dayGrayNightBlack">#000000</color>
+</resources>

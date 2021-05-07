@@ -142,9 +142,9 @@ public class DataService extends Service {
      * @param limit 查询返回的最大数目
      * @return list<Collection>
      */
-     public List<ArticleBrief> getCollection(int offset, int limit){
-         return DataBaseHelper.getCollection(offset,limit);
-     }
+    public List<ArticleBrief> getCollection(int offset, int limit){
+        return DataBaseHelper.getCollection(offset,limit);
+    }
 
     /**
      * 根据文章简介判断某文章是否被收藏

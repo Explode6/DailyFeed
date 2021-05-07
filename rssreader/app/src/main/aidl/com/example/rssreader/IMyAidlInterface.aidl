@@ -57,5 +57,4 @@ interface IMyAidlInterface {
 
     void clearStorage();
 
-
 }

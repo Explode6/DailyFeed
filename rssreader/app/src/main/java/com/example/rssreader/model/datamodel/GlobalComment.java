@@ -1,5 +1,8 @@
 package com.example.rssreader.model.datamodel;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import org.litepal.annotation.Column;
 import org.litepal.crud.LitePalSupport;
 
@@ -11,7 +14,7 @@ import java.util.Date;
  * @Date: 2021/5/6
  * @Description: 对文章的全局评论
  */
-public class GlobalComment extends LitePalSupport {
+public class GlobalComment extends LitePalSupport implements Parcelable {
 
     @Column(unique = true)
     private int id;
@@ -29,6 +32,14 @@ public class GlobalComment extends LitePalSupport {
     }
 
     public GlobalComment(int articleBriefId, String comment, Date date) {
+        this.articleBriefId = articleBriefId;
+        this.comment = comment;
+        this.date = date;
+    }
+
+    //序列化使用
+    public GlobalComment(int id,int articleBriefId,String comment,Date date){
+        this.id = id;
         this.articleBriefId = articleBriefId;
         this.comment = comment;
         this.date = date;
@@ -61,4 +72,33 @@ public class GlobalComment extends LitePalSupport {
     public void setDate(Date date) {
         this.date = date;
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(this.id);
+        dest.writeInt(this.articleBriefId);
+        dest.writeString(this.comment);
+        dest.writeValue(this.date);
+    }
+
+    public static final Creator<GlobalComment> CREATOR = new Creator<GlobalComment>() {
+        @Override
+        public GlobalComment createFromParcel(Parcel source) {
+            int id = source.readInt();
+            int articleBriefId = source.readInt();
+            String comment = source.readString();
+            Date date = (Date) source.readValue(Date.class.getClassLoader());
+            return new GlobalComment(id,articleBriefId,comment,date);
+        }
+
+        @Override
+        public GlobalComment[] newArray(int size) {
+            return new GlobalComment[size];
+        }
+    };
 }

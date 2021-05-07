@@ -69,16 +69,17 @@ public class ArticleBrief extends LitePalSupport implements Parcelable {
     }
 
     //序列化使用
-    public ArticleBrief(int id,String title, String link, String creator, String category,
-                        String description,Boolean isRead,long pubTime,int content_id,int channel_id) {
+    public ArticleBrief(int id,String title, String link,String firstPhoto, String creator, String category,
+                        String description,Boolean isRead,Boolean isCollect,long pubTime,int content_id,int channel_id) {
         this.id = id;
         this.title = title;
+        this.firstPhoto = firstPhoto;
         this.link = link;
         this.creator = creator;
         this.category = category;
         this.description = description;
-        //默认未读
         this.isRead = isRead;
+        this.isCollect = isCollect;
         this.pubTime = pubTime;
         this.content_id = content_id;
         this.channel_id = channel_id;
@@ -191,11 +192,13 @@ public class ArticleBrief extends LitePalSupport implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeInt(id);
         dest.writeString(title);
+        dest.writeString(firstPhoto);
         dest.writeString(link);
         dest.writeString(creator);
         dest.writeString(category);
         dest.writeString(description);
         dest.writeBoolean(isRead);
+        dest.writeBoolean(isCollect);
         dest.writeLong(pubTime);
         dest.writeInt(content_id);
         dest.writeInt(channel_id);
@@ -206,15 +209,17 @@ public class ArticleBrief extends LitePalSupport implements Parcelable {
         public ArticleBrief createFromParcel(Parcel source) {
             int id = source.readInt();
             String title = source.readString();
+            String firstPhoto = source.readString();
             String link = source.readString();
             String creator = source.readString();
             String category = source.readString();
             String description = source.readString();
             Boolean isRead = source.readBoolean();
+            Boolean isCollect = source.readBoolean();
             Long pubTime = source.readLong();
             int content_id = source.readInt();
             int channel_id = source.readInt();
-            return new ArticleBrief(id,title,link,creator,category,description,isRead,pubTime,content_id,channel_id);
+            return new ArticleBrief(id,title,firstPhoto,link,creator,category,description,isRead,isCollect,pubTime,content_id,channel_id);
         }
 
         @Override

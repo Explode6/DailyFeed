@@ -5,11 +5,15 @@ import android.content.Intent;
 import android.os.IBinder;
 import android.os.RemoteException;
 
+import com.example.rssreader.model.datamodel.AidlDate;
 import com.example.rssreader.model.datamodel.ArticleBrief;
 import com.example.rssreader.model.datamodel.Channel;
 import com.example.rssreader.model.datamodel.DataBaseHelper;
+import com.example.rssreader.model.datamodel.GlobalComment;
+import com.example.rssreader.model.datamodel.LocalComment;
 
 import java.sql.SQLException;
+import java.util.Date;
 import java.util.List;
 
 public class DataService extends Service {
@@ -38,6 +42,33 @@ public class DataService extends Service {
     public void collectArticle(ArticleBrief articleBrief) throws SQLException {
         DataBaseHelper.collectArticle(articleBrief);
     }
+
+    /**
+     * 添加文章的全局评论到数据库中
+     * @param articleBrief 对应的文章简介
+     * @param comment 评论内容
+     * @param aidlDate 评论时间
+     */
+    public void addGlobalCommentToArticle(ArticleBrief articleBrief, String comment, AidlDate aidlDate) throws SQLException {
+        Date date = aidlDate.getDate();
+        DataBaseHelper.addGlobalCommentToArticle(articleBrief,comment,date);
+    }
+
+    /**
+     * 添加对文章的部分内容的局部评论到数据库中
+     * @param articleBrief
+     * @param localContent
+     * @param comment
+     * @param aidlDate
+     * @throws SQLException
+     */
+    public void addLocalCommentToArticle(ArticleBrief articleBrief, String localContent, String comment, AidlDate aidlDate) throws SQLException {
+        Date date = aidlDate.getDate();
+        DataBaseHelper.addLocalCommentToArticle(articleBrief,localContent,comment,date);
+    }
+
+
+
     /**
      * 设置某篇文章为已读
      *
@@ -111,7 +142,9 @@ public class DataService extends Service {
      * @param limit 查询返回的最大数目
      * @return list<Collection>
      */
-
+     public List<ArticleBrief> getCollection(int offset, int limit){
+         return DataBaseHelper.getCollection(offset,limit);
+     }
 
     /**
      * 根据文章简介判断某文章是否被收藏
@@ -124,11 +157,46 @@ public class DataService extends Service {
     }
 
     /**
+     * 根据模糊的文章标题查询收藏
+     *
+     * @param vagueTitle 部分标题
+     * @return the List<ArticleBrief>
+     */
+    public List<ArticleBrief> searchCollection(String vagueTitle){
+        return DataBaseHelper.searchCollection(vagueTitle);
+    }
+
+    /**
+     * 查找对应文章的所有全局评论
+     *
+     * @param articleBrief 对应文章简介
+     * @return the List<GlobalComment>
+     * @throws SQLException 对应的文章简介不存在
+     */
+    public List<GlobalComment> getGlobalCommentsOfArticle(ArticleBrief articleBrief) throws SQLException {
+        return DataBaseHelper.getGlobalCommentsOfArticle(articleBrief);
+    }
+
+    /**
+     * 返回对应文章的所有局部评论
+     *
+     * @param articleBrief 对应的文章简介
+     * @return the List<LocalComment>
+     * @throws SQLException 对应的文章简介不存在
+     */
+    public List<LocalComment> getLocalCommentsOfArticle(ArticleBrief articleBrief) throws SQLException {
+        return DataBaseHelper.getLocalCommentsOfArticle(articleBrief);
+    }
+
+    /**
      * 取消收藏
      *
-     * @param collection 目标文章
+     * @param articleBrief 目标文章
      * @throws SQLException 删除出现错误
      */
+    public void removeCollection(ArticleBrief articleBrief) throws SQLException {
+        DataBaseHelper.removeCollection(articleBrief);
+    }
 
     /**
      * 取消订阅某频道
@@ -137,6 +205,23 @@ public class DataService extends Service {
      */
     public void removeChannel(Channel channel){
         DataBaseHelper.removeChannel(channel);
+    }
+
+    /**
+     * 删除某个全局评论
+     * @param globalComment
+     */
+    public void deleteGlobalComment(GlobalComment globalComment) throws SQLException {
+        DataBaseHelper.deleteGlobalComment(globalComment);
+    }
+
+
+    /**
+     * 删除某个局部评论
+     * @param localComment
+     */
+    public void deleteLocalComment(LocalComment localComment) throws SQLException {
+        DataBaseHelper.deleteLocalComment(localComment);
     }
 
     /**

@@ -12,9 +12,11 @@ import android.os.RemoteException;
 import android.util.Log;
 import android.view.View;
 
+import com.example.rssreader.model.datamodel.AidlDate;
 import com.example.rssreader.model.datamodel.ArticleBrief;
 import com.example.rssreader.model.datamodel.Channel;
 import com.example.rssreader.model.datamodel.DataBaseHelper;
+import com.example.rssreader.model.datamodel.GlobalComment;
 import com.example.rssreader.model.parse.DataCallback;
 import com.example.rssreader.model.parse.DataService;
 
@@ -23,6 +25,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.Date;
 import java.util.List;
 
 import org.litepal.LitePal;
@@ -78,6 +81,25 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    //临时测试接口
+    class tempCallback extends DataCallback.Stub{
+
+        @Override
+        public void onSuccess() throws RemoteException {
+            Log.d(TAG,"op success");
+        }
+
+        @Override
+        public void onFailure() throws RemoteException {
+            Log.d(TAG,"op failure");
+        }
+
+        @Override
+        public void onError() throws RemoteException {
+
+        }
+    }
+
     /**
      * 数据服务测试
      * @param view
@@ -100,13 +122,20 @@ public class MainActivity extends AppCompatActivity {
 //
 //                }
 //            });
-            //myAidlInterface.downloadParseXml("https://journeybunnies.com/feed/");
             List<Channel> channels =  myAidlInterface.getChannel(0,10);
             for(Channel channel : channels){
                 Log.d(TAG,channel.getTitle());
             }
             List<ArticleBrief> articleBriefs = myAidlInterface.getArticleBriefsFromChannel(channels.get(0),0,10);
-            //myAidlInterface.collectArticle(articleBriefs.get(2));
+            for(ArticleBrief articleBrief : articleBriefs){
+                Log.d(TAG,articleBrief.getTitle());
+            }
+            myAidlInterface.addGlobalCommentToArticle(articleBriefs.get(1),"This is a test comment",new AidlDate(new Date()),new tempCallback());
+            List<GlobalComment> comments =  myAidlInterface.getGlobalCommentsOfArticle(articleBriefs.get(1),new tempCallback());
+            for(GlobalComment comment :comments){
+                Log.d(TAG,"评论时间："+comment.getDate());
+                Log.d(TAG,"评论内容"+comment.getComment());
+            }
         } catch (RemoteException e) {
             e.printStackTrace();
         }

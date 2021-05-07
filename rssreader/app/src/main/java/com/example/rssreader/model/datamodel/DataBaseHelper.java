@@ -98,7 +98,7 @@ public class DataBaseHelper {
      */
     public static void addGlobalCommentToArticle(ArticleBrief articleBrief, String comment, Date date) throws SQLException {
         //查表确认对应的ArticleBrief
-        ArticleBrief articleBrief1 = LitePal.find(ArticleBrief.class, articleBrief.getContent_id());
+        ArticleBrief articleBrief1 = LitePal.find(ArticleBrief.class, articleBrief.getId());
         if(articleBrief1 == null) throw new SQLException("文章不存在");
         //封装评论添加到库中
         GlobalComment globalComment = new GlobalComment(articleBrief1.getId(), comment, date);
@@ -117,7 +117,7 @@ public class DataBaseHelper {
     public static void addLocalCommentToArticle(ArticleBrief articleBrief,
                                                 String localContent, String comment, Date date) throws SQLException{
         //查表确认对应的ArticleBrief
-        ArticleBrief articleBrief1 = LitePal.find(ArticleBrief.class, articleBrief.getContent_id());
+        ArticleBrief articleBrief1 = LitePal.find(ArticleBrief.class, articleBrief.getId());
         if(articleBrief1 == null) throw new SQLException("文章不存在");
         //封装评论添加到库中
         LocalComment localComment = new LocalComment(articleBrief1.getId(), localContent, comment, date);
@@ -279,7 +279,7 @@ public class DataBaseHelper {
      * @return the List<GlobalComment>
      * @throws SQLException 对应的文章简介不存在
      */
-    public List<GlobalComment> getGlobalCommentsOfArticle(ArticleBrief articleBrief) throws SQLException {
+    public static List<GlobalComment> getGlobalCommentsOfArticle(ArticleBrief articleBrief) throws SQLException {
         //查表确认对应的ArticleBrief
         ArticleBrief articleBrief1 = LitePal.find(ArticleBrief.class, articleBrief.getId());
         if(articleBrief1 == null) throw new SQLException("文章不存在");
@@ -294,7 +294,7 @@ public class DataBaseHelper {
      * @return the List<LocalComment>
      * @throws SQLException 对应的文章简介不存在
      */
-    public List<LocalComment> getLocalCommentsOfArticle(ArticleBrief articleBrief) throws SQLException{
+    public static List<LocalComment> getLocalCommentsOfArticle(ArticleBrief articleBrief) throws SQLException{
         //查表确认对应的ArticleBrief
         ArticleBrief articleBrief1 = LitePal.find(ArticleBrief.class, articleBrief.getId());
         if(articleBrief1 == null) throw new SQLException("文章不存在");

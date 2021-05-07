@@ -1,5 +1,7 @@
 package com.example.rssreader.model.datamodel;
 
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.provider.ContactsContract;
 
 import org.litepal.annotation.Column;
@@ -13,15 +15,17 @@ import java.util.Date;
  * @Date: 2021/5/6
  * @Description: 对文章部分内容的局部评论
  */
-public class LocalComment extends LitePalSupport {
+public class LocalComment extends LitePalSupport implements Parcelable {
 
     @Column(unique = true)
     private int id;
 
     private int articleBriefId;
 
+    //选中的内容
     private String localContent;
 
+    //评论内容
     private String comment;
 
     private Date date;
@@ -39,6 +43,16 @@ public class LocalComment extends LitePalSupport {
         this.comment = comment;
         this.date = date;
     }
+
+    //序列化使用
+    public LocalComment(int id,int articleBriefId, String localContent, String comment, Date date) {
+        this.id = id;
+        this.articleBriefId = articleBriefId;
+        this.localContent = localContent;
+        this.comment = comment;
+        this.date = date;
+    }
+
 
     protected int getId() {
         return id;
@@ -75,4 +89,35 @@ public class LocalComment extends LitePalSupport {
     public void setDate(Date date) {
         this.date = date;
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(id);
+        dest.writeInt(articleBriefId);
+        dest.writeString(localContent);
+        dest.writeString(comment);
+        dest.writeValue(date);
+    }
+
+    public static final Creator<LocalComment> CREATOR = new Creator<LocalComment>() {
+        @Override
+        public LocalComment createFromParcel(Parcel source) {
+            int id = source.readInt();
+            int articleBriefId = source.readInt();
+            String localContent = source.readString();
+            String comment = source.readString();
+            Date date = (Date) source.readValue(Date.class.getClassLoader());
+            return new LocalComment(id,articleBriefId,localContent,comment,date);
+        }
+
+        @Override
+        public LocalComment[] newArray(int size) {
+            return new LocalComment[size];
+        }
+    };
 }

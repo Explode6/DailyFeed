@@ -1,9 +1,11 @@
 package com.example.rssreader.rssSource;
 
 import android.content.Context;
+import android.os.RemoteException;
 import android.view.View;
 
 import com.example.rssreader.RssSource;
+import com.example.rssreader.model.datamodel.Channel;
 import com.example.rssreader.util.BasePresenter;
 import com.example.rssreader.util.BaseView;
 import com.google.android.material.navigation.NavigationView;
@@ -16,8 +18,8 @@ import java.util.List;
  */
 public interface RssSourceContract {
     interface RssSourceView extends BaseView<RssSourcePresenter>{
-
-        public void loadRecyclerView(List<RssSource>list);
+        //刷新recyclerView（会改变adapter中list的引用）
+        public void loadAndRefreshRecyclerView(List<RssSource>list);
         //刷新recyclerView
         public void refreshView();
         //设置底部弹窗
@@ -44,11 +46,17 @@ public interface RssSourceContract {
         public void setAddRssSrcDialog();
         //显示添加RSS源的弹窗
         public void showAddRssSrcDialog();
+        //设置添加RSS源弹窗的点击事件
+        public void setAddRssSrcListener();
+        //关闭添加RSS源的弹窗并清空输入框的内容
+        public void closeAndClearAddDialog();
+        //通过toast给出提示
+        public void giveHint(String hint);
     }
 
     interface RssSourcePresenter extends BasePresenter {
         //获取所有RSS源
-        public List<RssSource>getRssSrcList();
+        public List<RssSource>getRssSrcList() throws RemoteException;
         //删除选中的RSS源
         public void delSelectedItems();
         //设置为列表布局
@@ -59,6 +67,12 @@ public interface RssSourceContract {
         public void cancelSelected();
         //选中所有的RSS源
         public void selectAllRss();
+        //添加RSS源
+        public void addRssSrc(String rssLink);
+        //channel列表转为rssSource列表
+        public List<RssSource> channelToRssSrc(List<Channel>list);
+        //channel转为rssSource
+        public RssSource channelToRssSrc(Channel channel);
     }
 }
 

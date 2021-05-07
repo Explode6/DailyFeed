@@ -1,21 +1,47 @@
 package com.example.rssreader;
 
 public class RssSource {
+    private String title;
     private String intro;
-    private int imgId;
+    private String image;
     private boolean selected;
 
-    public RssSource(String intro, int imgId){
+    public RssSource(String title, String intro, String image, boolean selected) {
+        this.title = title;
         this.intro = intro;
-        this.imgId = imgId;
-        selected = false;
+        this.image = image;
+        this.selected = selected;
     }
-    public String getIntro(){
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getIntro() {
         return intro;
     }
-    public int getImgId(){
-        return imgId;
+
+    public void setIntro(String intro) {
+        this.intro = intro;
     }
-    public boolean getSelected() {return selected;}
-    public void setSelected(boolean selected){this.selected = selected;}
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
+    }
+
+    public boolean getSelected() {
+        return selected;
+    }
+
+    public void setSelected(boolean selected) {
+        this.selected = selected;
+    }
 }

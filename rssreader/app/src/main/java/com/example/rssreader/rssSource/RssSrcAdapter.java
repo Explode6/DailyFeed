@@ -11,6 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.example.rssreader.R;
 import com.example.rssreader.RssSource;
 
@@ -53,6 +54,7 @@ public class RssSrcAdapter extends RecyclerView.Adapter<RssSrcAdapter.ViewHolder
         ImageView rssCheckbox;
         ImageView rssSrcImg;
         TextView rssSrcIntro;
+        TextView rssSrcTitle;
         CardView cardView;      //子项的最外层布局（卡片布局）
         public ViewHolder(View view){
             super(view);
@@ -86,7 +88,7 @@ public class RssSrcAdapter extends RecyclerView.Adapter<RssSrcAdapter.ViewHolder
         holder.cardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //只有进入编辑模式后点击事件才有效
+                //编辑模式和非编辑模式下点击事件不同
                 if(canEdit == true){
                     if(rssOnClickListener != null){
                         int pos = holder.getAdapterPosition();
@@ -114,7 +116,9 @@ public class RssSrcAdapter extends RecyclerView.Adapter<RssSrcAdapter.ViewHolder
             holder.rssCheckbox.setImageResource(R.drawable.checkbox_checked);
         else
             holder.rssCheckbox.setImageResource(R.drawable.checkbox_unchecked);
-        holder.rssSrcImg.setImageResource(rssSource.getImgId());
+        //绑定数据
+        Glide.with(context).load(rssSource.getImage()).into(holder.rssSrcImg);
+        holder.rssSrcTitle.setText(rssSource.getTitle());
         holder.rssSrcIntro.setText(rssSource.getIntro());
         //如果有子项被长按就显示复选框
         if(canEdit == true)

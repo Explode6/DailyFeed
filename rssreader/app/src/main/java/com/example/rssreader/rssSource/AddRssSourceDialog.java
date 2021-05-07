@@ -41,4 +41,8 @@ public class AddRssSourceDialog extends Dialog {
     public String getInputRss(){
         return this.inputRssSource.getText().toString();
     }
+    //清空RSS链接内容
+    public void clearInput(){
+        this.inputRssSource.setText("");
+    }
 }

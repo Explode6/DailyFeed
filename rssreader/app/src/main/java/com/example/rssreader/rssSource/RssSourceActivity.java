@@ -47,7 +47,7 @@ public class RssSourceActivity extends AppCompatActivity {
 
     private DrawerLayout mDrawerLayout; //侧滑菜单
     private NavigationView navView; //侧滑菜单的导航栏
-    RssSourceFragment rssSourceFragment;
+    private RssSourceFragment rssSourceFragment;
     private RssSourcePresenterImpl rssSourcePresenter;
 
 
@@ -74,9 +74,6 @@ public class RssSourceActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_rss_source);
-        //获取数据库
-        LitePal.initialize(this);
-        LitePal.getDatabase();
         Toolbar toolbar = (Toolbar)findViewById(R.id.main_toolbar);
         //为toolbar引入actionbar的功能
         setSupportActionBar(toolbar);
@@ -95,6 +92,13 @@ public class RssSourceActivity extends AppCompatActivity {
         //获取侧滑菜单的导航栏
         navView = (NavigationView)findViewById(R.id.nav_view);
 
+        //连接数据库
+        LitePal.initialize(this);
+        LitePal.getDatabase();
+        //绑定后台服务
+        Intent intent = new Intent(this, DataService.class);
+        bindService(intent,conn, Context.BIND_AUTO_CREATE);
+
        //新建Fragment
         rssSourceFragment = (RssSourceFragment)getSupportFragmentManager().findFragmentById(R.id.contentFrame);
         if(rssSourceFragment == null){
@@ -102,22 +106,13 @@ public class RssSourceActivity extends AppCompatActivity {
             ActivityUtil.addFragmentToActivity(getSupportFragmentManager(),rssSourceFragment, R.id.contentFrame);
         }
        //初始化presenter
-        rssSourcePresenter = new RssSourcePresenterImpl(rssSourceFragment, new RssSourceModel());
+        rssSourcePresenter = new RssSourcePresenterImpl(rssSourceFragment, myAidlInterface);
         //设置侧滑菜单导航栏按钮点击事件
         if(navView != null){
             rssSourceFragment.setNavClickListener(navView);
         }
 
 
-        /*
-         * 以下四行代码是创建model有关
-         * 从澍豪的代码拔过来的
-         */
-        LitePal.initialize(this);
-        LitePal.getDatabase();
-
-        Intent intent = new Intent(this, DataService.class);
-        bindService(intent,conn, Context.BIND_AUTO_CREATE);
     }
 
     @Override

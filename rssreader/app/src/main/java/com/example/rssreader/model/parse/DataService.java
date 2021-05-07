@@ -20,7 +20,7 @@ public class DataService extends Service {
 
 
     /**
-     * 获取频道的列表
+     * 获取所有添加的频道
      *
      * @param offset 查询偏移量
      * @param limit 查询返回的最大数目

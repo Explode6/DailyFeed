@@ -2,12 +2,14 @@ package com.example.rssreader.rssSource;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.RemoteException;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -123,7 +125,11 @@ public class RssSourceFragment extends Fragment implements RssSourceContract.Rss
     public void onResume() {
         super.onResume();
         //加载recyclerview中的数据
-        rssSourcePresenter.start();
+        try {
+            rssSourcePresenter.start();
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
     }
 
 
@@ -210,7 +216,7 @@ public class RssSourceFragment extends Fragment implements RssSourceContract.Rss
     }
 
     @Override
-    public void loadRecyclerView(List<RssSource>list) {
+    public void loadAndRefreshRecyclerView(List<RssSource>list) {
         this.rssSrcAdapter.setRssSourceList(list);
         refreshView();
     }
@@ -300,4 +306,34 @@ public class RssSourceFragment extends Fragment implements RssSourceContract.Rss
     public void showAddRssSrcDialog() {
         addRssSourceDialog.show();
     }
+
+    @Override
+    public void closeAndClearAddDialog() {
+        addRssSourceDialog.dismiss();
+        addRssSourceDialog.clearInput();
+    }
+
+    @Override
+    public void setAddRssSrcListener() {
+        addRssSourceDialog.setListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                switch (view.getId()){
+                    //点击右上角关闭按钮
+                    case R.id.close_add_rss_dialog_btn:
+                        //关闭弹窗并清空输入内容
+                        closeAndClearAddDialog();
+                    //点击添加按钮
+                    case R.id.add_rss_btn:
+                        rssSourcePresenter.addRssSrc(addRssSourceDialog.getInputRss());
+                }
+            }
+        });
+    }
+
+    @Override
+    public void giveHint(String hint) {
+        Toast.makeText(getContext(), hint, Toast.LENGTH_SHORT).show();
+    }
 }
+

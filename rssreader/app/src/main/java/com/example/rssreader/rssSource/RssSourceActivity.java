@@ -3,7 +3,6 @@ package com.example.rssreader.rssSource;
 
 import android.content.ComponentName;
 import android.content.Context;
-import android.content.Intent;
 import android.content.ServiceConnection;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -27,10 +26,8 @@ import com.example.rssreader.IMyAidlInterface;
 import com.example.rssreader.R;
 import com.example.rssreader.model.datamodel.ArticleBrief;
 import com.example.rssreader.model.datamodel.Channel;
-import com.example.rssreader.model.datamodel.Collection;
 import com.example.rssreader.model.datamodel.DataBaseHelper;
-import com.example.rssreader.model.parse.DataCallback;
-import com.example.rssreader.model.parse.DataService;
+import com.example.rssreader.model.parse.AidlBinder;
 import com.example.rssreader.util.ActivityUtil;
 import com.google.android.material.navigation.NavigationView;
 
@@ -56,19 +53,6 @@ public class RssSourceActivity extends AppCompatActivity {
      * 以下代码是和model有关，从澍豪代码迁移过来
      */
     public IMyAidlInterface myAidlInterface;
-    /**
-     * 完善ServiceConnection接口
-     */
-    ServiceConnection conn = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName name, final IBinder service) {
-            myAidlInterface = IMyAidlInterface.Stub.asInterface(service);
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName name) { }
-    };
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,9 +79,6 @@ public class RssSourceActivity extends AppCompatActivity {
         //连接数据库
         LitePal.initialize(this);
         LitePal.getDatabase();
-        //绑定后台服务
-        Intent intent = new Intent(this, DataService.class);
-        bindService(intent,conn, Context.BIND_AUTO_CREATE);
 
        //新建Fragment
         rssSourceFragment = (RssSourceFragment)getSupportFragmentManager().findFragmentById(R.id.contentFrame);
@@ -113,6 +94,14 @@ public class RssSourceActivity extends AppCompatActivity {
         }
 
 
+
+        /*
+         * 以下四行代码是创建model有关
+         * 从澍豪的代码拔过来的
+         */
+        //Intent intent = new Intent(this, DataService.class);
+        //bindService(intent,conn, Context.BIND_AUTO_CREATE);
+        AidlBinder.setInstance(getApplicationContext());
     }
 
     @Override
@@ -129,6 +118,7 @@ public class RssSourceActivity extends AppCompatActivity {
                 break;
             case R.id.addButton:
                 rssSourceFragment.showAddRssSrcDialog();
+                startDataService();
                 break;
             default:
                 break;
@@ -146,11 +136,6 @@ public class RssSourceActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        // 释放服务
-        if(conn != null){
-            unbindService(conn);
-            conn = null;
-        }
     }
 
     /**
@@ -164,27 +149,28 @@ public class RssSourceActivity extends AppCompatActivity {
      */
     public void startDataService(){
         try {
+            myAidlInterface =  AidlBinder.getInstance();
             /*
              * 世伟看这里
              * 这是第一步，添加rss源之后先调用这个函数解析这个url，然后写进数据库
              * 这时候还没有刷新recyclerView，所以你需要重新用下面部分的函数刷新recyclerView
              */
-            myAidlInterface.downloadParseXml("https://tobiasahlin.com/feed.xml", new DataCallback.Stub() {
-                @Override
-                public void onSuccess() throws RemoteException {
-
-                }
-
-                @Override
-                public void onFailure() throws RemoteException {
-
-                }
-
-                @Override
-                public void onError() throws RemoteException {
-
-                }
-            });
+//            myAidlInterface.aidlInterface.downloadParseXml("https://tobiasahlin.com/feed.xml", new DataCallback.Stub() {
+//                @Override
+//                public void onSuccess() throws RemoteException {
+//
+//                }
+//
+//                @Override
+//                public void onFailure() throws RemoteException {
+//
+//                }
+//
+//                @Override
+//                public void onError() throws RemoteException {
+//
+//                }
+//            });
             //myAidlInterface.downloadParseXml("https://journeybunnies.com/feed/");
 
             /*
@@ -198,10 +184,6 @@ public class RssSourceActivity extends AppCompatActivity {
             }
             List<ArticleBrief> articleBriefs = myAidlInterface.getArticleBriefsFromChannel(channels.get(0),0,10);
             //myAidlInterface.collectArticle(articleBriefs.get(2));
-            List<Collection> collections =  myAidlInterface.getCollection(0,10);
-            for(Collection collection:collections){
-                Log.d(TAG,collection.getTitle());
-            }
         } catch (RemoteException e) {
             e.printStackTrace();
         }

@@ -1,11 +1,19 @@
 package com.example.rssreader.model.parse;
 
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
+import android.os.IBinder;
 import android.os.RemoteException;
 
 import com.example.rssreader.IMyAidlInterface;
+import com.example.rssreader.model.datamodel.AidlDate;
 import com.example.rssreader.model.datamodel.ArticleBrief;
 import com.example.rssreader.model.datamodel.Channel;
-import com.example.rssreader.model.datamodel.Collection;
+import com.example.rssreader.model.datamodel.DataBaseHelper;
+import com.example.rssreader.model.datamodel.GlobalComment;
+import com.example.rssreader.model.datamodel.LocalComment;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -16,8 +24,35 @@ import java.util.List;
  * @Date： 2021/4/29
  * @Description： 获得AidlBinder类后，可以调用类中的方法控制DataService。
  */
-class AidlBinder extends IMyAidlInterface.Stub {
+public class AidlBinder extends IMyAidlInterface.Stub {
     private DataService dataService;
+
+    public static IMyAidlInterface aidlBinder =null;
+
+    static ServiceConnection conn = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            aidlBinder =  IMyAidlInterface.Stub.asInterface(service);
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+
+        }
+    };
+
+    public static void setInstance(Context context){
+        if(aidlBinder==null){
+            Intent intent = new Intent(context.getApplicationContext(),DataService.class);
+            context.bindService(intent,conn,Context.BIND_AUTO_CREATE);
+        }
+    }
+
+    public static IMyAidlInterface getInstance(){
+        return aidlBinder;
+    }
+
+
 
     public AidlBinder(DataService service){
         this.dataService = service;
@@ -60,6 +95,45 @@ class AidlBinder extends IMyAidlInterface.Stub {
         } catch (SQLException throwables) {
             dataCallback.onFailure();
             throwables.printStackTrace();
+        }
+    }
+
+    /**
+     * 添加文章的全局评论到数据库中
+     * @param articleBrief
+     * @param comment
+     * @param aidlDate
+     * @param dataCallback
+     * @throws RemoteException
+     */
+    @Override
+    public void addGlobalCommentToArticle(ArticleBrief articleBrief, String comment, AidlDate aidlDate,DataCallback dataCallback) throws RemoteException {
+        try{
+            dataService.addGlobalCommentToArticle(articleBrief,comment,aidlDate);
+            dataCallback.onSuccess();
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+            dataCallback.onFailure();
+        }
+    }
+
+    /**
+     * 添加对文章的部分内容的局部评论到数据库中
+     * @param articleBrief
+     * @param localContent
+     * @param comment
+     * @param aidlDate
+     * @param dataCallback
+     * @throws RemoteException
+     */
+    @Override
+    public void addLocalCommentToArticle(ArticleBrief articleBrief, String localContent, String comment, AidlDate aidlDate,DataCallback dataCallback) throws RemoteException {
+        try {
+            dataService.addLocalCommentToArticle(articleBrief,localContent,comment,aidlDate);
+            dataCallback.onSuccess();
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+            dataCallback.onFailure();
         }
     }
 
@@ -159,8 +233,16 @@ class AidlBinder extends IMyAidlInterface.Stub {
      * @throws RemoteException
      */
     @Override
-    public Channel getChannelOfArticle(ArticleBrief articleBrief) throws RemoteException {
-        return dataService.getChannelOfArticle(articleBrief);
+    public Channel getChannelOfArticle(ArticleBrief articleBrief,DataCallback dataCallback) throws RemoteException {
+        try {
+            Channel res = dataService.getChannelOfArticle(articleBrief);
+            dataCallback.onSuccess();
+            return res;
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+            dataCallback.onFailure();
+            return null;
+        }
     }
 
     /**
@@ -171,7 +253,7 @@ class AidlBinder extends IMyAidlInterface.Stub {
      * @throws RemoteException
      */
     @Override
-    public List<Collection> getCollection(int offset, int limit) throws RemoteException {
+    public List<ArticleBrief> getCollection(int offset, int limit) throws RemoteException {
         return dataService.getCollection(offset,limit);
     }
 
@@ -182,26 +264,89 @@ class AidlBinder extends IMyAidlInterface.Stub {
      * @throws RemoteException
      */
     @Override
-    public boolean isCollect(ArticleBrief articleBrief) throws RemoteException {
-        return dataService.isCollect(articleBrief);
+    public boolean isCollect(ArticleBrief articleBrief,DataCallback dataCallback) throws RemoteException {
+        try {
+            boolean res = dataService.isCollect(articleBrief);
+            dataCallback.onSuccess();
+            return res;
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+            dataCallback.onFailure();
+            return false;
+        }
     }
 
     /**
+     * 根据模糊的文章标题查询收藏
+     *
+     * @param vagueTitle 部分标题
+     * @return the List<ArticleBrief>
+     */
+    @Override
+    public List<ArticleBrief> searchCollection(String vagueTitle) throws RemoteException {
+        return dataService.searchCollection(vagueTitle);
+    }
+
+    /**
+     * 返回对应文章的所有局部评论
+     *
+     * @param articleBrief 对应的文章简介
+     * @param dataCallback 回调
+     * @return the List<LocalComment>
+     * @throws RemoteException
+     */
+    @Override
+    public List<GlobalComment> getGlobalCommentsOfArticle(ArticleBrief articleBrief,DataCallback dataCallback) throws RemoteException {
+        try {
+            List<GlobalComment> globalComments =  dataService.getGlobalCommentsOfArticle(articleBrief);
+            dataCallback.onSuccess();
+            return globalComments;
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+            dataCallback.onFailure();
+            return null;
+        }
+    }
+
+    /**
+     * 返回对应文章的所有局部评论
+     *
+     * @param articleBrief 对应的文章简介
+     * @return the List<LocalComment>
+     * @throws RemoteException 对应的文章简介不存在
+     */
+    @Override
+    public List<LocalComment> getLocalCommentsOfArticle(ArticleBrief articleBrief,DataCallback dataCallback) throws RemoteException {
+        try {
+            List<LocalComment> comments = dataService.getLocalCommentsOfArticle(articleBrief);
+            dataCallback.onSuccess();
+            return comments;
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+            dataCallback.onFailure();
+            return null;
+        }
+
+    }
+
+
+    /**
      * 取消收藏
-     * @param collection
+     * @param articleBrief
      * @param dataCallback
      * @throws RemoteException
      */
     @Override
-    public void removeCollection(Collection collection,DataCallback dataCallback) throws RemoteException {
+    public void removeCollection(ArticleBrief articleBrief,DataCallback dataCallback) throws RemoteException {
         try {
-            dataService.removeCollection(collection);
+            dataService.removeCollection(articleBrief);
             dataCallback.onSuccess();
         } catch (SQLException throwables) {
             throwables.printStackTrace();
             dataCallback.onFailure();
         }
     }
+
 
     /**
      * 取消订阅某频道
@@ -214,6 +359,40 @@ class AidlBinder extends IMyAidlInterface.Stub {
     }
 
     /**
+     * 删除某个全局评论
+     * @param globalComment
+     * @param dataCallback
+     * @throws RemoteException
+     */
+    @Override
+    public void deleteGlobalComment(GlobalComment globalComment,DataCallback dataCallback) throws RemoteException {
+        try {
+            dataService.deleteGlobalComment(globalComment);
+            dataCallback.onSuccess();
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+            dataCallback.onFailure();
+        }
+    }
+
+    /**
+     * 删除某个局部评论
+     * @param localComment
+     * @param dataCallback
+     * @throws RemoteException
+     */
+    @Override
+    public void deleteLocalComment(LocalComment localComment,DataCallback dataCallback) throws RemoteException {
+        try {
+            dataService.deleteLocalComment(localComment);
+            dataCallback.onSuccess();
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+            dataCallback.onFailure();
+        }
+    }
+
+    /**
      * 清除缓存的文章
      * @throws RemoteException
      */
@@ -221,6 +400,5 @@ class AidlBinder extends IMyAidlInterface.Stub {
     public void clearStorage() throws RemoteException {
         dataService.clearStorage();
     }
-
 
 }

@@ -28,6 +28,7 @@ import com.example.rssreader.R;
 import com.example.rssreader.model.datamodel.ArticleBrief;
 import com.example.rssreader.model.datamodel.Channel;
 import com.example.rssreader.model.datamodel.DataBaseHelper;
+import com.example.rssreader.model.parse.BindServiceHelper;
 import com.example.rssreader.model.parse.DataCallback;
 import com.example.rssreader.model.parse.DataService;
 import com.example.rssreader.util.ActivityUtil;
@@ -62,6 +63,7 @@ public class RssSourceActivity extends AppCompatActivity {
         @Override
         public void onServiceConnected(ComponentName name, final IBinder service) {
             myAidlInterface = IMyAidlInterface.Stub.asInterface(service);
+            BindServiceHelper.aidlInterface = myAidlInterface;
         }
 
         @Override
@@ -112,11 +114,9 @@ public class RssSourceActivity extends AppCompatActivity {
          * 以下四行代码是创建model有关
          * 从澍豪的代码拔过来的
          */
-        LitePal.initialize(this);
-        LitePal.getDatabase();
-
-        Intent intent = new Intent(this, DataService.class);
-        bindService(intent,conn, Context.BIND_AUTO_CREATE);
+        //Intent intent = new Intent(this, DataService.class);
+        //bindService(intent,conn, Context.BIND_AUTO_CREATE);
+        BindServiceHelper.bindService(conn,getApplicationContext());
     }
 
     @Override
@@ -173,7 +173,7 @@ public class RssSourceActivity extends AppCompatActivity {
              * 这是第一步，添加rss源之后先调用这个函数解析这个url，然后写进数据库
              * 这时候还没有刷新recyclerView，所以你需要重新用下面部分的函数刷新recyclerView
              */
-            myAidlInterface.downloadParseXml("https://tobiasahlin.com/feed.xml", new DataCallback.Stub() {
+            BindServiceHelper.aidlInterface.downloadParseXml("https://tobiasahlin.com/feed.xml", new DataCallback.Stub() {
                 @Override
                 public void onSuccess() throws RemoteException {
 
@@ -196,16 +196,12 @@ public class RssSourceActivity extends AppCompatActivity {
              * 这是第二步
              * 这里的函数从数据库取数据然后再拿去刷新recyclerView
              */
-            List<Channel> channels =  myAidlInterface.getChannel(0,10);
+            List<Channel> channels =  BindServiceHelper.aidlInterface.getChannel(0,10);
             for(Channel channel : channels){
                 Log.d(TAG,channel.getTitle());
             }
-            List<ArticleBrief> articleBriefs = myAidlInterface.getArticleBriefsFromChannel(channels.get(0),0,10);
+            List<ArticleBrief> articleBriefs = BindServiceHelper.aidlInterface.getArticleBriefsFromChannel(channels.get(0),0,10);
             //myAidlInterface.collectArticle(articleBriefs.get(2));
-            List<ArticleBrief> collections =  myAidlInterface.getCollection(0,10);
-            for(ArticleBrief collection:collections){
-                Log.d(TAG,collection.getTitle());
-            }
         } catch (RemoteException e) {
             e.printStackTrace();
         }

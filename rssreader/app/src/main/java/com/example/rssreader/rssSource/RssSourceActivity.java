@@ -1,6 +1,5 @@
 package com.example.rssreader.rssSource;
 
-<<<<<<< HEAD
 
 import android.content.ComponentName;
 import android.content.Context;
@@ -15,8 +14,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
-=======
->>>>>>> HaoHaoGe
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
@@ -25,7 +22,6 @@ import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
-<<<<<<< HEAD
 
 import com.example.rssreader.IMyAidlInterface;
 import com.example.rssreader.R;
@@ -47,29 +43,11 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.List;
 
-=======
-import android.app.AlertDialog;
-import android.content.Context;
-import android.graphics.drawable.Drawable;
-import android.os.Build;
-import android.os.Bundle;
-import android.view.Gravity;
-import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-
-import com.example.rssreader.R;
-import com.example.rssreader.util.ActivityUtil;
-import com.google.android.material.navigation.NavigationView;
-
->>>>>>> HaoHaoGe
 public class RssSourceActivity extends AppCompatActivity {
 
     private DrawerLayout mDrawerLayout; //侧滑菜单
     private NavigationView navView; //侧滑菜单的导航栏
     private RssSourcePresenterImpl rssSourcePresenter;
-<<<<<<< HEAD
 
 
     String TAG = "RssSourceActivity";
@@ -91,9 +69,6 @@ public class RssSourceActivity extends AppCompatActivity {
     };
 
 
-=======
-    private RssSourceFragment rssSourceFragment;
->>>>>>> HaoHaoGe
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -109,11 +84,7 @@ public class RssSourceActivity extends AppCompatActivity {
         if(actionBar != null){
             actionBar.setDisplayHomeAsUpEnabled(true);
             //获取导航按钮图片
-<<<<<<< HEAD
             Drawable navBtnImg = ContextCompat.getDrawable(this, R.drawable.menu);
-=======
-            Drawable navBtnImg = ContextCompat.getDrawable(this,R.drawable.menu);
->>>>>>> HaoHaoGe
             //显示导航按钮图片
             actionBar.setHomeAsUpIndicator(navBtnImg);
         }
@@ -121,17 +92,10 @@ public class RssSourceActivity extends AppCompatActivity {
         navView = (NavigationView)findViewById(R.id.nav_view);
 
        //新建Fragment
-<<<<<<< HEAD
         RssSourceFragment rssSourceFragment = (RssSourceFragment)getSupportFragmentManager().findFragmentById(R.id.contentFrame);
         if(rssSourceFragment == null){
             rssSourceFragment = RssSourceFragment.newInstance();
             ActivityUtil.addFragmentToActivity(getSupportFragmentManager(),rssSourceFragment, R.id.contentFrame);
-=======
-        rssSourceFragment = (RssSourceFragment)getSupportFragmentManager().findFragmentById(R.id.contentFrame);
-        if(rssSourceFragment == null){
-            rssSourceFragment = RssSourceFragment.newInstance();
-            ActivityUtil.addFragmentToActivity(getSupportFragmentManager(),rssSourceFragment,R.id.contentFrame);
->>>>>>> HaoHaoGe
         }
        //初始化presenter
         rssSourcePresenter = new RssSourcePresenterImpl(rssSourceFragment, new RssSourceModel());
@@ -139,7 +103,6 @@ public class RssSourceActivity extends AppCompatActivity {
         if(navView != null){
             rssSourceFragment.setNavClickListener(navView);
         }
-<<<<<<< HEAD
 
 
         /*
@@ -151,8 +114,6 @@ public class RssSourceActivity extends AppCompatActivity {
 
         Intent intent = new Intent(this, DataService.class);
         bindService(intent,conn, Context.BIND_AUTO_CREATE);
-=======
->>>>>>> HaoHaoGe
     }
 
     @Override
@@ -168,11 +129,7 @@ public class RssSourceActivity extends AppCompatActivity {
                 mDrawerLayout.openDrawer(GravityCompat.START);
                 break;
             case R.id.addButton:
-<<<<<<< HEAD
                 startDataService();
-=======
-                rssSourceFragment.showAddRssSrcDialog();
->>>>>>> HaoHaoGe
                 break;
             default:
                 break;
@@ -183,7 +140,6 @@ public class RssSourceActivity extends AppCompatActivity {
     public void closeNavView(){
         mDrawerLayout.closeDrawer(GravityCompat.START);
     }
-<<<<<<< HEAD
 
 
 
@@ -298,8 +254,3 @@ public class RssSourceActivity extends AppCompatActivity {
         os.close();
     }
 }
-=======
-}
-
-
->>>>>>> HaoHaoGe

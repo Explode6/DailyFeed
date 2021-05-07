@@ -2,22 +2,9 @@ package com.example.rssreader.rssSource;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;
-<<<<<<< HEAD
 
 import com.example.rssreader.R;
 import com.example.rssreader.RssSource;
-=======
-import android.content.Context;
-import android.content.Intent;
-import android.os.SystemClock;
-import android.util.Log;
-
-import androidx.core.content.ContextCompat;
-
-import com.example.rssreader.R;
-import com.example.rssreader.RssSource;
-import com.example.rssreader.util.BasePresenter;
->>>>>>> HaoHaoGe
 
 import java.util.Iterator;
 import java.util.List;
@@ -34,15 +21,9 @@ public class RssSourcePresenterImpl implements RssSourceContract.RssSourcePresen
     private  boolean listChosen = false;
     private boolean gridChosen = true;
     private boolean canEdit = false;        //是否进入编辑模式
-<<<<<<< HEAD
     private List<RssSource> rssSourceList;   //暂存所有RSS源
 
     private AlarmManager manager;      //时钟管理器
-=======
-    private List<RssSource>rssSourceList;   //暂存所有RSS源
-
-    private  AlarmManager manager;      //时钟管理器
->>>>>>> HaoHaoGe
     private PendingIntent pendingIntent;
 
     public RssSourcePresenterImpl(RssSourceContract.RssSourceView view, RssSourceModel model){
@@ -68,11 +49,7 @@ public class RssSourcePresenterImpl implements RssSourceContract.RssSourcePresen
     }
 
     public void delSelectedItems() {
-<<<<<<< HEAD
         Iterator<RssSource> iterator = rssSourceList.iterator();
-=======
-        Iterator<RssSource>iterator = rssSourceList.iterator();
->>>>>>> HaoHaoGe
         //遍历迭代器，从列表中删除被选中的子项
         while(iterator.hasNext()){
             RssSource rssSource = iterator.next();

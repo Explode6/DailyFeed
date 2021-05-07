@@ -14,7 +14,6 @@
             <option value="$PROJECT_DIR$/app" />
           </set>
         </option>
-        <option name="gradleJvm" value="JDK" />
         <option name="resolveModulePerSourceSet" value="false" />
         <option name="useQualifiedModuleNames" value="true" />
       </GradleProjectSettings>

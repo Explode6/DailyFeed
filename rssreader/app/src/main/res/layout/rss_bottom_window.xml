@@ -3,7 +3,7 @@
     android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="#ffffff"
+    android:background="@color/dayWhiteNightBlack"
     >
     <Button
         android:id="@+id/select_all_btn"
@@ -32,7 +32,7 @@
         android:layout_height="wrap_content"
         android:layout_margin="5dp"
         android:padding="1dp"
-        android:drawableTop="@drawable/main_bottom_back"
+        android:drawableTop="@drawable/rss_bottom_back"
         android:text="取消"
         android:textColor="@color/btnTextColor"
         android:background="@drawable/main_bottomwin_btn"

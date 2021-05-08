@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -13,6 +14,7 @@ import androidx.appcompat.widget.Toolbar;
 import com.example.rssreader.Data.ShuhaoJiekou;
 import com.example.rssreader.IMyAidlInterface;
 import com.example.rssreader.R;
+import com.example.rssreader.model.datamodel.Channel;
 import com.example.rssreader.model.parse.DataService;
 import com.example.rssreader.util.ActivityUtil;
 
@@ -54,6 +56,9 @@ public class ArticleListActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.article_list_act);
+//        世伟测试用，可删除
+//        Channel channel = (Channel)getIntent().getParcelableExtra("channel");
+//        Toast.makeText(this,channel.getTitle(),Toast.LENGTH_SHORT).show();
 
         Toolbar toolbar = (Toolbar)findViewById(R.id.main_toolbar);
         //为toolbar引入actionbar的功能

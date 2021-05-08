@@ -3,6 +3,7 @@ package com.example.rssreader.articlelist;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.RemoteException;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -52,7 +53,11 @@ public class ArticleListFragment extends Fragment implements ArticleListContract
     @Override
     public void onResume() {
         super.onResume();
-        mPresent.start();
+        try {
+            mPresent.start();
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
     }
 
     @Nullable

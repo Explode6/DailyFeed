@@ -70,7 +70,8 @@ public class DataBaseHelper {
                 articleBrief.setChannel_id(channels.get(0).getId());
                 articleBrief.setContent_id(articleContent.getId());
             }
-            articleBrief.setPubTime(System.currentTimeMillis());
+            //以24小时为间隔
+            articleBrief.setPubTime((int)System.currentTimeMillis()/(60*60*24));
             articleBrief.save();
         }
     }
@@ -200,9 +201,9 @@ public class DataBaseHelper {
      * @return the list<ArticleBrief>
      */
     public static List<ArticleBrief> getArticleBriefsFromChannel(Channel resChannel, int offset, int limit){
-        //按id降序，最后更新时间降序返回对应channel的ArticleBrief列表
+        //更新日期降序，最后按id升序返回对应channel的ArticleBrief列表
         return LitePal.where("channel_id = ?", Integer.toString(resChannel.getId()))
-                .order("id desc, pubTime asc")
+                .order("pubTime desc, id")
                 .offset(offset)
                 .limit(limit)
                 .find(ArticleBrief.class);
@@ -323,15 +324,8 @@ public class DataBaseHelper {
             LitePal.delete(ArticleBrief.class, articleBrief1.getId());
         }else {
             //取消收藏
-
-            Log.d("removeColleciton", articleBrief1.getCollect().toString());
-            articleBrief1.setCollect(false);
-            Log.d("removeColleciton", articleBrief1.getCollect().toString());
-            Log.d("removeColleciton",Integer.toString(articleBrief.getId()));
-            Log.d("removeColleciton","1: "+Integer.toString(articleBrief1.getId()));
+            articleBrief1.setToDefault("isCollect");
             articleBrief1.update(articleBrief.getId());
-            ArticleBrief articleBrief2 = LitePal.find(ArticleBrief.class, articleBrief.getId());
-            Log.d("removeColleciton", "2: "+articleBrief2.getCollect().toString());
         }
     }
 

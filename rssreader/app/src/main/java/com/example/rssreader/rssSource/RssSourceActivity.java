@@ -28,6 +28,7 @@ import com.example.rssreader.model.datamodel.ArticleBrief;
 import com.example.rssreader.model.datamodel.Channel;
 import com.example.rssreader.model.datamodel.DataBaseHelper;
 import com.example.rssreader.model.parse.AidlBinder;
+import com.example.rssreader.model.parse.DataCallback;
 import com.example.rssreader.util.ActivityUtil;
 import com.google.android.material.navigation.NavigationView;
 
@@ -127,7 +128,7 @@ public class RssSourceActivity extends AppCompatActivity {
                 break;
             case R.id.addButton:
                 rssSourceFragment.showAddRssSrcDialog();
-                //startDataService();
+                startDataService();
                 break;
             default:
                 break;
@@ -192,6 +193,49 @@ public class RssSourceActivity extends AppCompatActivity {
                 Log.d(TAG,channel.getTitle());
             }
             List<ArticleBrief> articleBriefs = myAidlInterface.getArticleBriefsFromChannel(channels.get(0),0,10);
+
+            myAidlInterface.collectArticle(articleBriefs.get(0), new DataCallback.Stub() {
+                @Override
+                public void onSuccess() throws RemoteException {
+                    Log.d(TAG,"collect Success");
+                }
+
+                @Override
+                public void onFailure() throws RemoteException {
+                    Log.d(TAG,"collect Failure");
+                }
+
+                @Override
+                public void onError() throws RemoteException {
+
+                }
+            });
+            List<ArticleBrief> collections = myAidlInterface.getCollection(0,10);
+            for(ArticleBrief collection : collections){
+                Log.d(TAG,collection.getTitle());
+            }
+            Log.d(TAG,articleBriefs.get(0).getTitle());
+            myAidlInterface.removeCollection(articleBriefs.get(0), new DataCallback.Stub() {
+                @Override
+                public void onSuccess() throws RemoteException {
+                    Log.d(TAG,"remove Success");
+                }
+
+                @Override
+                public void onFailure() throws RemoteException {
+                    Log.d(TAG,"remove Failure");
+                }
+
+                @Override
+                public void onError() throws RemoteException {
+
+                }
+            });
+            collections = myAidlInterface.getCollection(0,10);
+            for(ArticleBrief collection : collections){
+                Log.d(TAG,collection.getTitle());
+            }
+
             //myAidlInterface.collectArticle(articleBriefs.get(2));
         } catch (RemoteException e) {
             e.printStackTrace();

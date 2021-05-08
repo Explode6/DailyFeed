@@ -1,5 +1,7 @@
 package com.example.rssreader.model.datamodel;
 
+import android.util.Log;
+
 import com.example.rssreader.model.datamodel.ArticleBrief;
 import com.example.rssreader.model.datamodel.ArticleContent;
 import com.example.rssreader.model.datamodel.Channel;
@@ -244,7 +246,7 @@ public class DataBaseHelper {
     public static List<ArticleBrief> getCollection(int offset, int limit){
         return LitePal.offset(offset)
                 .limit(limit)
-                .where("isCollect = true")
+                .where("isCollect = 1")
                 .find(ArticleBrief.class);
     }
 
@@ -268,7 +270,7 @@ public class DataBaseHelper {
      * @return the List<ArticleBrief>
      */
     public static List<ArticleBrief> searchCollection(String vagueTitle){
-        return LitePal.where("title like ? and isCollect = true", "%"+vagueTitle+"%")
+        return LitePal.where("title like ? and isCollect = 1", "%"+vagueTitle+"%")
                 .find(ArticleBrief.class);
     }
 
@@ -321,8 +323,15 @@ public class DataBaseHelper {
             LitePal.delete(ArticleBrief.class, articleBrief1.getId());
         }else {
             //取消收藏
+
+            Log.d("removeColleciton", articleBrief1.getCollect().toString());
             articleBrief1.setCollect(false);
+            Log.d("removeColleciton", articleBrief1.getCollect().toString());
+            Log.d("removeColleciton",Integer.toString(articleBrief.getId()));
+            Log.d("removeColleciton","1: "+Integer.toString(articleBrief1.getId()));
             articleBrief1.update(articleBrief.getId());
+            ArticleBrief articleBrief2 = LitePal.find(ArticleBrief.class, articleBrief.getId());
+            Log.d("removeColleciton", "2: "+articleBrief2.getCollect().toString());
         }
     }
 
@@ -335,12 +344,12 @@ public class DataBaseHelper {
         try {
             //找到对应频道的所有未被收藏的文章简介
             List<ArticleBrief> articleBriefs = LitePal.select("id","content_id")
-                    .where("channel_id = ? and isCollect = false", Integer.toString(channel.getId()))
+                    .where("channel_id = ? and isCollect = 0", Integer.toString(channel.getId()))
                     .find(ArticleBrief.class);
             //初始化对应频道被收藏文章的channelId，保持数据库一致性
             ArticleBrief articleBrief1 = new ArticleBrief();
             articleBrief1.setChannel_id(-1);
-            articleBrief1.updateAll("channel_id = ? and isCollect = true", Integer.toString(channel.getId()));
+            articleBrief1.updateAll("channel_id = ? and isCollect = 1", Integer.toString(channel.getId()));
             //清除未被收藏的文章
             for(ArticleBrief articleBrief: articleBriefs){
                 //删除对应文章内容
@@ -392,7 +401,7 @@ public class DataBaseHelper {
     public static void clearStorage(){
         try {
             //清除所有未收藏的文章及其对应的评论
-            List<ArticleBrief> articleBriefs = LitePal.where("isCollect = false").find(ArticleBrief.class);
+            List<ArticleBrief> articleBriefs = LitePal.where("isCollect = 0").find(ArticleBrief.class);
             for (ArticleBrief articleBrief:articleBriefs){
                 //清除内容
                 LitePal.delete(ArticleContent.class,articleBrief.getContent_id());

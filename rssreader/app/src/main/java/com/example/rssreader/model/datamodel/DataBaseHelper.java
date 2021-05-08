@@ -1,5 +1,7 @@
 package com.example.rssreader.model.datamodel;
 
+import android.util.Log;
+
 import com.example.rssreader.model.datamodel.ArticleBrief;
 import com.example.rssreader.model.datamodel.ArticleContent;
 import com.example.rssreader.model.datamodel.Channel;
@@ -68,7 +70,8 @@ public class DataBaseHelper {
                 articleBrief.setChannel_id(channels.get(0).getId());
                 articleBrief.setContent_id(articleContent.getId());
             }
-            articleBrief.setPubTime(System.currentTimeMillis());
+            //以24小时为间隔
+            articleBrief.setPubTime((int)System.currentTimeMillis()/(60*60*24));
             articleBrief.save();
         }
     }
@@ -198,9 +201,9 @@ public class DataBaseHelper {
      * @return the list<ArticleBrief>
      */
     public static List<ArticleBrief> getArticleBriefsFromChannel(Channel resChannel, int offset, int limit){
-        //按id降序，最后更新时间降序返回对应channel的ArticleBrief列表
+        //更新日期降序，最后按id升序返回对应channel的ArticleBrief列表
         return LitePal.where("channel_id = ?", Integer.toString(resChannel.getId()))
-                .order("id desc, pubTime asc")
+                .order("pubTime desc, id")
                 .offset(offset)
                 .limit(limit)
                 .find(ArticleBrief.class);
@@ -244,7 +247,7 @@ public class DataBaseHelper {
     public static List<ArticleBrief> getCollection(int offset, int limit){
         return LitePal.offset(offset)
                 .limit(limit)
-                .where("isCollect = true")
+                .where("isCollect = 1")
                 .find(ArticleBrief.class);
     }
 
@@ -268,7 +271,7 @@ public class DataBaseHelper {
      * @return the List<ArticleBrief>
      */
     public static List<ArticleBrief> searchCollection(String vagueTitle){
-        return LitePal.where("title like ? and isCollect = true", "%"+vagueTitle+"%")
+        return LitePal.where("title like ? and isCollect = 1", "%"+vagueTitle+"%")
                 .find(ArticleBrief.class);
     }
 
@@ -321,7 +324,7 @@ public class DataBaseHelper {
             LitePal.delete(ArticleBrief.class, articleBrief1.getId());
         }else {
             //取消收藏
-            articleBrief1.setCollect(false);
+            articleBrief1.setToDefault("isCollect");
             articleBrief1.update(articleBrief.getId());
         }
     }
@@ -392,7 +395,7 @@ public class DataBaseHelper {
     public static void clearStorage(){
         try {
             //清除所有未收藏的文章及其对应的评论
-            List<ArticleBrief> articleBriefs = LitePal.where("isCollect = false").find(ArticleBrief.class);
+            List<ArticleBrief> articleBriefs = LitePal.where("isCollect = 0").find(ArticleBrief.class);
             for (ArticleBrief articleBrief:articleBriefs){
                 //清除内容
                 LitePal.delete(ArticleContent.class,articleBrief.getContent_id());

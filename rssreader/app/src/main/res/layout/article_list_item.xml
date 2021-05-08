@@ -45,7 +45,7 @@
 
 
     <LinearLayout
-        android:layout_width="70dp"
+        android:layout_width="100dp"
         android:layout_height="match_parent"
         android:orientation="vertical">
         <Button
@@ -54,13 +54,21 @@
             android:layout_width="match_parent"
             android:layout_height="30dp"
             android:text="收藏"
-            android:background="@color/red"/>
+            android:background="@drawable/article_list_collection_button"/>
         <Button
             android:id="@+id/mark_as_read"
             android:layout_marginTop="10dp"
             android:layout_width="match_parent"
             android:layout_height="30dp"
             android:text="已读"
-            android:background="@color/yellow"/>
+            android:background="@drawable/article_list_read_button"/>
+
+        <Button
+            android:id="@+id/share_article_list"
+            android:layout_marginTop="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:text="分享"
+            android:background="@drawable/article_list_share_button"/>
     </LinearLayout>
 </LinearLayout>

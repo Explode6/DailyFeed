@@ -16,9 +16,9 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import com.example.rssreader.Data.ArticleBrief;
 import com.example.rssreader.R;
 import com.example.rssreader.lastactivity.LastActivity;
+import com.example.rssreader.model.datamodel.ArticleBrief;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,7 +31,7 @@ import java.util.List;
  */
 public class ArticleListFragment extends Fragment implements ArticleListContract.View {
 
-    ArticleListContract.Presenter mPresent;
+    ArticleListContract.ArticleListPresenter mPresent;
 
     ArticleListAdapter mArticleListAdapter;
 
@@ -40,7 +40,7 @@ public class ArticleListFragment extends Fragment implements ArticleListContract
     }
 
     @Override
-    public void setPresenter(ArticleListContract.Presenter presenter) {
+    public void setPresenter(ArticleListContract.ArticleListPresenter presenter) {
         mPresent = presenter;
     }
 
@@ -130,13 +130,15 @@ public class ArticleListFragment extends Fragment implements ArticleListContract
         mArticleListAdapter.setLoadFirstly();
     }
 
+
+    /*
+     * 还没有修改数据库
+     */
     public void markReadAndRefresh(int position){
-        mArticleListAdapter.setRead(position);
-        mArticleListAdapter.notifyItemChanged(position);
+        mArticleListAdapter.switchRead(position);
     }
 
     public void addCollectionAndRefresh(int position){
-        mArticleListAdapter.setCollected(position);
-        mArticleListAdapter.notifyItemRemoved(position);
+        mArticleListAdapter.switchCollected(position);
     }
 }

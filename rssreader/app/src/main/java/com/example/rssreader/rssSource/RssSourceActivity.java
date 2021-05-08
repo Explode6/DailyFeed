@@ -28,6 +28,7 @@ import com.example.rssreader.model.datamodel.ArticleBrief;
 import com.example.rssreader.model.datamodel.Channel;
 import com.example.rssreader.model.datamodel.DataBaseHelper;
 import com.example.rssreader.model.parse.AidlBinder;
+import com.example.rssreader.model.parse.DataCallback;
 import com.example.rssreader.util.ActivityUtil;
 import com.google.android.material.navigation.NavigationView;
 
@@ -46,6 +47,7 @@ public class RssSourceActivity extends AppCompatActivity {
     private NavigationView navView; //侧滑菜单的导航栏
     private RssSourceFragment rssSourceFragment;
     private RssSourcePresenterImpl rssSourcePresenter;
+    public IMyAidlInterface myAidlInterface;
 
 
     String TAG = "RssSourceActivity";
@@ -58,15 +60,15 @@ public class RssSourceActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_rss_source);
-        Toolbar toolbar = (Toolbar)findViewById(R.id.main_toolbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.main_toolbar);
         //为toolbar引入actionbar的功能
         setSupportActionBar(toolbar);
         //获取侧滑菜单
-        mDrawerLayout = (DrawerLayout)findViewById(R.id.drawer_layout);
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         //获取标题栏
         ActionBar actionBar = getSupportActionBar();
         //设置导航按钮
-        if(actionBar != null){
+        if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
             //获取导航按钮图片
             Drawable navBtnImg = ContextCompat.getDrawable(this, R.drawable.menu);
@@ -74,7 +76,7 @@ public class RssSourceActivity extends AppCompatActivity {
             actionBar.setHomeAsUpIndicator(navBtnImg);
         }
         //获取侧滑菜单的导航栏
-        navView = (NavigationView)findViewById(R.id.nav_view);
+        navView = (NavigationView) findViewById(R.id.nav_view);
 
         //连接数据库
         LitePal.initialize(this);
@@ -100,23 +102,21 @@ public class RssSourceActivity extends AppCompatActivity {
          * 以下四行代码是创建model有关
          * 从澍豪的代码拔过来的
          */
-        //Intent intent = new Intent(this, DataService.class);
-        //bindService(intent,conn, Context.BIND_AUTO_CREATE);
         ////启动服务，并且将获得的Binder实例放在AidlBinder的静态变量中
         AidlBinder.bindService(new ServiceConnection() {
             @Override
             public void onServiceConnected(ComponentName name, IBinder service) {
                 AidlBinder.setInstance(IMyAidlInterface.Stub.asInterface(service));
                 //新建Fragment
-                rssSourceFragment = (RssSourceFragment)getSupportFragmentManager().findFragmentById(R.id.contentFrame);
-                if(rssSourceFragment == null){
+                rssSourceFragment = (RssSourceFragment) getSupportFragmentManager().findFragmentById(R.id.contentFrame);
+                if (rssSourceFragment == null) {
                     rssSourceFragment = RssSourceFragment.newInstance();
-                    ActivityUtil.addFragmentToActivity(getSupportFragmentManager(),rssSourceFragment, R.id.contentFrame);
+                    ActivityUtil.addFragmentToActivity(getSupportFragmentManager(), rssSourceFragment, R.id.contentFrame);
                 }
                 //初始化presenter
                 rssSourcePresenter = new RssSourcePresenterImpl(rssSourceFragment, AidlBinder.getInstance());
                 //设置侧滑菜单导航栏按钮点击事件
-                if(navView != null){
+                if (navView != null) {
                     rssSourceFragment.setNavClickListener(navView);
                 }
             }
@@ -136,13 +136,13 @@ public class RssSourceActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        switch (item.getItemId()){
+        switch (item.getItemId()) {
             case android.R.id.home:
                 mDrawerLayout.openDrawer(GravityCompat.START);
                 break;
             case R.id.addButton:
                 rssSourceFragment.showAddRssSrcDialog();
-                //startDataService();
+                startDataService();
                 break;
             default:
                 break;
@@ -150,11 +150,9 @@ public class RssSourceActivity extends AppCompatActivity {
         return true;
     }
 
-    public void closeNavView(){
+    public void closeNavView() {
         mDrawerLayout.closeDrawer(GravityCompat.START);
     }
-
-
 
 
     @Override
@@ -169,16 +167,15 @@ public class RssSourceActivity extends AppCompatActivity {
 
     /**
      * 数据服务测试
-     *
      */
-//    public void startDataService(){
-//        try {
-//            myAidlInterface =  AidlBinder.getInstance();
-//            /*
-//             * 世伟看这里
-//             * 这是第一步，添加rss源之后先调用这个函数解析这个url，然后写进数据库
-//             * 这时候还没有刷新recyclerView，所以你需要重新用下面部分的函数刷新recyclerView
-//             */
+    public void startDataService() {
+        try {
+            myAidlInterface = AidlBinder.getInstance();
+            /*
+             * 世伟看这里
+             * 这是第一步，添加rss源之后先调用这个函数解析这个url，然后写进数据库
+             * 这时候还没有刷新recyclerView，所以你需要重新用下面部分的函数刷新recyclerView
+             */
 //            myAidlInterface.aidlInterface.downloadParseXml("https://tobiasahlin.com/feed.xml", new DataCallback.Stub() {
 //                @Override
 //                public void onSuccess() throws RemoteException {
@@ -195,67 +192,65 @@ public class RssSourceActivity extends AppCompatActivity {
 //
 //                }
 //            });
-//            myAidlInterface.downloadParseXml("https://journeybunnies.com/feed/");
-//
-//            /*
-//             * 如果数据已经写进数据库了才能调用这个函数
-//             * 这是第二步
-//             * 这里的函数从数据库取数据然后再拿去刷新recyclerView
-//             */
-//            List<Channel> channels =  myAidlInterface.getChannel(0,10);
-//            for(Channel channel : channels){
-//                Log.d(TAG,channel.getTitle());
-//            }
-//            List<ArticleBrief> articleBriefs = myAidlInterface.getArticleBriefsFromChannel(channels.get(0),0,10);
-//            //myAidlInterface.collectArticle(articleBriefs.get(2));
-//        } catch (RemoteException e) {
-//            e.printStackTrace();
-//        }
-//    }
 
+            /*
+             * 如果数据已经写进数据库了才能调用这个函数
+             * 这是第二步
+             * 这里的函数从数据库取数据然后再拿去刷新recyclerView
+             */
+            List<Channel> channels = myAidlInterface.getChannel(0, 10);
+            for (Channel channel : channels) {
+                Log.d(TAG, channel.getTitle());
+            }
+            List<ArticleBrief> articleBriefs = myAidlInterface.getArticleBriefsFromChannel(channels.get(0), 0, 10);
 
+            myAidlInterface.collectArticle(articleBriefs.get(0), new DataCallback.Stub() {
+                @Override
+                public void onSuccess() throws RemoteException {
+                    Log.d(TAG, "collect Success");
+                }
 
+                @Override
+                public void onFailure() throws RemoteException {
+                    Log.d(TAG, "collect Failure");
+                }
 
-    /**
-     * 删库跑路
-     * （HaoHaoGe）我觉得是没用的
-     * @param view
-     */
-    public void deleteData(View view){
-        DataBaseHelper dataBaseHelper = new DataBaseHelper();
-        List<Channel> channels = dataBaseHelper.getChannel(0,10);
-        for(Channel channel : channels){
-            dataBaseHelper.removeChannel(channel);
+                @Override
+                public void onError() throws RemoteException {
+
+                }
+            });
+            List<ArticleBrief> collections = myAidlInterface.getCollection(0, 10);
+            for (ArticleBrief collection : collections) {
+                Log.d(TAG, collection.getTitle());
+            }
+            Log.d(TAG, articleBriefs.get(0).getTitle());
+            myAidlInterface.removeCollection(articleBriefs.get(0), new DataCallback.Stub() {
+                @Override
+                public void onSuccess() throws RemoteException {
+                    Log.d(TAG, "remove Success");
+                }
+
+                @Override
+                public void onFailure() throws RemoteException {
+                    Log.d(TAG, "remove Failure");
+                }
+
+                @Override
+                public void onError() throws RemoteException {
+
+                }
+            });
+            collections = myAidlInterface.getCollection(0, 10);
+            for (ArticleBrief collection : collections) {
+                Log.d(TAG, collection.getTitle());
+            }
+
+            //myAidlInterface.collectArticle(articleBriefs.get(2));
+        } catch (RemoteException e) {
+            e.printStackTrace();
         }
-    }
-
-
-
-    /**
-     * 下载Xml （废弃）
-     * @param path 下载Xml的地址
-     * @throws IOException
-     */
-    public void downloadXml (String path) throws IOException {
-        URL url = new URL(path);
-        URLConnection conn = url.openConnection();
-        InputStream is = conn.getInputStream();
-
-        //截取文件格式
-        String end = path.substring(path.lastIndexOf("."));
-        //打开手机对应的输出流,输出到文件中
-        //File file = new File("Cache_test"+end);
-        //FileOutputStream os = new FileOutputStream(file);
-        FileOutputStream os = this.openFileOutput("Cache_test.xml", Context.MODE_PRIVATE);
-        byte[] buffer = new byte[1024];
-        int len = 0;
-        //从输入中读取数据,读到缓冲区中
-        while((len = is.read(buffer)) > 0)
-        {
-            os.write(buffer,0,len);
-        }
-        //关闭输入输出流
-        is.close();
-        os.close();
     }
 }
+
+

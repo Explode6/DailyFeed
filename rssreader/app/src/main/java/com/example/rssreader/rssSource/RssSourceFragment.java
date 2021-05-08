@@ -331,9 +331,11 @@ public class RssSourceFragment extends Fragment implements RssSourceContract.Rss
                     case R.id.close_add_rss_dialog_btn:
                         //关闭弹窗并清空输入内容
                         closeAndClearAddDialog();
+                        break;
                     //点击添加按钮
                     case R.id.add_rss_btn:
                         rssSourcePresenter.addRssSrc(addRssSourceDialog.getInputRss());
+                        break;
                 }
             }
         });

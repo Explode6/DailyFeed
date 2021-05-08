@@ -62,6 +62,7 @@ public class RssSrcAdapter extends RecyclerView.Adapter<RssSrcAdapter.ViewHolder
             rssCheckbox = (ImageView)view.findViewById(R.id.rss_checkbox);
             rssSrcImg = (ImageView)view.findViewById(R.id.rss_source_img);
             rssSrcIntro = (TextView)view.findViewById(R.id.rss_source_intro);
+            rssSrcTitle = (TextView)view.findViewById(R.id.rss_source_title);
         }
     }
 
@@ -98,7 +99,8 @@ public class RssSrcAdapter extends RecyclerView.Adapter<RssSrcAdapter.ViewHolder
                             rssSourceList.get(pos).setSelected(false);
                         rssOnClickListener.rssOnClickListener(pos);
                     }
-                }else{
+                }
+                else{
                     int pos = holder.getAdapterPosition();
                     rssOnClickListener.rssOnClickListener(pos);
                 }
@@ -117,7 +119,10 @@ public class RssSrcAdapter extends RecyclerView.Adapter<RssSrcAdapter.ViewHolder
         else
             holder.rssCheckbox.setImageResource(R.drawable.checkbox_unchecked);
         //绑定数据
-        Glide.with(context).load(rssSource.getImage()).into(holder.rssSrcImg);
+        if(rssSource.getImage() == null)
+            Glide.with(context).load(R.drawable.add_icon).into(holder.rssSrcImg);
+        else
+            Glide.with(context).load(rssSource.getImage()).into(holder.rssSrcImg);
         holder.rssSrcTitle.setText(rssSource.getTitle());
         holder.rssSrcIntro.setText(rssSource.getIntro());
         //如果有子项被长按就显示复选框

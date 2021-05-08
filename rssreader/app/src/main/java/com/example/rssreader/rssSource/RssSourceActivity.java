@@ -52,7 +52,7 @@ public class RssSourceActivity extends AppCompatActivity {
     /*
      * 以下代码是和model有关，从澍豪代码迁移过来
      */
-    public IMyAidlInterface myAidlInterface;
+//    public IMyAidlInterface myAidlInterface;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,18 +81,18 @@ public class RssSourceActivity extends AppCompatActivity {
         LitePal.getDatabase();
         //绑定后台服务
 
-       //新建Fragment
-        rssSourceFragment = (RssSourceFragment)getSupportFragmentManager().findFragmentById(R.id.contentFrame);
-        if(rssSourceFragment == null){
-            rssSourceFragment = RssSourceFragment.newInstance();
-            ActivityUtil.addFragmentToActivity(getSupportFragmentManager(),rssSourceFragment, R.id.contentFrame);
-        }
-       //初始化presenter
-        rssSourcePresenter = new RssSourcePresenterImpl(rssSourceFragment, myAidlInterface);
-        //设置侧滑菜单导航栏按钮点击事件
-        if(navView != null){
-            rssSourceFragment.setNavClickListener(navView);
-        }
+//       //新建Fragment
+//        rssSourceFragment = (RssSourceFragment)getSupportFragmentManager().findFragmentById(R.id.contentFrame);
+//        if(rssSourceFragment == null){
+//            rssSourceFragment = RssSourceFragment.newInstance();
+//            ActivityUtil.addFragmentToActivity(getSupportFragmentManager(),rssSourceFragment, R.id.contentFrame);
+//        }
+//       //初始化presenter
+//        rssSourcePresenter = new RssSourcePresenterImpl(rssSourceFragment, myAidlInterface);
+//        //设置侧滑菜单导航栏按钮点击事件
+//        if(navView != null){
+//            rssSourceFragment.setNavClickListener(navView);
+//        }
 
 
 
@@ -107,6 +107,18 @@ public class RssSourceActivity extends AppCompatActivity {
             @Override
             public void onServiceConnected(ComponentName name, IBinder service) {
                 AidlBinder.setInstance(IMyAidlInterface.Stub.asInterface(service));
+                //新建Fragment
+                rssSourceFragment = (RssSourceFragment)getSupportFragmentManager().findFragmentById(R.id.contentFrame);
+                if(rssSourceFragment == null){
+                    rssSourceFragment = RssSourceFragment.newInstance();
+                    ActivityUtil.addFragmentToActivity(getSupportFragmentManager(),rssSourceFragment, R.id.contentFrame);
+                }
+                //初始化presenter
+                rssSourcePresenter = new RssSourcePresenterImpl(rssSourceFragment, AidlBinder.getInstance());
+                //设置侧滑菜单导航栏按钮点击事件
+                if(navView != null){
+                    rssSourceFragment.setNavClickListener(navView);
+                }
             }
 
             @Override
@@ -159,14 +171,14 @@ public class RssSourceActivity extends AppCompatActivity {
      * 数据服务测试
      *
      */
-    public void startDataService(){
-        try {
-            myAidlInterface =  AidlBinder.getInstance();
-            /*
-             * 世伟看这里
-             * 这是第一步，添加rss源之后先调用这个函数解析这个url，然后写进数据库
-             * 这时候还没有刷新recyclerView，所以你需要重新用下面部分的函数刷新recyclerView
-             */
+//    public void startDataService(){
+//        try {
+//            myAidlInterface =  AidlBinder.getInstance();
+//            /*
+//             * 世伟看这里
+//             * 这是第一步，添加rss源之后先调用这个函数解析这个url，然后写进数据库
+//             * 这时候还没有刷新recyclerView，所以你需要重新用下面部分的函数刷新recyclerView
+//             */
 //            myAidlInterface.aidlInterface.downloadParseXml("https://tobiasahlin.com/feed.xml", new DataCallback.Stub() {
 //                @Override
 //                public void onSuccess() throws RemoteException {
@@ -183,23 +195,23 @@ public class RssSourceActivity extends AppCompatActivity {
 //
 //                }
 //            });
-            //myAidlInterface.downloadParseXml("https://journeybunnies.com/feed/");
-
-            /*
-             * 如果数据已经写进数据库了才能调用这个函数
-             * 这是第二步
-             * 这里的函数从数据库取数据然后再拿去刷新recyclerView
-             */
-            List<Channel> channels =  myAidlInterface.getChannel(0,10);
-            for(Channel channel : channels){
-                Log.d(TAG,channel.getTitle());
-            }
-            List<ArticleBrief> articleBriefs = myAidlInterface.getArticleBriefsFromChannel(channels.get(0),0,10);
-            //myAidlInterface.collectArticle(articleBriefs.get(2));
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
-    }
+//            myAidlInterface.downloadParseXml("https://journeybunnies.com/feed/");
+//
+//            /*
+//             * 如果数据已经写进数据库了才能调用这个函数
+//             * 这是第二步
+//             * 这里的函数从数据库取数据然后再拿去刷新recyclerView
+//             */
+//            List<Channel> channels =  myAidlInterface.getChannel(0,10);
+//            for(Channel channel : channels){
+//                Log.d(TAG,channel.getTitle());
+//            }
+//            List<ArticleBrief> articleBriefs = myAidlInterface.getArticleBriefsFromChannel(channels.get(0),0,10);
+//            //myAidlInterface.collectArticle(articleBriefs.get(2));
+//        } catch (RemoteException e) {
+//            e.printStackTrace();
+//        }
+//    }
 
 
 

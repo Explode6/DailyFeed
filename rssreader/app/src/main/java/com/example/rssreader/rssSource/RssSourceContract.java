@@ -73,6 +73,8 @@ public interface RssSourceContract {
         public List<RssSource> channelToRssSrc(List<Channel>list);
         //channel转为rssSource
         public RssSource channelToRssSrc(Channel channel);
+        //点击RSS源之后将RSS源信息传递给下一个界面
+        public void transferChannel(Context srcActivity, int pos);
     }
 }
 

@@ -4,6 +4,7 @@ import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 import android.os.RemoteException;
 import android.os.SystemClock;
 import android.util.Base64;
@@ -15,6 +16,7 @@ import androidx.core.content.ContextCompat;
 import com.example.rssreader.IMyAidlInterface;
 import com.example.rssreader.R;
 import com.example.rssreader.RssSource;
+import com.example.rssreader.articlelist.ArticleListActivity;
 import com.example.rssreader.model.datamodel.Channel;
 import com.example.rssreader.model.parse.AidlBinder;
 import com.example.rssreader.model.parse.DataCallback;
@@ -162,13 +164,25 @@ public class RssSourcePresenterImpl implements RssSourceContract.RssSourcePresen
     public List<RssSource> channelToRssSrc(List<Channel> list) {
         List<RssSource> rssSources = new ArrayList<>();
         for(Channel c : list){
-            rssSources.add(new RssSource(c.getTitle(), c.getDescription(), Base64.encodeToString(c.getImage(), Base64.DEFAULT), false));
+            if(c.getImage() == null)
+                rssSources.add(new RssSource(c.getTitle(), c.getDescription(), null, false));
+            else
+                rssSources.add(new RssSource(c.getTitle(), c.getDescription(), c.getImage(), false));
         }
         return rssSources;
     }
 
     @Override
     public RssSource channelToRssSrc(Channel c) {
-        return new RssSource(c.getTitle(), c.getDescription(), Base64.encodeToString(c.getImage(), Base64.DEFAULT), false);
+        return new RssSource(c.getTitle(), c.getDescription(), c.getImage(), false);
+    }
+
+    @Override
+    public void transferChannel(Context srcActivity, int pos) {
+        Intent intent = new Intent(srcActivity, ArticleListActivity.class);
+        Bundle bundle = new Bundle();
+        bundle.putParcelable("channel", channelList.get(pos));
+        intent.putExtras(bundle);
+        srcActivity.startActivity(intent);
     }
 }

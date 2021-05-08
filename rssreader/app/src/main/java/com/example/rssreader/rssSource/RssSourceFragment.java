@@ -82,8 +82,8 @@ public class RssSourceFragment extends Fragment implements RssSourceContract.Rss
                     //提高性能，一次点击只通知适配器一个item发生变化
                     rssSrcAdapter.notifyItemChanged(pos);
                 }else{
-                    Intent intent = new Intent(getContext(), ArticleListActivity.class);
-                    startActivity(intent);
+                    //将RSS源信息传递给下一个Activity
+                    rssSourcePresenter.transferChannel(getActivity(),pos);
                 }
             }
         });
@@ -176,8 +176,8 @@ public class RssSourceFragment extends Fragment implements RssSourceContract.Rss
                     //提高性能，一次点击只通知适配器一个item发生变化
                     rssSrcAdapter.notifyItemChanged(pos);
                 }else{
-                    Intent intent = new Intent(getContext(), ArticleListActivity.class);
-                    startActivity(intent);
+                    //将RSS源信息传递给下一个Activity
+                    rssSourcePresenter.transferChannel(getActivity(),pos);
                 }
             }
         });
@@ -198,8 +198,8 @@ public class RssSourceFragment extends Fragment implements RssSourceContract.Rss
                     //提高性能，一次点击只通知适配器一个item发生变化
                     rssSrcAdapter.notifyItemChanged(pos);
                 }else{
-                    Intent intent = new Intent(getContext(), ArticleListActivity.class);
-                    startActivity(intent);
+                    //将RSS源信息传递给下一个Activity
+                    rssSourcePresenter.transferChannel(getActivity(),pos);
                 }
             }
         });

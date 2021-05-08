@@ -117,7 +117,7 @@ public class Channel extends LitePalSupport implements Parcelable {
     }
 
     public byte[] getImage() {
-        if(this.image.isEmpty()) return null;
+        if(this.image== null || this.image.isEmpty()) return null;
         return Base64.decode(this.image, Base64.DEFAULT);
     }
 

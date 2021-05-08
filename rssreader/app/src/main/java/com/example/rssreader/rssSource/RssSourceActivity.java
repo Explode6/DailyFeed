@@ -119,7 +119,7 @@ public class RssSourceActivity extends AppCompatActivity {
                 break;
             case R.id.addButton:
                 rssSourceFragment.showAddRssSrcDialog();
-                startDataService();
+                //startDataService();
                 break;
             default:
                 break;

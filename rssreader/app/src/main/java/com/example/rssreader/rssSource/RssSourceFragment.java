@@ -95,6 +95,8 @@ public class RssSourceFragment extends Fragment implements RssSourceContract.Rss
         setBottomWindow();
         //绑定添加RSS源的弹窗
         setAddRssSrcDialog();
+        //设置添加RSS源的弹窗相关的点击函数
+        setAddRssSrcListener();
         //监听按钮点击事件
         listBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -313,6 +315,7 @@ public class RssSourceFragment extends Fragment implements RssSourceContract.Rss
         addRssSourceDialog.clearInput();
     }
 
+    //设置添加RSS源弹窗有关的点击事件
     @Override
     public void setAddRssSrcListener() {
         addRssSourceDialog.setListener(new View.OnClickListener() {

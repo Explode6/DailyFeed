@@ -79,6 +79,7 @@ public class RssSourceActivity extends AppCompatActivity {
         //连接数据库
         LitePal.initialize(this);
         LitePal.getDatabase();
+        //绑定后台服务
 
        //新建Fragment
         rssSourceFragment = (RssSourceFragment)getSupportFragmentManager().findFragmentById(R.id.contentFrame);

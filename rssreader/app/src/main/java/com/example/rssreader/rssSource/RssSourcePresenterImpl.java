@@ -16,6 +16,7 @@ import com.example.rssreader.IMyAidlInterface;
 import com.example.rssreader.R;
 import com.example.rssreader.RssSource;
 import com.example.rssreader.model.datamodel.Channel;
+import com.example.rssreader.model.parse.AidlBinder;
 import com.example.rssreader.model.parse.DataCallback;
 import com.example.rssreader.util.BasePresenter;
 

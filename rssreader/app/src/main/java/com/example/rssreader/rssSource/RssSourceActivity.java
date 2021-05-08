@@ -99,7 +99,18 @@ public class RssSourceActivity extends AppCompatActivity {
          */
         //Intent intent = new Intent(this, DataService.class);
         //bindService(intent,conn, Context.BIND_AUTO_CREATE);
-        AidlBinder.setInstance(getApplicationContext());
+        ////启动服务，并且将获得的Binder实例放在AidlBinder的静态变量中
+        AidlBinder.bindService(new ServiceConnection() {
+            @Override
+            public void onServiceConnected(ComponentName name, IBinder service) {
+                AidlBinder.setInstance(IMyAidlInterface.Stub.asInterface(service));
+            }
+
+            @Override
+            public void onServiceDisconnected(ComponentName name) {
+
+            }
+        }, getApplicationContext());
     }
 
     @Override
@@ -116,7 +127,7 @@ public class RssSourceActivity extends AppCompatActivity {
                 break;
             case R.id.addButton:
                 rssSourceFragment.showAddRssSrcDialog();
-                startDataService();
+                //startDataService();
                 break;
             default:
                 break;

@@ -77,18 +77,23 @@ public class RssSourcePresenterImpl implements RssSourceContract.RssSourcePresen
         return null;
     }
 
-    public void delSelectedItems() {
-        Iterator<RssSource>iterator = rssSourceList.iterator();
+    public void delSelectedItems() throws RemoteException {
+        //获取Rss源和channel列表的迭代器
+        Iterator<RssSource>rssSrcIterator = rssSourceList.iterator();
+        Iterator<Channel>channelIterator = channelList.iterator();
         //遍历迭代器，从列表中删除被选中的子项
-        while(iterator.hasNext()){
-            RssSource rssSource = iterator.next();
+        while(rssSrcIterator.hasNext() && channelIterator.hasNext()){
+            RssSource rssSource = rssSrcIterator.next();
+            Channel channel = channelIterator.next();
             if(rssSource.getSelected() == true){
-                iterator.remove();
-                //从数据库中删除子项
-                //rssSourceModel.delRssSource();
+                rssSrcIterator.remove();
+                //从数据库中删除这个RSS源
+                myAidlInterface.removeChannel(channel);
+                channelIterator.remove();
                 continue;
             }
         }
+        //退出编辑模式
         rssSourceView.exitEditMode();
     }
 

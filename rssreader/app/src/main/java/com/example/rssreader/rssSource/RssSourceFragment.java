@@ -232,6 +232,7 @@ public class RssSourceFragment extends Fragment implements RssSourceContract.Rss
         bottomPopupWindow.dismiss();
     }
 
+    //设置底部弹窗相关的点击事件
     @Override
     public View.OnClickListener setBottomWinClickListener(){
         return new View.OnClickListener() {
@@ -244,7 +245,11 @@ public class RssSourceFragment extends Fragment implements RssSourceContract.Rss
                         break;
                     //删除按钮
                     case R.id.del_rss_btn:
-                        rssSourcePresenter.delSelectedItems();
+                        try {
+                            rssSourcePresenter.delSelectedItems();
+                        } catch (RemoteException e) {
+                            e.printStackTrace();
+                        }
                         break;
                     //全选按钮
                     case R.id.select_all_btn:

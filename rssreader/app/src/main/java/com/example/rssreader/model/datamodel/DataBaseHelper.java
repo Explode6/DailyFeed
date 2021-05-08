@@ -335,12 +335,12 @@ public class DataBaseHelper {
         try {
             //找到对应频道的所有未被收藏的文章简介
             List<ArticleBrief> articleBriefs = LitePal.select("id","content_id")
-                    .where("channel_id = ? and isCollect = false", Integer.toString(channel.getId()))
+                    .where("channel_id = ? and isCollect = 0", Integer.toString(channel.getId()))
                     .find(ArticleBrief.class);
             //初始化对应频道被收藏文章的channelId，保持数据库一致性
             ArticleBrief articleBrief1 = new ArticleBrief();
             articleBrief1.setChannel_id(-1);
-            articleBrief1.updateAll("channel_id = ? and isCollect = true", Integer.toString(channel.getId()));
+            articleBrief1.updateAll("channel_id = ? and isCollect = 1", Integer.toString(channel.getId()));
             //清除未被收藏的文章
             for(ArticleBrief articleBrief: articleBriefs){
                 //删除对应文章内容

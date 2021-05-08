@@ -58,7 +58,7 @@ public interface RssSourceContract {
         //获取所有RSS源
         public List<RssSource>getRssSrcList() throws RemoteException;
         //删除选中的RSS源
-        public void delSelectedItems();
+        public void delSelectedItems() throws RemoteException;
         //设置为列表布局
         public void setListLayout();
         //设置为网格布局

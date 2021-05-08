@@ -71,7 +71,7 @@ public class DataBaseHelper {
                 articleBrief.setContent_id(articleContent.getId());
             }
             //以24小时为间隔
-            articleBrief.setPubTime((int)System.currentTimeMillis()/(60*60*24));
+            articleBrief.setPubTime((int)System.currentTimeMillis()/(60*60*24*1000));
             articleBrief.save();
         }
     }

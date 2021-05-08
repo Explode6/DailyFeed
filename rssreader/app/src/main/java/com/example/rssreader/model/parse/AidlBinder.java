@@ -29,25 +29,31 @@ public class AidlBinder extends IMyAidlInterface.Stub {
 
     public static IMyAidlInterface aidlBinder =null;
 
-    static ServiceConnection conn = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName name, IBinder service) {
-            aidlBinder =  IMyAidlInterface.Stub.asInterface(service);
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName name) {
-
-        }
-    };
-
-    public static void setInstance(Context context){
+    /**
+     * 绑定服务，由第一个activity调用。
+     * 其中conn为回调函数接口，绑定成功后会在接口中的onServiceConnected函数内回调。
+     * @param conn 回调函数接口
+     * @param context 传入应用的上下文
+     */
+    public static void bindService(ServiceConnection conn, Context context){
         if(aidlBinder==null){
             Intent intent = new Intent(context.getApplicationContext(),DataService.class);
             context.bindService(intent,conn,Context.BIND_AUTO_CREATE);
         }
     }
 
+    /**
+     * 设置Binder实例
+     * @param myAidlInterface 被设置的实例
+     */
+    public static void setInstance(IMyAidlInterface myAidlInterface){
+        aidlBinder = myAidlInterface;
+    }
+
+    /**
+     * 获取Binder实例
+     * @return Binder实例
+     */
     public static IMyAidlInterface getInstance(){
         return aidlBinder;
     }

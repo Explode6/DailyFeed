@@ -14,8 +14,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
-import com.example.rssreader.Data.ArticleBrief;
 import com.example.rssreader.R;
+import com.example.rssreader.model.datamodel.ArticleBrief;
 
 import java.util.List;
 
@@ -131,26 +131,42 @@ public class ArticleListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             holder.itemView.setTag(position);
 
 
-            //设置ArticleBrief的图片样式
-            //如果有图片的话需要用url加载图片
-            if(articleBrief.isHavingImage()) {
-                ((ViewHolder) holder).articleImage.setVisibility(View.VISIBLE);
-                RequestOptions options = new RequestOptions()
-                        //还未加载完成时，用isLoading作为占位图
-                        .placeholder(R.drawable.article_list_image_isloading)
-                        //加载失败用error图占位
-                        .error(R.drawable.article_list_image_error);
-                Glide.with(mContext)
-                        .load(articleBrief.getImageId())
-                        .apply(options)
-                        .into(((ViewHolder) holder).articleImage);
-            }
-            //如果这篇文章没有图片，则不需显示图片
-            else{
-                ((ViewHolder) holder).articleImage.setVisibility(View.GONE);
-            }
+            /*
+             *以下代码等待文章的第一张图片解析完成之后使用
+             */
+//            //设置ArticleBrief的图片样式
+//            //如果有图片的话需要用url加载图片
+//            if(articleBrief.isHavingImage()) {
+//                ((ViewHolder) holder).articleImage.setVisibility(View.VISIBLE);
+//                RequestOptions options = new RequestOptions()
+//                        //还未加载完成时，用isLoading作为占位图
+//                        .placeholder(R.drawable.article_list_image_isloading)
+//                        //加载失败用error图占位
+//                        .error(R.drawable.article_list_image_error);
+//                Glide.with(mContext)
+//                        .load(articleBrief.getImageId())
+//                        .apply(options)
+//                        .into(((ViewHolder) holder).articleImage);
+//            }
+//            //如果这篇文章没有图片，则不需显示图片
+//            else{
+//                ((ViewHolder) holder).articleImage.setVisibility(View.GONE);
+//            }
 
-            if(articleBrief.isRead()){
+
+            ((ViewHolder) holder).articleImage.setVisibility(View.VISIBLE);
+            RequestOptions options = new RequestOptions()
+                    //还未加载完成时，用isLoading作为占位图
+                    .placeholder(R.drawable.article_list_image_isloading)
+                    //加载失败用error图占位
+                    .error(R.drawable.article_list_image_error);
+            Glide.with(mContext)
+                    .load(R.drawable.nav_day_img)
+                    .apply(options)
+                    .into(((ViewHolder) holder).articleImage);
+
+
+            if(articleBrief.getRead()){
                 ((ViewHolder) holder).articleTitle.setTextColor(mContext.getResources().getColor(R.color.brief_or_isread_gray));
             }else{
                 ((ViewHolder) holder).articleTitle.setTextColor(mContext.getResources().getColor(R.color.toolbarTextColor));
@@ -158,13 +174,13 @@ public class ArticleListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             ((ViewHolder)holder).articleTitle.setText(articleBrief.getTitle());
             ((ViewHolder)holder).articleBrief.setText(articleBrief.getDescription());
 
-            if(articleBrief.isCollected()) {
+            if(articleBrief.getCollect()) {
                 ((ViewHolder) holder).deleteCollection.setText("取消收藏");
             }else{
                 ((ViewHolder) holder).deleteCollection.setText("收藏");
             }
 
-            if(articleBrief.isRead()) {
+            if(articleBrief.getRead()) {
                 ((ViewHolder) holder).markRead.setText("已读");
             }else{
                 ((ViewHolder) holder).markRead.setText("未读");
@@ -248,9 +264,6 @@ public class ArticleListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     }
 
 
-
-
-
     /**
      * 第一次加载数据时，直接替换原有的list然后刷新recyclerView
      * 用于刷新时重新加载数据
@@ -308,11 +321,17 @@ public class ArticleListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     }
 
 
-    public void setRead(int position){
-        mArticleBriefList.get(position).switchRead();
+    public void switchRead(int position){
+        ArticleBrief articleBrief = mArticleBriefList.get(position);
+        boolean isRead = articleBrief.getRead();
+        articleBrief.setRead(!isRead);
+        this.notifyItemChanged(position);
     }
 
-    public void setCollected(int position){
-        mArticleBriefList.get(position).switchCollected();
+    public void switchCollected(int position){
+        ArticleBrief articleBrief = mArticleBriefList.get(position);
+        boolean isCollect = articleBrief.getCollect();
+        articleBrief.setCollect(!isCollect);
+        this.notifyItemChanged(position);
     }
 }

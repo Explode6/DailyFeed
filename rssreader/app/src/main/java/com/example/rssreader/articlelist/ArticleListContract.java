@@ -1,6 +1,7 @@
 package com.example.rssreader.articlelist;
 
-import com.example.rssreader.Data.ArticleBrief;
+
+import com.example.rssreader.model.datamodel.ArticleBrief;
 import com.example.rssreader.util.BasePresenter;
 import com.example.rssreader.util.BaseView;
 
@@ -13,11 +14,11 @@ import java.util.List;
  * @Description
  */
 public interface ArticleListContract {
-    interface View extends BaseView<Presenter> {
+    interface View extends BaseView<ArticleListPresenter> {
         void showArticleList(List<ArticleBrief> articleBriefList, int begin, int size);
         void refreshArticleList(List<ArticleBrief> articleBriefList);
     }
-    interface Presenter extends BasePresenter {
+    interface ArticleListPresenter extends BasePresenter {
         boolean loadArticle();
         boolean reLoadArticle();
         void reLoadFromNet();

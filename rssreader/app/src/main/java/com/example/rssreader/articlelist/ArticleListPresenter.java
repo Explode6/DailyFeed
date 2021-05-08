@@ -1,7 +1,11 @@
 package com.example.rssreader.articlelist;
 
-import com.example.rssreader.Data.ArticleBrief;
-import com.example.rssreader.Data.ShuhaoJiekou;
+
+import android.os.RemoteException;
+
+import com.example.rssreader.IMyAidlInterface;
+import com.example.rssreader.model.datamodel.ArticleBrief;
+import com.example.rssreader.model.datamodel.Channel;
 
 import java.util.List;
 
@@ -11,11 +15,15 @@ import java.util.List;
  * @Date 2021/4/30
  * @Description
  */
-public class ArticleListPresenter implements ArticleListContract.Presenter {
+public class ArticleListPresenter implements ArticleListContract.ArticleListPresenter {
 
-    private ShuhaoJiekou mshuHaoJiekou;
+
 
     private ArticleListContract.View mArticleListView;
+
+    private Channel mChannel;
+
+    private IMyAidlInterface model;
 
     private boolean notHaveData = false;
 
@@ -26,11 +34,14 @@ public class ArticleListPresenter implements ArticleListContract.Presenter {
      */
     private boolean isNotInLoading = true;
 
-    public ArticleListPresenter(ShuhaoJiekou shuhaoJiekou, ArticleListContract.View articleListView){
+    public ArticleListPresenter(IMyAidlInterface iMyAidlInterface, ArticleListContract.View articleListView, Channel channel){
         mArticleListView = articleListView;
-        mshuHaoJiekou = shuhaoJiekou;
+
+        model = iMyAidlInterface;
 
         mArticleListView.setPresenter(this);
+
+        mChannel = channel;
     }
 
     @Override
@@ -47,7 +58,12 @@ public class ArticleListPresenter implements ArticleListContract.Presenter {
         if(isNotInLoading){
             isNotInLoading = false;
 
-            List<ArticleBrief> articleBriefList = ShuhaoJiekou.getData(articleListBegin, 10);
+            List<ArticleBrief> articleBriefList = null;
+            try {
+                articleBriefList = model.getArticleBriefsFromChannel(mChannel, articleListBegin, 5);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
             int size = articleBriefList.size();
             if(size < 10) {
                 notHaveData = true;
@@ -88,7 +104,12 @@ public class ArticleListPresenter implements ArticleListContract.Presenter {
             reLoadFromNet();
             reset();
             articleListBegin = 0;
-            List<ArticleBrief> articleBriefList = ShuhaoJiekou.getData(articleListBegin, 10);
+            List<ArticleBrief> articleBriefList = null;
+            try {
+                articleBriefList = model.getArticleBriefsFromChannel(mChannel, articleListBegin, 10);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
             int size = articleBriefList.size();
             if(size < 10) {
                 notHaveData = true;

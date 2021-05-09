@@ -81,10 +81,14 @@ public class XmlHandler {
      * 下载xml并且解析，将相关数据存放在数据库之中
      */
     public void startParse(DataCallback dataCallback) throws RemoteException {
+
         OkHttpClient client = new OkHttpClient();
         Request request = new Request.Builder()
                 .url(url).build();
         try {
+            //测试速度
+            long start = System.currentTimeMillis();
+
             Response response = client.newCall(request).execute();
 
             //检测
@@ -94,8 +98,18 @@ public class XmlHandler {
 
             FilterInputStreamReader responseDataReader = new FilterInputStreamReader(responseData,decode);
 
+            long diff =  System.currentTimeMillis()-start;
+            Log.d(TAG,"下载使用："+ diff + "毫秒");
+
             try{
+                //测试速度
+                start = System.currentTimeMillis();
+
                 XmlParse(responseDataReader);
+
+                diff =  System.currentTimeMillis()- start;
+                Log.d(TAG,"解析使用："+ diff + "毫秒");
+
                 dataCallback.onSuccess();
             }catch (DocumentException e) {
                 e.printStackTrace();
@@ -118,6 +132,8 @@ public class XmlHandler {
      * @param isReader :InputStreamReader
      */
     private void XmlParse (InputStreamReader isReader) throws IOException, DocumentException, SQLException {
+
+
         //创建Reader对象
         SAXReader reader = new SAXReader();
 
@@ -195,10 +211,10 @@ public class XmlHandler {
                             case "description":{
                                 articleBrief.setCategory(categoryList.toArray(new String[0]));
                                 content = articleSon.getText();
-                                //正则匹配
-                                String description = articleSon.getText();
                                 //转码
-                                description = StringEscapeUtils.unescapeHtml4(description);
+                                content = StringEscapeUtils.unescapeHtml4(content);
+                                String description = content;
+                                //正则匹配
                                 Pattern p = Pattern.compile("(<(\\S*?)[^>]*>.*?|<.*? />)");
                                 Matcher m = p.matcher(description);
                                 description = m.replaceAll("");
@@ -207,11 +223,17 @@ public class XmlHandler {
                             }
                             case "content":
                             case "content:encoded":{
-                                content = articleSon.getText();
+                                content = StringEscapeUtils.unescapeHtml4(articleSon.getText());
                                 break;
                             }
 
                         }
+                    }
+                    //找img标签中图片的内容
+                    Pattern imgp = Pattern.compile("<img.*?src=\"(.+?)\"");
+                    Matcher imgm = imgp.matcher(content);
+                    if(imgm.find()){
+                        articleBrief.setFirstPhoto(imgm.group(1));
                     }
                     //最后添加
                     DataBaseHelper.addArticle(articleBrief,content,channel);
@@ -221,6 +243,7 @@ public class XmlHandler {
             }
         }
         DataBaseHelper.addChannel(channel);
+
     }
 
 

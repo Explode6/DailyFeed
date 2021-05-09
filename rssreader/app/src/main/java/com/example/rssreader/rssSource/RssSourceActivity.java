@@ -81,6 +81,19 @@ public class RssSourceActivity extends AppCompatActivity {
         //连接数据库
         LitePal.initialize(this);
         LitePal.getDatabase();
+        if(AidlBinder.getInstance() != null){
+            rssSourceFragment = (RssSourceFragment) getSupportFragmentManager().findFragmentById(R.id.contentFrame);
+            if (rssSourceFragment == null) {
+                rssSourceFragment = RssSourceFragment.newInstance();
+                ActivityUtil.addFragmentToActivity(getSupportFragmentManager(), rssSourceFragment, R.id.contentFrame);
+            }
+            //初始化presenter
+            rssSourcePresenter = new RssSourcePresenterImpl(rssSourceFragment, AidlBinder.getInstance());
+            //设置侧滑菜单导航栏按钮点击事件
+            if (navView != null) {
+                rssSourceFragment.setNavClickListener(navView);
+            }
+        }
         //绑定后台服务
 
 //       //新建Fragment
@@ -142,7 +155,7 @@ public class RssSourceActivity extends AppCompatActivity {
                 break;
             case R.id.addButton:
                 rssSourceFragment.showAddRssSrcDialog();
-                startDataService();
+                //startDataService();
                 break;
             default:
                 break;

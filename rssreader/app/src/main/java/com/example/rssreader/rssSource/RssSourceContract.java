@@ -52,6 +52,7 @@ public interface RssSourceContract {
         public void closeAndClearAddDialog();
         //通过toast给出提示
         public void giveHint(String hint);
+        public void test();
     }
 
     interface RssSourcePresenter extends BasePresenter {

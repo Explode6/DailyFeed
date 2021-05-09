@@ -145,9 +145,10 @@ public class RssSourcePresenterImpl implements RssSourceContract.RssSourcePresen
                    channelList = myAidlInterface.getChannel(0, 100);
                    //把channel列表中的最后一项rssSource列表
                    rssSourceList.add(channelToRssSrc(channelList.get(channelList.size()-1)));
-                   rssSourceView.closeAndClearAddDialog();
-                   rssSourceView.refreshView();
-                   rssSourceView.giveHint("添加成功");
+                   rssSourceView.test();
+//                   rssSourceView.refreshView();
+//                   rssSourceView.closeAndClearAddDialog();
+//                   rssSourceView.giveHint("添加成功");
                }
 
                @Override

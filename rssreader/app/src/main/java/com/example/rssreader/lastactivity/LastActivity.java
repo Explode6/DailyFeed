@@ -7,6 +7,8 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.rssreader.R;
+import com.example.rssreader.model.datamodel.ArticleBrief;
+import com.example.rssreader.model.datamodel.Channel;
 
 public class LastActivity extends AppCompatActivity {
 
@@ -16,9 +18,9 @@ public class LastActivity extends AppCompatActivity {
         setContentView(R.layout.activity_last);
 
         Intent intent = getIntent();
-        String title = intent.getStringExtra("title");
+        ArticleBrief articleBrief = intent.getParcelableExtra("articleBrief");
 
         TextView textView = (TextView)findViewById(R.id.test_title);
-        textView.setText(title);
+        textView.setText(articleBrief.getTitle());
     }
 }

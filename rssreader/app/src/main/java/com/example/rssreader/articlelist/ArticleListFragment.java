@@ -44,12 +44,18 @@ public class ArticleListFragment extends Fragment implements ArticleListContract
         mPresent = presenter;
     }
 
+    /*
+     * 重写onCreate函数，在一开始时用空的list初始化
+     */
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mArticleListAdapter = new ArticleListAdapter(new ArrayList<ArticleBrief>());
     }
 
+    /*
+     * 在onResume方法中调用start方法，该方法从数据库中读取数据然后把有数据的list写进adapter
+     */
     @Override
     public void onResume() {
         super.onResume();
@@ -65,6 +71,7 @@ public class ArticleListFragment extends Fragment implements ArticleListContract
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         final View root = inflater.inflate(R.layout.article_list_frag, container, false);
 
+        //绑定SwipeRefreshLayout，实现下拉刷新功能
         final SwipeRefreshLayout swipeRefreshLayout = root.findViewById(R.id.refresh_layout);
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -74,28 +81,37 @@ public class ArticleListFragment extends Fragment implements ArticleListContract
                 swipeRefreshLayout.setRefreshing(false);
             }
         });
+
+        //绑定自定义的SlideRecyclerView，实现每一项能够侧滑的功能
         final SlideRecyclerView slideRecyclerView = (SlideRecyclerView)root.findViewById(R.id.article_list_slideview);
         slideRecyclerView.setAdapter(mArticleListAdapter);
         LinearLayoutManager layoutManager = new LinearLayoutManager(slideRecyclerView.getContext(), RecyclerView.VERTICAL, false);
 
+        //设置每一项的点击事件
         mArticleListAdapter.setOnItemClickListener(new ArticleListAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(RecyclerView.Adapter adapter, View v, int position) {
-                String name = mArticleListAdapter.getArticleBrief(position);
+                ArticleBrief articleBrief = mArticleListAdapter.getArticleBrief(position);
+                //点击进入文章之前，把文章变为已读
                 markReadAndRefresh(position);
 
+                //跳转到文章内容的页面
                 Intent intent = new Intent(root.getContext(), LastActivity.class);
-                intent.putExtra("title", name);
+                intent.putExtra("articleBrief", articleBrief);
                 startActivity(intent);
 
             }
         });
+
+        //设置收藏的点击事件
         mArticleListAdapter.setOnDeleteClickListener(new ArticleListAdapter.OnDeleteClickListener() {
             @Override
             public void onDeleteClick(View view, int position) {
                 addCollectionAndRefresh(position);
             }
         });
+
+        //设计标记已读的点击事件
         mArticleListAdapter.setOnMarkReadClickListener(new ArticleListAdapter.OnMarkReadClickListener() {
             @Override
             public void onMarkReadClick(View view, int position) {
@@ -119,11 +135,20 @@ public class ArticleListFragment extends Fragment implements ArticleListContract
         return root;
     }
 
+
+    /*
+     * 这两个函数用于presenter的调用
+     * 如果添加了新的数据进来，应当加进缓存并且在view层中插入新的项
+     */
+    @Override
     public void showArticleList(List<ArticleBrief> articleBriefList, int begin, int size){
         mArticleListAdapter.addArticleList(articleBriefList);
         mArticleListAdapter.notifyItemRangeInserted(begin, size);
     }
-
+    /*
+     * 如果重新刷新，需要把数据全都换了，并且调用setChanged直接重新加载recyclerView
+     */
+    @Override
     public void refreshArticleList(List<ArticleBrief> articleBriefList){
         mArticleListAdapter.changeData(articleBriefList);
         mArticleListAdapter.notifyDataSetChanged();
@@ -132,7 +157,8 @@ public class ArticleListFragment extends Fragment implements ArticleListContract
 
 
     /*
-     * 还没有修改数据库
+     * 以下两个函数还没有修改数据库
+     * 需要补充，还没写进Contract
      */
     public void markReadAndRefresh(int position){
         mArticleListAdapter.switchRead(position);

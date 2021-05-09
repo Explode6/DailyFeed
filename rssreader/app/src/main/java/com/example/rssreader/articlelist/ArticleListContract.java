@@ -21,6 +21,5 @@ public interface ArticleListContract {
     interface ArticleListPresenter extends BasePresenter {
         boolean loadArticle();
         boolean reLoadArticle();
-        void reLoadFromNet();
     }
 }

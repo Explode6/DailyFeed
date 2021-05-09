@@ -34,10 +34,14 @@ public class ArticleListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     private static int ITEM_TYPE_LOAD = 1;
     private static int ITEM_TYPE_END = 2;
 
+    /*
+     * 三个按钮对应的点击监听接口
+     */
     private OnDeleteClickListener mDeleteClickListener;
     private OnItemClickListener mListener;
     private OnMarkReadClickListener mMarkReadClickListener;
 
+    //FooterView最下面显示是否有文章
     private FooterHolder mFooterHolder;
 
     private Context mContext;
@@ -49,6 +53,11 @@ public class ArticleListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         }
     }
 
+
+    /**
+     * 这里是recyclerView中的文章项
+     * 其中包括了文章的标题title、简介brief、文章图片、还有三个按钮
+     */
     static public class ViewHolder extends RecyclerView.ViewHolder{
         ImageView articleImage = null;
         TextView articleTitle = null;
@@ -80,6 +89,10 @@ public class ArticleListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         }
     };
 
+
+    /**
+     * FooterView用于提示是否还有文章没显示
+     */
     public static class FooterHolder extends RecyclerView.ViewHolder{
         TextView textView = null;
         public FooterHolder(View view) {
@@ -88,6 +101,9 @@ public class ArticleListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         }
     }
 
+    /*
+     * adapter维护一个对应的list，能够在缓存中修改数据
+     */
     public ArticleListAdapter(List<ArticleBrief> articleBriefList){
         mArticleBriefList = articleBriefList;
     }
@@ -132,40 +148,32 @@ public class ArticleListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
 
             /*
-             *以下代码等待文章的第一张图片解析完成之后使用
+             * 设置ArticleBrief的图片样式
+             * 如果有图片的话需要用url加载图片
              */
-//            //设置ArticleBrief的图片样式
-//            //如果有图片的话需要用url加载图片
-//            if(articleBrief.isHavingImage()) {
-//                ((ViewHolder) holder).articleImage.setVisibility(View.VISIBLE);
-//                RequestOptions options = new RequestOptions()
-//                        //还未加载完成时，用isLoading作为占位图
-//                        .placeholder(R.drawable.article_list_image_isloading)
-//                        //加载失败用error图占位
-//                        .error(R.drawable.article_list_image_error);
-//                Glide.with(mContext)
-//                        .load(articleBrief.getImageId())
-//                        .apply(options)
-//                        .into(((ViewHolder) holder).articleImage);
-//            }
-//            //如果这篇文章没有图片，则不需显示图片
-//            else{
-//                ((ViewHolder) holder).articleImage.setVisibility(View.GONE);
-//            }
+            if(articleBrief.getFirstPhoto()!=null) {
+                String url = articleBrief.getFirstPhoto();
+                ((ViewHolder) holder).articleImage.setVisibility(View.VISIBLE);
+                RequestOptions options = new RequestOptions()
+                        //还未加载完成时，用isLoading作为占位图
+                        .placeholder(R.drawable.article_list_image_isloading)
+                        //加载失败用error图占位
+                        .error(R.drawable.article_list_image_error);
+                Glide.with(mContext)
+                        .load(articleBrief.getFirstPhoto())
+                        .apply(options)
+                        .into(((ViewHolder) holder).articleImage);
+            }
+            //如果这篇文章没有图片，则不需显示图片
+            else{
+                ((ViewHolder) holder).articleImage.setVisibility(View.GONE);
+            }
 
 
-            ((ViewHolder) holder).articleImage.setVisibility(View.VISIBLE);
-            RequestOptions options = new RequestOptions()
-                    //还未加载完成时，用isLoading作为占位图
-                    .placeholder(R.drawable.article_list_image_isloading)
-                    //加载失败用error图占位
-                    .error(R.drawable.article_list_image_error);
-            Glide.with(mContext)
-                    .load(R.drawable.nav_day_img)
-                    .apply(options)
-                    .into(((ViewHolder) holder).articleImage);
 
-
+            /*
+             * 如果文章已读的话，把字体颜色变灰，区分已读未读
+             */
             if(articleBrief.getRead()){
                 ((ViewHolder) holder).articleTitle.setTextColor(mContext.getResources().getColor(R.color.brief_or_isread_gray));
             }else{
@@ -174,6 +182,10 @@ public class ArticleListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             ((ViewHolder)holder).articleTitle.setText(articleBrief.getTitle());
             ((ViewHolder)holder).articleBrief.setText(articleBrief.getDescription());
 
+
+            /*
+             * 收藏和已读按钮也会跟随文章的属性变化
+             */
             if(articleBrief.getCollect()) {
                 ((ViewHolder) holder).deleteCollection.setText("取消收藏");
             }else{
@@ -305,10 +317,13 @@ public class ArticleListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     /*
      *获取点击时的文章
      */
-    public String getArticleBrief(int position){
-        return mArticleBriefList.get(position).getTitle();
+    public ArticleBrief getArticleBrief(int position){
+        return mArticleBriefList.get(position);
     }
 
+    /*
+     * 改变FooterView样式
+     */
     public void setLoadCompletely(){
         if(mFooterHolder != null) {
             mFooterHolder.textView.setText("我也是有底线的");
@@ -321,6 +336,10 @@ public class ArticleListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     }
 
 
+    /*
+     * 点击按钮时对应的变化，需要修改界面以及写进数据库两个部分
+     * 其中这个部分是view的变化，也就是先把显示的界面修改
+     */
     public void switchRead(int position){
         ArticleBrief articleBrief = mArticleBriefList.get(position);
         boolean isRead = articleBrief.getRead();

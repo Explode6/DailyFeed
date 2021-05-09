@@ -31,10 +31,13 @@ import java.util.List;
  */
 public class ArticleListFragment extends Fragment implements ArticleListContract.View {
 
+    //presenter层
     ArticleListContract.ArticleListPresenter mPresent;
 
+    //recyclerView的adpter
     ArticleListAdapter mArticleListAdapter;
 
+    //单例模式获取fragment
     public static ArticleListFragment newInstance(){
         return new ArticleListFragment();
     }
@@ -92,13 +95,7 @@ public class ArticleListFragment extends Fragment implements ArticleListContract
             @Override
             public void onItemClick(RecyclerView.Adapter adapter, View v, int position) {
                 ArticleBrief articleBrief = mArticleListAdapter.getArticleBrief(position);
-                //点击进入文章之前，把文章变为已读
-                markReadAndRefresh(position);
-
-                //跳转到文章内容的页面
-                Intent intent = new Intent(root.getContext(), LastActivity.class);
-                intent.putExtra("articleBrief", articleBrief);
-                startActivity(intent);
+                mPresent.openArticleDetails(articleBrief, position);
 
             }
         });
@@ -107,7 +104,8 @@ public class ArticleListFragment extends Fragment implements ArticleListContract
         mArticleListAdapter.setOnDeleteClickListener(new ArticleListAdapter.OnDeleteClickListener() {
             @Override
             public void onDeleteClick(View view, int position) {
-                addCollectionAndRefresh(position);
+                ArticleBrief articleBrief = mArticleListAdapter.getArticleBrief(position);
+                mPresent.addCollection(articleBrief, position);
             }
         });
 
@@ -115,18 +113,23 @@ public class ArticleListFragment extends Fragment implements ArticleListContract
         mArticleListAdapter.setOnMarkReadClickListener(new ArticleListAdapter.OnMarkReadClickListener() {
             @Override
             public void onMarkReadClick(View view, int position) {
-                markReadAndRefresh(position);
+                mPresent.markRead(position);
             }
         });
 
         slideRecyclerView.setLayoutManager(layoutManager);
+
+        //注意：这里有问题，加载完成之后还是能够继续刷新
         slideRecyclerView.addOnScrollListener(new SlideRecyclerView.LoadMoreOnScrollListener(){
             @Override
             public void loadMoreArticle() {
+                //加载后面10篇文章
                 boolean completeLoad = mPresent.loadArticle();
                 if(!completeLoad) {
                     Toast.makeText(root.getContext(), "加载成功", Toast.LENGTH_SHORT).show();
-                }else{
+                }
+                //如果全都加载完成了，改变FooterView样式
+                else{
                     mArticleListAdapter.setLoadCompletely();
                 }
             }
@@ -136,17 +139,19 @@ public class ArticleListFragment extends Fragment implements ArticleListContract
     }
 
 
-    /*
-     * 这两个函数用于presenter的调用
-     * 如果添加了新的数据进来，应当加进缓存并且在view层中插入新的项
+    /**把得到的新数据添加在原数据之后
+     * @param articleBriefList 得到的新数据
+     * @param begin 原数据的末尾
+     * @param size 新数据的长度
      */
     @Override
     public void showArticleList(List<ArticleBrief> articleBriefList, int begin, int size){
         mArticleListAdapter.addArticleList(articleBriefList);
         mArticleListAdapter.notifyItemRangeInserted(begin, size);
     }
-    /*
-     * 如果重新刷新，需要把数据全都换了，并且调用setChanged直接重新加载recyclerView
+
+    /**如果重新刷新，需要把数据全都换了，并且调用setChanged直接重新加载recyclerView
+     * @param articleBriefList 新的数据list
      */
     @Override
     public void refreshArticleList(List<ArticleBrief> articleBriefList){
@@ -155,16 +160,39 @@ public class ArticleListFragment extends Fragment implements ArticleListContract
         mArticleListAdapter.setLoadFirstly();
     }
 
-
-    /*
-     * 以下两个函数还没有修改数据库
-     * 需要补充，还没写进Contract
+    /**点击某一项从而进入对应的文章内容页
+     * @param articleBrief 传入文章详情页的内容
      */
+    @Override
+    public void showArticleDetails(ArticleBrief articleBrief) {
+        Intent intent = new Intent(getContext(), LastActivity.class);
+        intent.putExtra("articleBrief", articleBrief);
+        startActivity(intent);
+    }
+
+
+    /**标记已读后刷新页面
+     * @param position 标记出这是第几项
+     */
+    @Override
     public void markReadAndRefresh(int position){
         mArticleListAdapter.switchRead(position);
     }
 
+    /**添加收藏后刷新页面
+     * @param position 标记出这是第几项
+     */
+    @Override
     public void addCollectionAndRefresh(int position){
         mArticleListAdapter.switchCollected(position);
+    }
+
+    /**
+     * 报告错误信息
+     * @param message 错误信息
+     */
+    @Override
+    public void giveWrongMessage(String message) {
+        Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
     }
 }

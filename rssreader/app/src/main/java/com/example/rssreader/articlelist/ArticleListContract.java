@@ -15,11 +15,28 @@ import java.util.List;
  */
 public interface ArticleListContract {
     interface View extends BaseView<ArticleListPresenter> {
+
         void showArticleList(List<ArticleBrief> articleBriefList, int begin, int size);
+
         void refreshArticleList(List<ArticleBrief> articleBriefList);
+
+        void showArticleDetails(ArticleBrief articleBrief);
+
+        void markReadAndRefresh(int position);
+
+        void addCollectionAndRefresh(int position);
+
+        void giveWrongMessage(String str);
     }
     interface ArticleListPresenter extends BasePresenter {
         boolean loadArticle();
+
         boolean reLoadArticle();
+
+        void openArticleDetails(ArticleBrief articleBrief, int pos);
+
+        void markRead(int pos);
+
+        void addCollection(ArticleBrief articleBrief, int pos);
     }
 }

@@ -1,33 +1,40 @@
 package com.example.rssreader.articlelist;
 
 
+import android.content.Context;
+import android.os.IBinder;
 import android.os.RemoteException;
+import android.widget.Toast;
 
 import com.example.rssreader.IMyAidlInterface;
 import com.example.rssreader.model.datamodel.ArticleBrief;
 import com.example.rssreader.model.datamodel.Channel;
+import com.example.rssreader.model.parse.DataCallback;
 
 import java.util.List;
 
 /**
+ * The type Article list presenter.
+ *
  * @ClassName ArticleListPresenter
  * @Author HaoHaoGe
- * @Date 2021/4/30
- * @Description presenter层，用于view层和model层的连接，从model获取数据并改变view层
+ * @Date 2021 /4/30
+ * @Description
  */
 public class ArticleListPresenter implements ArticleListContract.ArticleListPresenter {
 
 
-    //View层
+
+    //view层
     private ArticleListContract.View mArticleListView;
 
-    //用于记录从第一个界面得到的channel，从而能够去数据库读取相应的文章
+    //用于记录从上个界面传来的rss源，用于去数据库加载对应的文章
     private Channel mChannel;
 
     //model层
     private IMyAidlInterface model;
 
-    //记录数据库的数据是否已经读完，读完之后需改变FooterView样式
+    //判断数据库是否还有数据，如果没有的话可用于改变FooterView样式
     private boolean notHaveData = false;
 
     //数据起点，用于记录当前数据个数，从而向数据库读取新的数据
@@ -38,6 +45,13 @@ public class ArticleListPresenter implements ArticleListContract.ArticleListPres
      */
     private boolean isNotInLoading = true;
 
+    /**
+     * Instantiates a new Article list presenter.
+     *
+     * @param iMyAidlInterface model层对象
+     * @param articleListView  view层对象
+     * @param channel          当前界面对应的rss源
+     */
     public ArticleListPresenter(IMyAidlInterface iMyAidlInterface, ArticleListContract.View articleListView, Channel channel){
         mArticleListView = articleListView;
 
@@ -64,8 +78,30 @@ public class ArticleListPresenter implements ArticleListContract.ArticleListPres
     public boolean loadArticle(){
         //防止同时拉取数据
         if(isNotInLoading){
-            //从数据库取数据
-            return getArticleData();
+            isNotInLoading = false;
+
+            List<ArticleBrief> articleBriefList = null;
+            try {
+                articleBriefList = model.getArticleBriefsFromChannel(mChannel, articleListBegin, 10);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+            int size = articleBriefList.size();
+            //因为每次取10个数据，如果数据小于10的话说明数据库已经取完了
+            if(size < 10) {
+                notHaveData = true;
+            }
+
+            //如果已经没有更新数据的话需要做优化
+            if (size == 0) {
+            } else {
+                mArticleListView.showArticleList(articleBriefList, articleListBegin, size);
+                articleListBegin += size;
+            }
+
+            isNotInLoading = true;
+
+            return notHaveData;
         }
         //
         else{
@@ -74,48 +110,84 @@ public class ArticleListPresenter implements ArticleListContract.ArticleListPres
     }
 
     /**
-     * 上拉加载更多的函数，返回值用于判断是否数据库中是否还有数据没读取完
+     * 上拉加载更多调用的函数，返回值用于判断是否数据库中是否还有数据没读取完
      * 这里比正常load多了一个操作，也就是把当前的list置空然后重新加载数据
      */
     @Override
     public boolean reLoadArticle(){
         if(isNotInLoading){
-            //把当前数据清空
+            //把当前缓存的数据清空
             reset();
-            return getArticleData();
+            List<ArticleBrief> articleBriefList = null;
+            try {
+                articleBriefList = model.getArticleBriefsFromChannel(mChannel, articleListBegin, 10);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+            int size = articleBriefList.size();
+            if(size < 10) {
+                notHaveData = true;
+            }
+            mArticleListView.refreshArticleList(articleBriefList);
+            articleListBegin = size;
+            isNotInLoading = true;
+            return notHaveData;
         }else{
             return true;
         }
     }
 
-    /*
-     * 从数据库读取文章的list
+    /** 切换进入具体的文章页面
+     * @param articleBrief 想要阅读的文章
+     * @param pos 处在文章list的第几项
      */
-    private boolean getArticleData(){
-        isNotInLoading = false;
+    @Override
+    public void openArticleDetails(ArticleBrief articleBrief, int pos) {
+        //先把文章标记为已读
+        markRead(pos);
+        mArticleListView.showArticleDetails(articleBrief);
+    }
 
-        List<ArticleBrief> articleBriefList = null;
+
+    /** 改变文章已读属性（加入数据库），并刷新页面
+     * @param articleBrief 改变已读属性的文章
+     * @param pos 处在文章list的第几项
+     */
+    @Override
+    public void markRead(int pos) {
+        // 还没写好
+        // model.setRead()
+        mArticleListView.markReadAndRefresh(pos);
+    }
+
+    /**添加文章进收藏（加入数据库），并刷新页面
+     * @param articleBrief 需要收藏的文章
+     * @param pos 处在文章list的第几项
+     */
+    @Override
+    public void addCollection(ArticleBrief articleBrief, final int pos) {
         try {
-            articleBriefList = model.getArticleBriefsFromChannel(mChannel, articleListBegin, 10);
+            model.collectArticle(articleBrief, new DataCallback.Stub() {
+                @Override
+                //成功时刷新页面
+                public void onSuccess() throws RemoteException {
+                    mArticleListView.addCollectionAndRefresh(pos);
+                }
+
+                @Override
+                //失败时弹出错误信息
+                public void onFailure() throws RemoteException {
+                    mArticleListView.giveWrongMessage("文章已被删除");
+                }
+
+                @Override
+                public void onError() throws RemoteException {
+                    mArticleListView.giveWrongMessage("数据库出错了");
+                }
+            });
         } catch (RemoteException e) {
             e.printStackTrace();
         }
-        int size = articleBriefList.size();
-        //因为每次取10个数据，如果数据小于10的话说明数据库已经取完了
-        if(size < 10) {
-            notHaveData = true;
-        }
-
-        //如果已经没有更新数据的话需要做优化
-        if (size == 0) {
-        } else {
-            mArticleListView.showArticleList(articleBriefList, articleListBegin, size);
-            articleListBegin += size;
-        }
-
-        isNotInLoading = true;
-
-        return notHaveData;
     }
 
     //清空当前缓存的数据
@@ -123,4 +195,5 @@ public class ArticleListPresenter implements ArticleListContract.ArticleListPres
         articleListBegin = 0;
         notHaveData = false;
     }
+
 }

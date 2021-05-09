@@ -10,6 +10,9 @@
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="2dp"
+        android:layout_marginTop="2dp"
+        android:layout_marginLeft="2dp"
         app:cardCornerRadius="20dp">
     <LinearLayout
         android:layout_width="match_parent"
@@ -49,8 +52,9 @@
 
 
     <LinearLayout
-        android:layout_width="100dp"
+        android:layout_width="110dp"
         android:layout_height="match_parent"
+        android:layout_marginLeft="-8dp"
         android:orientation="vertical">
         <Button
             android:layout_marginTop="10dp"
@@ -61,7 +65,7 @@
             android:background="@drawable/article_list_collection_button"/>
         <Button
             android:id="@+id/mark_as_read"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="5dp"
             android:layout_width="match_parent"
             android:layout_height="30dp"
             android:text="已读"
@@ -69,7 +73,7 @@
 
         <Button
             android:id="@+id/share_article_list"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="5dp"
             android:layout_width="match_parent"
             android:layout_height="30dp"
             android:text="分享"

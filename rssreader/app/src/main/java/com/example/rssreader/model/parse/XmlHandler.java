@@ -2,11 +2,14 @@ package com.example.rssreader.model.parse;
 
 
 import android.os.RemoteException;
+import android.text.Html;
+import android.util.Log;
 
 import com.example.rssreader.model.datamodel.ArticleBrief;
 import com.example.rssreader.model.datamodel.Channel;
 import com.example.rssreader.model.datamodel.DataBaseHelper;
 
+import org.apache.commons.text.StringEscapeUtils;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
@@ -16,6 +19,7 @@ import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
+import java.net.URLDecoder;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -162,7 +166,8 @@ public class XmlHandler {
                     break;
                 }
                 //文章内容项
-                case "item":{
+                case "entry":
+                case "item" :{
                     ArticleBrief articleBrief = new ArticleBrief();
                     Iterator itemIterator = channelSon.elementIterator();
                     List<String> categoryList = new ArrayList<>();
@@ -189,10 +194,18 @@ public class XmlHandler {
                             }
                             case "description":{
                                 articleBrief.setCategory(categoryList.toArray(new String[0]));
-                                articleBrief.setDescription(articleSon.getText());
                                 content = articleSon.getText();
+                                //正则匹配
+                                String description = articleSon.getText();
+                                //转码
+                                description = StringEscapeUtils.unescapeHtml4(description);
+                                Pattern p = Pattern.compile("(<(\\S*?)[^>]*>.*?|<.*? />)");
+                                Matcher m = p.matcher(description);
+                                description = m.replaceAll("");
+                                articleBrief.setDescription(description);
                                 break;
                             }
+                            case "content":
                             case "content:encoded":{
                                 content = articleSon.getText();
                                 break;
@@ -202,6 +215,7 @@ public class XmlHandler {
                     }
                     //最后添加
                     DataBaseHelper.addArticle(articleBrief,content,channel);
+                    break;
                 }
 
             }
@@ -217,7 +231,7 @@ public class XmlHandler {
      */
     private String charsetDetect(BufferedInputStream in) {
 
-        String _charset="";
+        String _charset="UTF-8";
         try {
 
             byte[] buffer = new byte[100];

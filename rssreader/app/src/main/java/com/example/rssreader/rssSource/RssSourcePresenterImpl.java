@@ -141,13 +141,21 @@ public class RssSourcePresenterImpl implements RssSourceContract.RssSourcePresen
 
     @Override
     public void addRssSrc(String rssLink, final Activity activity) {
-        //首先对RSS链接进行解析加入数据库，并实现回调接口
+        //首先检查是否添加了重复的RSS源
        try {
+           channelList = myAidlInterface.getChannel(0, 100);
+           for(Channel channel : channelList){
+               if(channel.getRssLink().equals(rssLink)){
+                   rssSourceView.giveHint("请不要重复添加");
+                   return;
+               }
+           }
+           //对RSS链接进行解析加入数据库，并实现回调接口
            myAidlInterface.downloadParseXml(rssLink, new DataCallback.Stub() {
                @Override
                public void onSuccess() throws RemoteException {
                     //如果成功就获取这个RSS源并刷新RecyclerView
-                   channelList = myAidlInterface.getChannel(0, 100);
+                   // channelList = myAidlInterface.getChannel(0, 100);
                    //把channel列表中的最后一项rssSource列表
                    rssSourceList.add(channelToRssSrc(channelList.get(channelList.size()-1)));
                    //主线程更新UI
@@ -174,7 +182,12 @@ public class RssSourcePresenterImpl implements RssSourceContract.RssSourcePresen
 
                @Override
                public void onError() throws RemoteException {
-
+                   activity.runOnUiThread(new Runnable() {
+                       @Override
+                       public void run() {
+                           rssSourceView.giveHint("添加失败，请输入合法URL");
+                       }
+                   });
                }
            });
        }catch (RemoteException e){

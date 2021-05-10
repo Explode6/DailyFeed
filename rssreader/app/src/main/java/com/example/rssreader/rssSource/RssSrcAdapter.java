@@ -120,7 +120,7 @@ public class RssSrcAdapter extends RecyclerView.Adapter<RssSrcAdapter.ViewHolder
             holder.rssCheckbox.setImageResource(R.drawable.checkbox_unchecked);
         //绑定数据
         if(rssSource.getImage() == null)
-            Glide.with(context).load(R.drawable.add_icon).into(holder.rssSrcImg);
+            Glide.with(context).load(R.drawable.nav_day_img).into(holder.rssSrcImg);
         else
             Glide.with(context).load(rssSource.getImage()).into(holder.rssSrcImg);
         holder.rssSrcTitle.setText(rssSource.getTitle());

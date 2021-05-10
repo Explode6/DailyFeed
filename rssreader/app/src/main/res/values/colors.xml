@@ -8,7 +8,7 @@
     <color name="rssSourceViewColor">#F5F5F5</color>
     <color name="rssSourceItemColor">#FFFFFF</color>
     <color name="rssSourceItemTextColor">#000000</color>
-    <color name="btnPressedBackgroundColor">#F5F5F5</color>
+    <color name="btnPressedBackgroundColor">#C0C0C0</color>
     <color name="btnTextColor">#000000</color>
     <color name="dayBlackNightWhite">#000000</color>
     <color name="dayBlackNightGray">#000000</color>

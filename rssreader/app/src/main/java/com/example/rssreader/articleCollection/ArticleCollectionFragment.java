@@ -1,4 +1,4 @@
-package com.example.rssreader.articlelist;
+package com.example.rssreader.articleCollection;
 
 
 import android.content.Intent;
@@ -14,9 +14,9 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.rssreader.R;
+import com.example.rssreader.articlelist.SlideRecyclerView;
 import com.example.rssreader.lastactivity.LastActivity;
 import com.example.rssreader.model.datamodel.ArticleBrief;
 
@@ -24,26 +24,28 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @ClassName ArticleListFragment
+ * The type Article collection fragment.
+ *
+ * @ClassName ArticleCollectionFragment
  * @Author HaoHaoGe
- * @Date 2021/4/30
+ * @Date 2021 /4/30
  * @Description
  */
-public class ArticleListFragment extends Fragment implements ArticleListContract.View {
+public class ArticleCollectionFragment extends Fragment implements ArticleCollectionContract.View {
 
     //presenter层
-    ArticleListContract.ArticleListPresenter mPresent;
+    ArticleCollectionContract.ArticleCollectionPresenter mPresent;
 
     //recyclerView的adpter
-    ArticleListAdapter mArticleListAdapter;
+    ArticleCollectionAdapter mArticleCollectionAdapter;
 
     //单例模式获取fragment
-    public static ArticleListFragment newInstance(){
-        return new ArticleListFragment();
+    public static ArticleCollectionFragment newInstance(){
+        return new ArticleCollectionFragment();
     }
 
     @Override
-    public void setPresenter(ArticleListContract.ArticleListPresenter presenter) {
+    public void setPresenter(ArticleCollectionContract.ArticleCollectionPresenter presenter) {
         mPresent = presenter;
     }
 
@@ -53,7 +55,7 @@ public class ArticleListFragment extends Fragment implements ArticleListContract
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mArticleListAdapter = new ArticleListAdapter(new ArrayList<ArticleBrief>());
+        mArticleCollectionAdapter = new ArticleCollectionAdapter(new ArrayList<ArticleBrief>());
     }
 
     /*
@@ -72,45 +74,35 @@ public class ArticleListFragment extends Fragment implements ArticleListContract
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        final View root = inflater.inflate(R.layout.article_list_frag, container, false);
+        final View root = inflater.inflate(R.layout.article_collection_frag, container, false);
 
-        //绑定SwipeRefreshLayout，实现下拉刷新功能
-        final SwipeRefreshLayout swipeRefreshLayout = root.findViewById(R.id.refresh_layout);
-        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                mPresent.reLoadArticle();
-                Toast.makeText(root.getContext(), "刷新成功", Toast.LENGTH_SHORT).show();
-                swipeRefreshLayout.setRefreshing(false);
-            }
-        });
 
         //绑定自定义的SlideRecyclerView，实现每一项能够侧滑的功能
-        final SlideRecyclerView slideRecyclerView = (SlideRecyclerView)root.findViewById(R.id.article_list_slideview);
-        slideRecyclerView.setAdapter(mArticleListAdapter);
+        final SlideRecyclerView slideRecyclerView = (SlideRecyclerView)root.findViewById(R.id.article_collection_slideview);
+        slideRecyclerView.setAdapter(mArticleCollectionAdapter);
         LinearLayoutManager layoutManager = new LinearLayoutManager(slideRecyclerView.getContext(), RecyclerView.VERTICAL, false);
 
         //设置每一项的点击事件
-        mArticleListAdapter.setOnItemClickListener(new ArticleListAdapter.OnItemClickListener() {
+        mArticleCollectionAdapter.setOnItemClickListener(new ArticleCollectionAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(RecyclerView.Adapter adapter, View v, int position) {
-                ArticleBrief articleBrief = mArticleListAdapter.getArticleBrief(position);
+                ArticleBrief articleBrief = mArticleCollectionAdapter.getArticleBrief(position);
                 mPresent.openArticleDetails(articleBrief, position);
 
             }
         });
 
         //设置收藏的点击事件
-        mArticleListAdapter.setOnDeleteClickListener(new ArticleListAdapter.OnDeleteClickListener() {
+        mArticleCollectionAdapter.setOnDeleteClickListener(new ArticleCollectionAdapter.OnDeleteClickListener() {
             @Override
             public void onDeleteClick(View view, int position) {
-                ArticleBrief articleBrief = mArticleListAdapter.getArticleBrief(position);
+                ArticleBrief articleBrief = mArticleCollectionAdapter.getArticleBrief(position);
                 mPresent.switchCollection(articleBrief, position, articleBrief.getCollect());
             }
         });
 
         //设计标记已读的点击事件
-        mArticleListAdapter.setOnMarkReadClickListener(new ArticleListAdapter.OnMarkReadClickListener() {
+        mArticleCollectionAdapter.setOnMarkReadClickListener(new ArticleCollectionAdapter.OnMarkReadClickListener() {
             @Override
             public void onMarkReadClick(View view, int position) {
                 mPresent.markRead(position);
@@ -124,14 +116,7 @@ public class ArticleListFragment extends Fragment implements ArticleListContract
             @Override
             public void loadMoreArticle() {
                 //加载后面10篇文章
-                boolean completeLoad = mPresent.loadArticle();
-                if(!completeLoad) {
-                    Toast.makeText(root.getContext(), "加载成功", Toast.LENGTH_SHORT).show();
-                }
-                //如果全都加载完成了，改变FooterView样式
-                else{
-                    mArticleListAdapter.setLoadCompletely();
-                }
+                mPresent.loadArticle();
             }
         });
 
@@ -145,19 +130,9 @@ public class ArticleListFragment extends Fragment implements ArticleListContract
      * @param size 新数据的长度
      */
     @Override
-    public void showArticleList(List<ArticleBrief> articleBriefList, int begin, int size){
-        mArticleListAdapter.addArticleList(articleBriefList);
-        mArticleListAdapter.notifyItemRangeInserted(begin, size);
-    }
-
-    /**如果重新刷新，需要把数据全都换了，并且调用setChanged直接重新加载recyclerView
-     * @param articleBriefList 新的数据list
-     */
-    @Override
-    public void refreshArticleList(List<ArticleBrief> articleBriefList){
-        mArticleListAdapter.changeData(articleBriefList);
-        mArticleListAdapter.notifyDataSetChanged();
-        mArticleListAdapter.setLoadFirstly();
+    public void showArticleCollection(List<ArticleBrief> articleBriefList, int begin, int size){
+        mArticleCollectionAdapter.addArticleList(articleBriefList);
+        mArticleCollectionAdapter.notifyItemRangeInserted(begin, size);
     }
 
     /**点击某一项从而进入对应的文章内容页
@@ -176,7 +151,7 @@ public class ArticleListFragment extends Fragment implements ArticleListContract
      */
     @Override
     public void markReadAndRefresh(int position){
-        mArticleListAdapter.switchRead(position);
+        mArticleCollectionAdapter.switchRead(position);
     }
 
     /**添加收藏后刷新页面
@@ -184,7 +159,7 @@ public class ArticleListFragment extends Fragment implements ArticleListContract
      */
     @Override
     public void switchCollectionAndRefresh(int position){
-        mArticleListAdapter.switchCollected(position);
+        mArticleCollectionAdapter.switchCollected(position);
     }
 
     /**
@@ -194,5 +169,18 @@ public class ArticleListFragment extends Fragment implements ArticleListContract
     @Override
     public void giveWrongMessage(String message) {
         Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
+    }
+
+    /**
+     * 改变FooterView，显示已经加载所有数据了
+     */
+    @Override
+    public void changeFooterViewStyle() {
+        mArticleCollectionAdapter.setLoadCompletely();
+    }
+
+    @Override
+    public void giveLoadSuccessfulMessage() {
+        Toast.makeText(getContext(), "加载成功", Toast.LENGTH_SHORT).show();
     }
 }

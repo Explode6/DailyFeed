@@ -145,6 +145,23 @@ public class DataBaseHelper {
     }
 
     /**
+     * 设置某篇文章为未读
+     *
+     * @param articleBrief 对应的文章简介
+     * @throws SQLException 该文章不在库中
+     */
+    public static void unreadArticle(ArticleBrief articleBrief) throws SQLException{
+        //查询表中是否有对应的文章
+        ArticleBrief articleBrief1 = LitePal.find(ArticleBrief.class, articleBrief.getId());
+        if (articleBrief1==null) throw new SQLException("该文章不存在");
+        //将库中对应的文章设置为未读
+        else{
+            articleBrief1.setToDefault("isRead");
+            articleBrief1.update(articleBrief.getId());
+        }
+    }
+
+    /**
      * 获取频道的列表
      *
      * @param offset 查询偏移量
@@ -251,18 +268,6 @@ public class DataBaseHelper {
                 .find(ArticleBrief.class);
     }
 
-    /**
-     * 根据文章简介判断某文章是否被收藏, 以数据库中的数据为准
-     *
-     * @param articleBrief 文章简介
-     * @return the boolean
-     */
-    public static Boolean isCollect(ArticleBrief articleBrief) throws SQLException {
-        //查询表中的文章简介是否被收藏
-        ArticleBrief articleBrief1 = LitePal.find(ArticleBrief.class, articleBrief.getId());
-        if(articleBrief1 == null) throw new SQLException("对应文章简介不存在");
-        return articleBrief1.getCollect();
-    }
 
     /**
      * 根据模糊的文章标题查询收藏

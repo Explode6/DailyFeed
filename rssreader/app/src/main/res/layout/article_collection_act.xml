@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".articleCollection.ArticleCollectionActivity">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/article_collection_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorPrimary">
+
+        <TextView
+            android:id="@+id/article_collection_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="我的收藏"
+            android:textColor="@color/dayBlackNightGray"
+            android:textSize="26dp"
+            android:textStyle="bold" />
+    </androidx.appcompat.widget.Toolbar>
+
+
+    <FrameLayout
+        android:id="@+id/artcollection_frag"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+    </FrameLayout>
+
+</LinearLayout>

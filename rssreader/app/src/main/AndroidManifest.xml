@@ -33,6 +33,7 @@
 
         <activity android:name="com.example.rssreader.lastactivity.LastActivity"></activity>
         <activity android:name="com.example.rssreader.articlelist.ArticleListActivity"></activity>
+        <activity android:name="com.example.rssreader.articleCollection.ArticleCollectionActivity"></activity>
         <service android:name=".rssSource.NoticeService">
             <intent-filter>
                 <action android:name="com.ryantang.service.PollingService"/>

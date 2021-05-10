@@ -17,6 +17,8 @@ import com.example.rssreader.model.datamodel.LocalComment;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @ClassName： AidlBinder
@@ -73,7 +75,16 @@ public class AidlBinder extends IMyAidlInterface.Stub {
      */
     @Override
     public void downloadParseXml(String url,DataCallback dataCallback) throws RemoteException {
-        dataService.parseXml(url,dataCallback);
+        //添加对于url的检测，判定url是否合法
+        Pattern pattern = Pattern.compile("[a-zA-z]+://[^\\s]*");
+        Matcher matcher = pattern.matcher(url);
+        if(matcher.matches()){
+            dataService.parseXml(url,dataCallback);
+        }else{
+            dataCallback.onError();
+        }
+
+
     }
 
     /**
@@ -158,6 +169,24 @@ public class AidlBinder extends IMyAidlInterface.Stub {
             dataCallback.onFailure();
             throwables.printStackTrace();
         }
+    }
+
+    /**
+     * 设置某篇文章未读
+     * @param articleBrief 文章简介
+     * @param dataCallback 回调函数
+     * @throws RemoteException
+     */
+    @Override
+    public void unreadArticle(ArticleBrief articleBrief, DataCallback dataCallback) throws RemoteException {
+        try {
+            dataService.unreadArticle(articleBrief);
+            dataCallback.onSuccess();
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+            dataCallback.onFailure();
+        }
+
     }
 
     /**
@@ -263,24 +292,6 @@ public class AidlBinder extends IMyAidlInterface.Stub {
         return dataService.getCollection(offset,limit);
     }
 
-    /**
-     * 根据文章简介判断某文章是否被收藏
-     * @param articleBrief
-     * @return 是否收藏
-     * @throws RemoteException
-     */
-    @Override
-    public boolean isCollect(ArticleBrief articleBrief,DataCallback dataCallback) throws RemoteException {
-        try {
-            boolean res = dataService.isCollect(articleBrief);
-            dataCallback.onSuccess();
-            return res;
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
-            dataCallback.onFailure();
-            return false;
-        }
-    }
 
     /**
      * 根据模糊的文章标题查询收藏

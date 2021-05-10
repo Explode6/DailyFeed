@@ -362,6 +362,7 @@ public class RssSourceFragment extends Fragment implements RssSourceContract.Rss
     @Override
     public void giveHint(String hint) {
         Toast.makeText(getContext(), hint, Toast.LENGTH_SHORT).show();
+
     }
 
     @Override

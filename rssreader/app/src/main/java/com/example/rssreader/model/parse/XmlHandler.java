@@ -142,6 +142,9 @@ public class XmlHandler {
         Element channelNode = document.getRootElement().element("channel");
 
         Channel channel = new Channel();
+        //设定channel的rsslink
+        channel.setRssLink(url);
+        DataBaseHelper.addChannel(channel);
 
         //获取channel的子节点
         Iterator iterator = channelNode.elementIterator();
@@ -167,7 +170,6 @@ public class XmlHandler {
                 //rss链接
                 case "atom:link":{
                     channel.setRssLink(channelSon.attribute(0).getValue());
-                    DataBaseHelper.addChannel(channel);
                     break;
                 }
                 //最后建立日期

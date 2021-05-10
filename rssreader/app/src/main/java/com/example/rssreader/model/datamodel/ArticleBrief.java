@@ -75,8 +75,8 @@ public class ArticleBrief extends LitePalSupport implements Parcelable {
                         String description,Boolean isRead,Boolean isCollect,long pubTime,int content_id,int channel_id) {
         this.id = id;
         this.title = title;
-        this.firstPhoto = firstPhoto;
         this.link = link;
+        this.firstPhoto = firstPhoto;
         this.creator = creator;
         this.category = category;
         this.description = description;
@@ -194,10 +194,8 @@ public class ArticleBrief extends LitePalSupport implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeInt(id);
         dest.writeString(title);
-
-        dest.writeString(firstPhoto);
-
         dest.writeString(link);
+        dest.writeString(firstPhoto);
         dest.writeString(creator);
         dest.writeString(category);
         dest.writeString(description);
@@ -215,10 +213,8 @@ public class ArticleBrief extends LitePalSupport implements Parcelable {
         public ArticleBrief createFromParcel(Parcel source) {
             int id = source.readInt();
             String title = source.readString();
-
-            String firstPhoto = source.readString();
-
             String link = source.readString();
+            String firstPhoto = source.readString();
             String creator = source.readString();
             String category = source.readString();
             String description = source.readString();
@@ -227,7 +223,7 @@ public class ArticleBrief extends LitePalSupport implements Parcelable {
             Long pubTime = source.readLong();
             int content_id = source.readInt();
             int channel_id = source.readInt();
-            return new ArticleBrief(id,title,firstPhoto,link,creator,category,description,isRead,isCollect,pubTime,content_id,channel_id);
+            return new ArticleBrief(id,title,link,firstPhoto,creator,category,description,isRead,isCollect,pubTime,content_id,channel_id);
 
         }
 

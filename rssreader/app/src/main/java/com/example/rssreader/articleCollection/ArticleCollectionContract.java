@@ -1,4 +1,4 @@
-package com.example.rssreader.articlelist;
+package com.example.rssreader.articleCollection;
 
 
 import com.example.rssreader.model.datamodel.ArticleBrief;
@@ -8,17 +8,17 @@ import com.example.rssreader.util.BaseView;
 import java.util.List;
 
 /**
- * @ClassName ArticleListContract
+ * @ClassName ArticleCollectionContract
  * @Author HaoHaoGe
  * @Date 2021/4/30
  * @Description
  */
-public interface ArticleListContract {
-    interface View extends BaseView<ArticleListPresenter> {
+public interface ArticleCollectionContract {
+    interface View extends BaseView<ArticleCollectionPresenter> {
 
-        void showArticleList(List<ArticleBrief> articleBriefList, int begin, int size);
+        void showArticleCollection(List<ArticleBrief> articleBriefList, int begin, int size);
 
-        void refreshArticleList(List<ArticleBrief> articleBriefList);
+        void changeFooterViewStyle();
 
         void showArticleDetails(ArticleBrief articleBrief);
 
@@ -27,16 +27,18 @@ public interface ArticleListContract {
         void switchCollectionAndRefresh(int position);
 
         void giveWrongMessage(String str);
-    }
-    interface ArticleListPresenter extends BasePresenter {
-        boolean loadArticle();
 
-        boolean reLoadArticle();
+        void giveLoadSuccessfulMessage();
+    }
+    interface ArticleCollectionPresenter extends BasePresenter {
+        void loadArticle();
 
         void openArticleDetails(ArticleBrief articleBrief, int pos);
 
         void markRead(int pos);
 
         void switchCollection(ArticleBrief articleBrief, int pos, boolean isCollect);
+
+        boolean getArticleBriefData();
     }
 }

@@ -2,11 +2,14 @@ package com.example.rssreader.model.parse;
 
 
 import android.os.RemoteException;
+import android.text.Html;
+import android.util.Log;
 
 import com.example.rssreader.model.datamodel.ArticleBrief;
 import com.example.rssreader.model.datamodel.Channel;
 import com.example.rssreader.model.datamodel.DataBaseHelper;
 
+import org.apache.commons.text.StringEscapeUtils;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
@@ -16,6 +19,7 @@ import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
+import java.net.URLDecoder;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -77,10 +81,14 @@ public class XmlHandler {
      * 下载xml并且解析，将相关数据存放在数据库之中
      */
     public void startParse(DataCallback dataCallback) throws RemoteException {
+
         OkHttpClient client = new OkHttpClient();
         Request request = new Request.Builder()
                 .url(url).build();
         try {
+            //测试速度
+            long start = System.currentTimeMillis();
+
             Response response = client.newCall(request).execute();
 
             //检测
@@ -90,8 +98,18 @@ public class XmlHandler {
 
             FilterInputStreamReader responseDataReader = new FilterInputStreamReader(responseData,decode);
 
+            long diff =  System.currentTimeMillis()-start;
+            Log.d(TAG,"下载使用："+ diff + "毫秒");
+
             try{
+                //测试速度
+                start = System.currentTimeMillis();
+
                 XmlParse(responseDataReader);
+
+                diff =  System.currentTimeMillis()- start;
+                Log.d(TAG,"解析使用："+ diff + "毫秒");
+
                 dataCallback.onSuccess();
             }catch (DocumentException e) {
                 e.printStackTrace();
@@ -114,6 +132,8 @@ public class XmlHandler {
      * @param isReader :InputStreamReader
      */
     private void XmlParse (InputStreamReader isReader) throws IOException, DocumentException, SQLException {
+
+
         //创建Reader对象
         SAXReader reader = new SAXReader();
 
@@ -162,7 +182,8 @@ public class XmlHandler {
                     break;
                 }
                 //文章内容项
-                case "item":{
+                case "entry":
+                case "item" :{
                     ArticleBrief articleBrief = new ArticleBrief();
                     Iterator itemIterator = channelSon.elementIterator();
                     List<String> categoryList = new ArrayList<>();
@@ -189,24 +210,40 @@ public class XmlHandler {
                             }
                             case "description":{
                                 articleBrief.setCategory(categoryList.toArray(new String[0]));
-                                articleBrief.setDescription(articleSon.getText());
                                 content = articleSon.getText();
+                                //转码
+                                content = StringEscapeUtils.unescapeHtml4(content);
+                                String description = content;
+                                //正则匹配
+                                Pattern p = Pattern.compile("(<(\\S*?)[^>]*>.*?|<.*? />)");
+                                Matcher m = p.matcher(description);
+                                description = m.replaceAll("");
+                                articleBrief.setDescription(description);
                                 break;
                             }
+                            case "content":
                             case "content:encoded":{
-                                content = articleSon.getText();
+                                content = StringEscapeUtils.unescapeHtml4(articleSon.getText());
                                 break;
                             }
 
                         }
                     }
+                    //找img标签中图片的内容
+                    Pattern imgp = Pattern.compile("<img.*?src=\"(.+?)\"");
+                    Matcher imgm = imgp.matcher(content);
+                    if(imgm.find()){
+                        articleBrief.setFirstPhoto(imgm.group(1));
+                    }
                     //最后添加
                     DataBaseHelper.addArticle(articleBrief,content,channel);
+                    break;
                 }
 
             }
         }
         DataBaseHelper.addChannel(channel);
+
     }
 
 
@@ -217,7 +254,7 @@ public class XmlHandler {
      */
     private String charsetDetect(BufferedInputStream in) {
 
-        String _charset="";
+        String _charset="UTF-8";
         try {
 
             byte[] buffer = new byte[100];

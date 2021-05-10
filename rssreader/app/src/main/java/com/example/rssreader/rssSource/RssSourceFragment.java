@@ -24,6 +24,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.rssreader.R;
 import com.example.rssreader.RssSource;
+import com.example.rssreader.articleCollection.ArticleCollectionActivity;
 import com.example.rssreader.articlelist.ArticleListActivity;
 import com.google.android.material.navigation.NavigationView;
 
@@ -305,6 +306,10 @@ public class RssSourceFragment extends Fragment implements RssSourceContract.Rss
                         rssSourcePresenter.modeSwitching(menuItem);
                         break;
 
+                    case R.id.my_collection:
+                        Intent intent = new Intent(getContext(), ArticleCollectionActivity.class);
+                        startActivity(intent);
+                        break;
                 }
                 return true;
             }

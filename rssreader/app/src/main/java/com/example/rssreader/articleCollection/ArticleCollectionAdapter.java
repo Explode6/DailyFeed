@@ -1,4 +1,4 @@
-package com.example.rssreader.articlelist;
+package com.example.rssreader.articleCollection;
 
 import android.content.Context;
 import android.util.SparseArray;
@@ -26,7 +26,7 @@ import java.util.List;
  * @Description 文章适配器用于展示文章简介页面的recyclerView，
  * 其中implements View.OnClickListener是用于感知每一项的点击，从而判断是否为侧滑
  */
-public class ArticleListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements View.OnClickListener {
+public class ArticleCollectionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements View.OnClickListener {
 
     private List<ArticleBrief> mArticleBriefList;
 
@@ -104,7 +104,7 @@ public class ArticleListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     /*
      * adapter维护一个对应的list，能够在缓存中修改数据
      */
-    public ArticleListAdapter(List<ArticleBrief> articleBriefList){
+    public ArticleCollectionAdapter(List<ArticleBrief> articleBriefList){
         mArticleBriefList = articleBriefList;
     }
 
@@ -228,8 +228,9 @@ public class ArticleListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 });
             }
         }else if(holder instanceof FooterHolder){
-            //test应该不需要这句
-            //((FooterHolder)holder).textView.setText("下拉加载更多");
+            if(mArticleBriefList.size() < 10) {
+                ((FooterHolder) holder).textView.setText("我也是有底线的");
+            }
         }
     }
 
@@ -351,6 +352,9 @@ public class ArticleListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         ArticleBrief articleBrief = mArticleBriefList.get(position);
         boolean isCollect = articleBrief.getCollect();
         articleBrief.setCollect(!isCollect);
-        this.notifyItemChanged(position);
+
+        this.notifyItemRemoved(position);
+        mArticleBriefList.remove(position);
+        this.notifyItemRangeChanged(position, mArticleBriefList.size());
     }
 }

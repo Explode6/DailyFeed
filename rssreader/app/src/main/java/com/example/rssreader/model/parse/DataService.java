@@ -80,6 +80,16 @@ public class DataService extends Service {
     }
 
     /**
+     * 设置某篇文章未读
+     *
+     * @param articleBrief 文章简介
+     * @throws SQLException 该文章不存在库中
+     */
+    public void unreadArticle(ArticleBrief articleBrief) throws SQLException {
+        DataBaseHelper.unreadArticle(articleBrief);
+    }
+
+    /**
      * 根据频道的rssLink查询其上次的推送时间
      *
      * @param rssLink 频道的rssLink
@@ -144,16 +154,6 @@ public class DataService extends Service {
      */
     public List<ArticleBrief> getCollection(int offset, int limit){
         return DataBaseHelper.getCollection(offset,limit);
-    }
-
-    /**
-     * 根据文章简介判断某文章是否被收藏
-     *
-     * @param articleBrief 文章简介
-     * @return boolean
-     */
-    public boolean isCollect(ArticleBrief articleBrief) throws SQLException {
-        return DataBaseHelper.isCollect(articleBrief);
     }
 
     /**

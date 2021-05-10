@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -47,6 +48,9 @@ public class ArticleListActivity extends AppCompatActivity {
         Channel channel = (Channel)getIntent().getParcelableExtra("channel");
 
         Toolbar toolbar = (Toolbar)findViewById(R.id.main_toolbar);
+
+        TextView textView = (TextView)findViewById(R.id.article_list_title);
+        textView.setText(channel.getTitle());
         //为toolbar引入actionbar的功能
         setSupportActionBar(toolbar);
 

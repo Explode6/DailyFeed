@@ -27,6 +27,8 @@ interface IMyAidlInterface {
 
     void readArticle(in ArticleBrief articleBrief,in DataCallback dataCallback);
 
+    void unreadArticle(in ArticleBrief articleBrief,in DataCallback dataCallback);
+
     String getChannelDateByRssLink(String rssLink,in DataCallback dataCallback);
 
     void updateChannelDateByRssLink(String rssLink, String lastBuildDate,in DataCallback dataCallback);
@@ -38,8 +40,6 @@ interface IMyAidlInterface {
     Channel getChannelOfArticle(in ArticleBrief articleBrief,in DataCallback dataCallback);
 
     List<ArticleBrief> getCollection(int offset, int limit);
-
-    boolean isCollect(in ArticleBrief articleBrief,in DataCallback dataCallback);
 
     List<ArticleBrief> searchCollection(String vagueTitle);
 

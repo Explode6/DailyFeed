@@ -155,7 +155,7 @@ public class RssSourcePresenterImpl implements RssSourceContract.RssSourcePresen
                @Override
                public void onSuccess() throws RemoteException {
                     //如果成功就获取这个RSS源并刷新RecyclerView
-                   // channelList = myAidlInterface.getChannel(0, 100);
+                   channelList = myAidlInterface.getChannel(0, 100);
                    //把channel列表中的最后一项rssSource列表
                    rssSourceList.add(channelToRssSrc(channelList.get(channelList.size()-1)));
                    //主线程更新UI

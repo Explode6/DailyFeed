@@ -48,7 +48,8 @@ public class DataBaseHelper {
         //获取文章的来源channel对象
         List<Channel> channels = LitePal.where("rssLink = ?", resChannel.getRssLink())
                 .find(Channel.class);
-        if(channels.size() != 1){
+        if(channels.isEmpty()) throw new SQLException("Channel 不存在");
+        else if(channels.size() > 1){
             throw new SQLException("Channel 不唯一");
         }
         else {

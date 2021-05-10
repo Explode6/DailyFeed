@@ -35,9 +35,17 @@
         <activity android:name="com.example.rssreader.articlelist.ArticleListActivity"></activity>
         <service android:name=".rssSource.NoticeService">
             <intent-filter>
-                <action android:name="com.ryantang.service.PollingService"/>
+                <action android:name="com.example.rssreader.rssNoticeService"/>
             </intent-filter>
         </service>
+
+        <receiver android:name=".rssSource.ClockBroadcastReceiver"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.example.rssreader.rssNoticeBroadcast"/>
+            </intent-filter>
+        </receiver>
         <service
             android:name="com.example.rssreader.model.parse.DataService"
             android:enabled="true"

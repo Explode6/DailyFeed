@@ -31,7 +31,7 @@ public class BottomPopupWindow extends PopupWindow {
         this.setContentView(this.view);
         //设置弹窗的长和宽
         this.setHeight(ViewGroup.LayoutParams.WRAP_CONTENT);
-        this.setWidth(ViewGroup.LayoutParams.WRAP_CONTENT);
+        this.setWidth(ViewGroup.LayoutParams.MATCH_PARENT);
         //设置窗口为焦点
         this.setFocusable(false);
         //设置窗口可点击

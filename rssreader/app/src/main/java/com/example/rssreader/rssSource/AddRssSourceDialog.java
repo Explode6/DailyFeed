@@ -20,7 +20,7 @@ public class AddRssSourceDialog extends Dialog {
         super(context);
         //将自定义布局加载到dialog
         view = LayoutInflater.from(context).inflate(R.layout.add_rss, null, false);
-        this.addContentView(view, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        this.addContentView(view, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         this.setContentView(view);
         //dialog可点击
         this.setCancelable(true);

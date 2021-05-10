@@ -12,9 +12,8 @@ public class AlarmUtil {
         //初始化intent用来执行service
         Intent intent = new Intent(context, cls);
         intent.setAction(action);
-        intent.putExtra("mykey","更新已完成");
         //利用intent初始化pendingIntent用于启动service
-        PendingIntent pendingIntent = PendingIntent.getService(context,0,intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(context,0,intent, PendingIntent.FLAG_UPDATE_CURRENT);
         //service的开始时间
         long triggerAtTime = seconds;
         //设置时钟

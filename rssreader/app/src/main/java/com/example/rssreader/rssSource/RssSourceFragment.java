@@ -3,11 +3,13 @@ package com.example.rssreader.rssSource;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.RemoteException;
+import android.view.Display;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.Toast;
 
@@ -286,7 +288,8 @@ public class RssSourceFragment extends Fragment implements RssSourceContract.Rss
                                         calendar.set(Calendar.HOUR, dialog.getHour());
                                         calendar.set(Calendar.MINUTE, dialog.getMinute());
                                         calendar.set(Calendar.SECOND, 0);
-                                        AlarmUtil.startNoticeService(getContext(),calendar.getTimeInMillis(),NoticeService.class,"com.ryantang.service.PollingService");
+                                        //开启广播
+                                        AlarmUtil.startNoticeService(getContext(),calendar.getTimeInMillis(),ClockBroadcastReceiver.class,"com.example.rssreader.rssNoticeBroadcast");
                                         dialog.dismiss();
                                         break;
                                     case R.id.close_time_choose_dialog_btn:
@@ -316,6 +319,12 @@ public class RssSourceFragment extends Fragment implements RssSourceContract.Rss
     @Override
     public void showAddRssSrcDialog() {
         addRssSourceDialog.show();
+        //设置弹窗显示宽度
+        WindowManager windowManager = getActivity().getWindowManager();
+        Display display = windowManager.getDefaultDisplay();
+        WindowManager.LayoutParams lp = addRssSourceDialog.getWindow().getAttributes();
+        lp.width = (int)(display.getWidth());
+        addRssSourceDialog.getWindow().setAttributes(lp);
     }
 
     @Override

@@ -142,9 +142,8 @@ public class XmlHandler {
         Element channelNode = document.getRootElement().element("channel");
 
         Channel channel = new Channel();
-        //设定channel的rsslink
-        channel.setRssLink(url);
-        DataBaseHelper.addChannel(channel);
+
+
 
         //获取channel的子节点
         Iterator iterator = channelNode.elementIterator();
@@ -170,6 +169,7 @@ public class XmlHandler {
                 //rss链接
                 case "atom:link":{
                     channel.setRssLink(channelSon.attribute(0).getValue());
+                    DataBaseHelper.addChannel(channel);
                     break;
                 }
                 //最后建立日期
@@ -186,6 +186,11 @@ public class XmlHandler {
                 //文章内容项
                 case "entry":
                 case "item" :{
+                    //设定channel不存在的rssLink时的rssLink
+                    if(channel.getRssLink().isEmpty()){
+                        channel.setRssLink(url);
+                        DataBaseHelper.addChannel(channel);
+                    }
                     ArticleBrief articleBrief = new ArticleBrief();
                     Iterator itemIterator = channelSon.elementIterator();
                     List<String> categoryList = new ArrayList<>();

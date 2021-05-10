@@ -13,30 +13,41 @@
         android:layout_height="wrap_content"
         android:minHeight="35dp"
         android:background="@color/rssSourceItemColor">
-        <ImageView
-            android:id="@+id/rss_checkbox"
-            android:layout_width="15dp"
-            android:layout_height="15dp"
-            android:layout_gravity="top|right"
-            android:layout_margin="5dp"
-            />
-        <ImageView
-            android:id="@+id/rss_source_img"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            />
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <ImageView
+                android:id="@+id/rss_source_img"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="10dp"
+                />
+            <ImageView
+                android:id="@+id/rss_checkbox"
+                android:layout_width="15dp"
+                android:layout_height="15dp"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentTop="true"
+                android:layout_margin="5dp"
+                />
+        </RelativeLayout>
         <TextView
             android:id="@+id/rss_source_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center_horizontal"/>
+            android:gravity="center_horizontal"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:textColor="@color/dayBlackNightGray"/>
         <TextView
             android:id="@+id/rss_source_intro"
-            android:textSize="20sp"
-            android:layout_width="wrap_content"
+            android:textSize="15sp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout_marginLeft="10dp"
+            android:layout_marginBottom="10dp"
+            android:gravity="center_horizontal"
+            android:maxLines="2"
             android:textColor="@color/rssSourceItemTextColor"/>
 
     </LinearLayout>

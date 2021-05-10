@@ -34,7 +34,7 @@ public class NoticeService extends Service {
         initNotification(intent);
         showNotification();
         AlarmUtil.stopNoticeService(getApplicationContext(), NoticeService.class,"com.ryantang.service.PollingService");
-        AlarmUtil.startNoticeService(getApplicationContext(), System.currentTimeMillis()+10*1000, NoticeService.class, "com.ryantang.service.PollingService");
+        //AlarmUtil.startNoticeService(getApplicationContext(), System.currentTimeMillis()+10*1000, NoticeService.class, "com.ryantang.service.PollingService");
         return super.onStartCommand(intent, flags, startId);
     }
 

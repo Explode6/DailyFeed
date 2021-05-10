@@ -1,7 +1,9 @@
 package com.example.rssreader.rssSource;
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.RemoteException;
+import android.view.MenuItem;
 import android.view.View;
 
 import com.example.rssreader.RssSource;
@@ -29,9 +31,9 @@ public interface RssSourceContract {
         //设置底部弹窗按钮监听事件
         public View.OnClickListener setBottomWinClickListener();
         //设置列表按钮背景
-        public void setListBtnBackground(int imgId);
+        public void setListBtnBackground(int imgColor);
         //设置网格按钮背景
-        public void setGridBtnBackground(int imgId);
+        public void setGridBtnBackground(int imgColor);
         //转换为列表布局
         public void convertToList(List<RssSource>list);
         //转换为网格布局
@@ -52,7 +54,10 @@ public interface RssSourceContract {
         public void closeAndClearAddDialog();
         //通过toast给出提示
         public void giveHint(String hint);
-        public void test();
+        //转换为夜间模式
+        public void switchToNightMode(MenuItem item);
+        //转换为日间模式
+        public void switchToDayMode(MenuItem item);
     }
 
     interface RssSourcePresenter extends BasePresenter {
@@ -69,13 +74,15 @@ public interface RssSourceContract {
         //选中所有的RSS源
         public void selectAllRss();
         //添加RSS源
-        public void addRssSrc(String rssLink);
+        public void addRssSrc(String rssLink, Activity activity);
         //channel列表转为rssSource列表
         public List<RssSource> channelToRssSrc(List<Channel>list);
         //channel转为rssSource
         public RssSource channelToRssSrc(Channel channel);
         //点击RSS源之后将RSS源信息传递给下一个界面
         public void transferChannel(Context srcActivity, int pos);
+        //日间/夜间模式切换
+        public void modeSwitching(MenuItem item);
     }
 }
 

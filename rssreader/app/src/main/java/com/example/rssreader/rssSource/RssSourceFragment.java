@@ -117,6 +117,8 @@ public class RssSourceFragment extends Fragment implements RssSourceContract.Rss
             public void onClick(View view) {
                 if(canEdit == false){
                     enterEditMode();
+                }else{
+                    exitEditMode();
                 }
             }
         });
@@ -152,15 +154,13 @@ public class RssSourceFragment extends Fragment implements RssSourceContract.Rss
 
 
     @Override
-    public void setListBtnBackground(int imgId) {
-        listBtn.setBackground(ContextCompat.
-                getDrawable(getContext(), imgId));
+    public void setListBtnBackground(int imgColor) {
+        listBtn.setBackgroundColor(imgColor);
     }
 
     @Override
-    public void setGridBtnBackground(int imgId) {
-        gridBtn.setBackground(ContextCompat.
-                getDrawable(getContext(), imgId));
+    public void setGridBtnBackground(int imgColor) {
+        gridBtn.setBackgroundColor(imgColor);
     }
 
     @Override
@@ -211,6 +211,7 @@ public class RssSourceFragment extends Fragment implements RssSourceContract.Rss
     public void enterEditMode() {
         //进入编辑模式
         canEdit = true;
+        editBtn.setText("取消");
         rssSrcAdapter.setCanEdit(canEdit);
         //进入编辑模式界面
         refreshView();
@@ -226,6 +227,7 @@ public class RssSourceFragment extends Fragment implements RssSourceContract.Rss
     @Override
     public void exitEditMode() {
         canEdit = false;
+        editBtn.setText("编辑");
         rssSourcePresenter.cancelSelected();
         rssSrcAdapter.setCanEdit(false);
         refreshView();
@@ -283,6 +285,7 @@ public class RssSourceFragment extends Fragment implements RssSourceContract.Rss
                                         //设置为用户选择的时间
                                         calendar.set(Calendar.HOUR, dialog.getHour());
                                         calendar.set(Calendar.MINUTE, dialog.getMinute());
+                                        calendar.set(Calendar.SECOND, 0);
                                         AlarmUtil.startNoticeService(getContext(),calendar.getTimeInMillis(),NoticeService.class,"com.ryantang.service.PollingService");
                                         dialog.dismiss();
                                         break;
@@ -293,11 +296,12 @@ public class RssSourceFragment extends Fragment implements RssSourceContract.Rss
                             }
                         });
                         break;
+
                     //主题设置，夜间/日间模式切换
                     case R.id.theme_setting:
-                        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-                        getActivity().recreate();
+                        rssSourcePresenter.modeSwitching(menuItem);
                         break;
+
                 }
                 return true;
             }
@@ -334,7 +338,7 @@ public class RssSourceFragment extends Fragment implements RssSourceContract.Rss
                         break;
                     //点击添加按钮
                     case R.id.add_rss_btn:
-                        rssSourcePresenter.addRssSrc(addRssSourceDialog.getInputRss());
+                        rssSourcePresenter.addRssSrc(addRssSourceDialog.getInputRss(), getActivity());
                         break;
                 }
             }
@@ -347,15 +351,15 @@ public class RssSourceFragment extends Fragment implements RssSourceContract.Rss
     }
 
     @Override
-    public void test() {
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                refreshView();
-                closeAndClearAddDialog();
-                giveHint("添加成功");
-            }
-        });
+    public void switchToNightMode(MenuItem item) {
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+        getActivity().recreate();
+    }
+
+    @Override
+    public void switchToDayMode(MenuItem item) {
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+        getActivity().recreate();
     }
 }
 

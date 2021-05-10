@@ -129,7 +129,7 @@ public class RssSrcAdapter extends RecyclerView.Adapter<RssSrcAdapter.ViewHolder
         if(canEdit == true)
             holder.rssCheckbox.setVisibility(View.VISIBLE);
         else
-            holder.rssCheckbox.setVisibility(View.GONE);
+            holder.rssCheckbox.setVisibility(View.INVISIBLE);
     }
 
     @Override

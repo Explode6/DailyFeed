@@ -13,7 +13,7 @@
         android:text="全选"
         android:drawableTop="@drawable/checkbox_unchecked"
         android:textColor="@color/btnTextColor"
-        android:background="@drawable/main_bottomwin_btn"
+        android:background="@drawable/rss_bottomwin_btn"
         />
     <Button
         android:id="@+id/del_rss_btn"
@@ -24,7 +24,7 @@
         android:drawableTop="@drawable/delete_icon"
         android:text="删除"
         android:textColor="@color/btnTextColor"
-        android:background="@drawable/main_bottomwin_btn"
+        android:background="@drawable/rss_bottomwin_btn"
         />
     <Button
         android:id="@+id/cancel_btn"
@@ -35,6 +35,6 @@
         android:drawableTop="@drawable/rss_bottom_back"
         android:text="取消"
         android:textColor="@color/btnTextColor"
-        android:background="@drawable/main_bottomwin_btn"
+        android:background="@drawable/rss_bottomwin_btn"
         />
 </LinearLayout>

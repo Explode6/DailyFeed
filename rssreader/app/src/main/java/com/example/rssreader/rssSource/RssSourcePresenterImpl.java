@@ -1,14 +1,17 @@
 package com.example.rssreader.rssSource;
 
+import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.RemoteException;
 import android.os.SystemClock;
 import android.util.Base64;
 import android.util.Log;
+import android.view.MenuItem;
 import android.widget.Toast;
 
 import androidx.core.content.ContextCompat;
@@ -40,6 +43,7 @@ public class RssSourcePresenterImpl implements RssSourceContract.RssSourcePresen
     private  boolean listChosen = false;
     private boolean gridChosen = true;
     private boolean canEdit = false;        //是否进入编辑模式
+    private boolean isNightMode = false;            //是否进入了夜间模式
     private List<RssSource>rssSourceList;   //暂存所有RSS源，用于recyclerView的显示
     private List<Channel>channelList;       //暂存所有channel
 
@@ -101,8 +105,8 @@ public class RssSourcePresenterImpl implements RssSourceContract.RssSourcePresen
     public void setListLayout() {
         //切换为列表模式
         if (gridChosen == true && listChosen == false) {
-            rssSourceView.setListBtnBackground(R.drawable.test1);
-            rssSourceView.setGridBtnBackground(R.drawable.add_icon);
+            rssSourceView.setListBtnBackground(Color.parseColor("#808080"));
+            rssSourceView.setGridBtnBackground(Color.parseColor("#F5F5F5"));
             listChosen = true;
             gridChosen = false;
             rssSourceView.convertToList(rssSourceList);
@@ -111,9 +115,10 @@ public class RssSourcePresenterImpl implements RssSourceContract.RssSourcePresen
 
     @Override
     public void setGridLayout() {
+        //切换为网格模式
         if (gridChosen == false && listChosen == true){
-            rssSourceView.setListBtnBackground(R.drawable.add_icon);
-            rssSourceView.setGridBtnBackground(R.drawable.test1);
+            rssSourceView.setListBtnBackground(Color.parseColor("#F5F5F5"));
+            rssSourceView.setGridBtnBackground(Color.parseColor("#808080"));
             listChosen = false;
             gridChosen = true;
             rssSourceView.convertToGrid(rssSourceList);
@@ -135,7 +140,7 @@ public class RssSourcePresenterImpl implements RssSourceContract.RssSourcePresen
     }
 
     @Override
-    public void addRssSrc(String rssLink) {
+    public void addRssSrc(String rssLink, final Activity activity) {
         //首先对RSS链接进行解析加入数据库，并实现回调接口
        try {
            myAidlInterface.downloadParseXml(rssLink, new DataCallback.Stub() {
@@ -145,15 +150,26 @@ public class RssSourcePresenterImpl implements RssSourceContract.RssSourcePresen
                    channelList = myAidlInterface.getChannel(0, 100);
                    //把channel列表中的最后一项rssSource列表
                    rssSourceList.add(channelToRssSrc(channelList.get(channelList.size()-1)));
-                   rssSourceView.test();
-//                   rssSourceView.refreshView();
-//                   rssSourceView.closeAndClearAddDialog();
-//                   rssSourceView.giveHint("添加成功");
+                   //主线程更新UI
+                   activity.runOnUiThread(new Runnable() {
+                       @Override
+                       public void run() {
+                           rssSourceView.refreshView();
+                           rssSourceView.closeAndClearAddDialog();
+                           rssSourceView.giveHint("添加成功");
+                       }
+                   });
                }
 
+               //连接服务失败
                @Override
                public void onFailure() throws RemoteException {
-                   rssSourceView.giveHint("添加失败");
+                   activity.runOnUiThread(new Runnable() {
+                       @Override
+                       public void run() {
+                           rssSourceView.giveHint("添加失败，请检查网络");
+                       }
+                   });
                }
 
                @Override
@@ -190,5 +206,20 @@ public class RssSourcePresenterImpl implements RssSourceContract.RssSourcePresen
         bundle.putParcelable("channel", channelList.get(pos));
         intent.putExtras(bundle);
         srcActivity.startActivity(intent);
+    }
+
+    @Override
+    public void modeSwitching(MenuItem item) {
+        //如果现在为日间模式
+        if(isNightMode == false){
+            //界面切换为夜间模式
+            rssSourceView.switchToNightMode(item);
+            isNightMode = true;
+            //将模式写入配置文件
+        }else{
+            rssSourceView.switchToDayMode(item);
+            isNightMode = false;
+            //将模式写入配置文件
+        }
     }
 }

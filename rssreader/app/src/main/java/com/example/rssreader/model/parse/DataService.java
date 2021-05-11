@@ -240,7 +240,6 @@ public class DataService extends Service {
 
         private XmlCallback xmlCallback;
 
-
         parseXmlThread(String url,XmlCallback xmlCallback){
             this.url = url;
             this.xmlCallback = xmlCallback;

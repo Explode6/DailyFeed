@@ -6,7 +6,6 @@ package com.example.rssreader.model.parse;
 interface XmlCallback {
     //读取XML成功
     void onLoadXmlSuccess();
-
     //格式错误
     void onUrlTypeError();
     //解析错误

@@ -192,6 +192,8 @@ public class XmlHandler {
         //获取channel的子节点
         Iterator iterator = channelNode.elementIterator();
 
+        boolean hasEnterItem = false;
+
         while(iterator.hasNext()) {
             Element channelSon = (Element) iterator.next();
             switch (channelSon.getQualifiedName()){
@@ -221,26 +223,24 @@ public class XmlHandler {
                     channel.setLastBuildDate(channelSon.getText());
                     break;
                 }
-                //图片 (设置值为其url)
-//                case "image":{
-//                    Element url = channelSon.element("url");
-//                    new Thread(new ImgDownloadThread(channel,url.getText())).start();
-//                    break;
-//                }
                 //文章内容项
                 case "entry":
                 case "item" :{
-                    //设定channel不存在的rssLink时的rssLink
-                    if(channel.getRssLink().isEmpty()){
-                        channel.setRssLink(url);
-                        DataBaseHelper.addChannel(channel);
+                    if(!hasEnterItem){
+                        //设定channel不存在的rssLink时的rssLink
+                        if(channel.getRssLink().isEmpty()){
+                            channel.setRssLink(url);
+                            DataBaseHelper.addChannel(channel);
+                        }
+                        //开始对channel图片进行解析
+                        Pattern pattern = Pattern.compile("(http|https)://(www.)?(\\w+(\\.)?)+");
+                        Matcher matcher = pattern.matcher(url);
+                        if(matcher.find()){
+                            new Thread(new ImgUrlFinder(channel,matcher.group(0),imgCallback)).start();
+                        }
+                        hasEnterItem = true;
                     }
-                    //开始对channel图片进行解析
-                    Pattern pattern = Pattern.compile("(http|https)://(www.)?(\\w+(\\.)?)+");
-                    Matcher matcher = pattern.matcher(url);
-                    if(matcher.find()){
-                        new Thread(new ImgUrlFinder(channel,matcher.group(0),imgCallback)).start();
-                    }
+
 
                     ArticleBrief articleBrief = new ArticleBrief();
                     Iterator itemIterator = channelSon.elementIterator();

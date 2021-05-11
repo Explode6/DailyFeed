@@ -12,6 +12,8 @@ import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.request.RequestOptions;
 import com.example.rssreader.R;
 import com.example.rssreader.RssSource;
 
@@ -120,9 +122,17 @@ public class RssSrcAdapter extends RecyclerView.Adapter<RssSrcAdapter.ViewHolder
             holder.rssCheckbox.setImageResource(R.drawable.checkbox_unchecked);
         //绑定数据
         if(rssSource.getImage() == null)
-            Glide.with(context).load(R.drawable.nav_day_img).into(holder.rssSrcImg);
-        else
-            Glide.with(context).load(rssSource.getImage()).into(holder.rssSrcImg);
+            Glide.with(context)
+                    .load(R.drawable.nav_day_img)
+                    .into(holder.rssSrcImg);
+        else {
+            RequestOptions options = new RequestOptions()
+                    .diskCacheStrategy(DiskCacheStrategy.NONE);
+            Glide.with(context)
+                    .load(rssSource.getImage())
+                    .apply(options)
+                    .into(holder.rssSrcImg);
+        }
         holder.rssSrcTitle.setText(rssSource.getTitle());
         holder.rssSrcIntro.setText(rssSource.getIntro());
         //如果有子项被长按就显示复选框

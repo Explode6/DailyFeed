@@ -155,7 +155,6 @@ public class RssSourcePresenterImpl implements RssSourceContract.RssSourcePresen
            myAidlInterface.downloadParseXml(rssLink, new XmlCallback.Stub() {
                @Override
                public void onLoadXmlSuccess() throws RemoteException {
-                   Log.d("Rss","onLoadXmlSuccess");
                    //如果成功就获取这个RSS源并刷新RecyclerView
                    channelList = myAidlInterface.getChannel(0, 100);
                    //把channel列表中的最后一项rssSource列表

@@ -286,8 +286,10 @@ public class RssSourceFragment extends Fragment implements RssSourceContract.Rss
                                         //设置为当前系统时间
                                         calendar.setTimeInMillis(System.currentTimeMillis());
                                         //设置为用户选择的时间
-                                        calendar.set(Calendar.HOUR, dialog.getHour());
+                                        calendar.set(Calendar.HOUR_OF_DAY, dialog.getHour());
                                         calendar.set(Calendar.MINUTE, dialog.getMinute());
+                                        Toast.makeText(getContext(), String.valueOf(dialog.getHour()), Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(getContext(), String.valueOf(dialog.getMinute()), Toast.LENGTH_SHORT).show();
                                         calendar.set(Calendar.SECOND, 0);
                                         //开启广播
                                         AlarmUtil.startNoticeService(getContext(),calendar.getTimeInMillis(),ClockBroadcastReceiver.class,"com.example.rssreader.rssNoticeBroadcast");

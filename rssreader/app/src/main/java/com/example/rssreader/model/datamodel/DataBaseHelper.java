@@ -292,7 +292,7 @@ public class DataBaseHelper {
         //查表确认对应的ArticleBrief
         ArticleBrief articleBrief1 = LitePal.find(ArticleBrief.class, articleBrief.getId());
         if(articleBrief1 == null) throw new SQLException("文章不存在");
-        return LitePal.where("articleBriefId = ?", Integer.toString(articleBrief1.getId()))
+        return LitePal.where("articleBrief_id = ?", Integer.toString(articleBrief1.getId()))
                 .find(GlobalComment.class);
     }
 
@@ -307,7 +307,7 @@ public class DataBaseHelper {
         //查表确认对应的ArticleBrief
         ArticleBrief articleBrief1 = LitePal.find(ArticleBrief.class, articleBrief.getId());
         if(articleBrief1 == null) throw new SQLException("文章不存在");
-        return LitePal.where("articleBriefId = ?", Integer.toString(articleBrief1.getId()))
+        return LitePal.where("articleBrief_id = ?", Integer.toString(articleBrief1.getId()))
                 .find(LocalComment.class);
     }
 
@@ -325,8 +325,8 @@ public class DataBaseHelper {
         if(articleBrief1.getChannel_id() < 0){
             //清除channel已经被取消订阅的ArticleBrief对应的内容和评论
             LitePal.delete(ArticleContent.class, articleBrief1.getContent_id());
-            LitePal.deleteAll(GlobalComment.class, "articleBriefId = ?", Integer.toString(articleBrief1.getId()));
-            LitePal.deleteAll(LocalComment.class, "articleBriefId = ?", Integer.toString(articleBrief1.getId()));
+            LitePal.deleteAll(GlobalComment.class, "articleBrief_id = ?", Integer.toString(articleBrief1.getId()));
+            LitePal.deleteAll(LocalComment.class, "articleBrief_id = ?", Integer.toString(articleBrief1.getId()));
             LitePal.delete(ArticleBrief.class, articleBrief1.getId());
         }else {
             //取消收藏
@@ -355,8 +355,8 @@ public class DataBaseHelper {
                 //删除对应文章内容
                 LitePal.delete(ArticleContent.class, articleBrief.getContent_id());
                 //删除对应文章的评论
-                LitePal.deleteAll(GlobalComment.class, "articleBriefId = ?", Integer.toString(articleBrief.getId()));
-                LitePal.deleteAll(LocalComment.class, "articleBriefId = ?", Integer.toString(articleBrief.getId()));
+                LitePal.deleteAll(GlobalComment.class, "articleBrief_id = ?", Integer.toString(articleBrief.getId()));
+                LitePal.deleteAll(LocalComment.class, "articleBrief_id = ?", Integer.toString(articleBrief.getId()));
                 //删除对应简介
                 LitePal.delete(ArticleBrief.class, articleBrief.getId());
             }
@@ -406,8 +406,8 @@ public class DataBaseHelper {
                 //清除内容
                 LitePal.delete(ArticleContent.class,articleBrief.getContent_id());
                 //清除评论
-                LitePal.deleteAll(GlobalComment.class, "articleBriefId = ?", Integer.toString(articleBrief.getId()));
-                LitePal.deleteAll(LocalComment.class, "articleBriefId = ?", Integer.toString(articleBrief.getId()));
+                LitePal.deleteAll(GlobalComment.class, "articleBrief_id = ?", Integer.toString(articleBrief.getId()));
+                LitePal.deleteAll(LocalComment.class, "articleBrief_id = ?", Integer.toString(articleBrief.getId()));
                 //清除简介
                 LitePal.delete(ArticleBrief.class,articleBrief.getId());
             }

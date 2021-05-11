@@ -6,6 +6,7 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.Build;
 import android.os.IBinder;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
@@ -13,7 +14,6 @@ import androidx.core.app.NotificationCompat;
 import com.example.rssreader.R;
 
 public class NoticeService extends Service {
-    public static final String ACTION = "";
 
     private NotificationCompat.Builder builder;  //通知栏
     private NotificationManager notificationManager;    //通知栏管理器
@@ -27,15 +27,22 @@ public class NoticeService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
+        Toast.makeText(this, "service创建成功",Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         initNotification(intent);
         showNotification();
-        AlarmUtil.stopNoticeService(getApplicationContext(), NoticeService.class,"com.example.rssreader.rssNoticeService");
+        AlarmUtil.stopNoticeService(getApplicationContext(), ClockBroadcastReceiver.class,"com.example.rssreader.rssNoticeBroadcast");
         //AlarmUtil.startNoticeService(getApplicationContext(), System.currentTimeMillis()+10*1000, NoticeService.class, "com.ryantang.service.PollingService");
         return super.onStartCommand(intent, flags, startId);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Toast.makeText(this, "service停止运行",Toast.LENGTH_SHORT).show();
     }
 
     //初始化通知内容

@@ -28,7 +28,7 @@ public class AlarmUtil {
         intent.setAction(action);
         intent.putExtra("mykey","更新已完成");
         //利用intent初始化pendingIntent用于启动service
-        PendingIntent pendingIntent = PendingIntent.getService(context,0,intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(context,0,intent, PendingIntent.FLAG_UPDATE_CURRENT);
         manager.cancel(pendingIntent);
 
     }

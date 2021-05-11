@@ -368,13 +368,13 @@ public class RssSourceFragment extends Fragment implements RssSourceContract.Rss
     @Override
     public void switchToNightMode(MenuItem item) {
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-        getActivity().recreate();
+        //getActivity().recreate();
     }
 
     @Override
     public void switchToDayMode(MenuItem item) {
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-        getActivity().recreate();
+        //getActivity().recreate();
     }
 }
 

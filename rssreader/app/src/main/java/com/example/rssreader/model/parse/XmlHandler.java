@@ -4,6 +4,7 @@ package com.example.rssreader.model.parse;
 import android.os.RemoteException;
 import android.text.Html;
 import android.util.Log;
+import android.util.Xml;
 
 import com.example.rssreader.model.datamodel.ArticleBrief;
 import com.example.rssreader.model.datamodel.Channel;
@@ -14,6 +15,7 @@ import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
+import org.jsoup.Jsoup;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
@@ -44,6 +46,39 @@ public class XmlHandler {
     private static final String TAG = "XmlHandler";
 
     /**
+     * 内部类ImgUrlFinder
+     * 寻找图片的url并且发起一个下载图片的线程
+     */
+    public class ImgUrlFinder implements Runnable{
+
+        private Channel channel;
+        private String url;
+        private XmlCallback xmlCallback;
+
+        ImgUrlFinder(Channel channel,String url,XmlCallback xmlCallback){
+            this.channel = channel;
+            this.url = url;
+            this.xmlCallback = xmlCallback;
+        }
+
+        @Override
+        public void run() {
+            try {
+                org.jsoup.nodes.Document document =  Jsoup.connect(url).get();
+                org.jsoup.select.Elements imgElements = document.select("link[rel=icon]");
+                new Thread(new ImgDownloadThread(channel,imgElements.get(0).attr("href"),xmlCallback)).start();
+            } catch (IOException e) {
+                try {
+                    xmlCallback.onLoadImgError();
+                } catch (RemoteException remoteException) {
+                    remoteException.printStackTrace();
+                }
+                e.printStackTrace();
+            }
+        }
+    }
+
+    /**
      * 内部类ImgDownloader
      * 下载图片线程
      */
@@ -51,10 +86,12 @@ public class XmlHandler {
 
         private Channel channel;
         private String url;
+        private XmlCallback xmlCallback;
 
-        ImgDownloadThread(Channel channel,String url){
+        ImgDownloadThread(Channel channel,String url,XmlCallback xmlCallback){
             this.channel = channel;
             this.url = url;
+            this.xmlCallback = xmlCallback;
         }
 
         @Override
@@ -67,11 +104,20 @@ public class XmlHandler {
                 byte[] bytes = response.body().bytes();
                 channel.setImage(bytes);
                 DataBaseHelper.addChannel(channel);
-            } catch (IOException e) {
+                xmlCallback.onLoadImgSuccess();
+            } catch (IOException | RemoteException e) {
+                try {
+                    xmlCallback.onLoadImgError();
+                } catch (RemoteException remoteException) {
+                    remoteException.printStackTrace();
+                }
                 e.printStackTrace();
             }
         }
     }
+
+
+
 
     public XmlHandler(String url){
         this.url = url ;
@@ -80,7 +126,7 @@ public class XmlHandler {
     /**
      * 下载xml并且解析，将相关数据存放在数据库之中
      */
-    public void startParse(DataCallback dataCallback) throws RemoteException {
+    public void startParse(XmlCallback xmlCallback) throws RemoteException {
 
         OkHttpClient client = new OkHttpClient();
         Request request = new Request.Builder()
@@ -105,24 +151,24 @@ public class XmlHandler {
                 //测试速度
                 start = System.currentTimeMillis();
 
-                XmlParse(responseDataReader);
+                XmlParse(responseDataReader,xmlCallback);
 
                 diff =  System.currentTimeMillis()- start;
                 Log.d(TAG,"解析使用："+ diff + "毫秒");
 
-                dataCallback.onSuccess();
+                xmlCallback.onLoadXmlSuccess();
             }catch (DocumentException e) {
                 e.printStackTrace();
-                dataCallback.onFailure();
+                xmlCallback.onParseError();
 
             } catch (SQLException e) {
                 e.printStackTrace();
-                dataCallback.onFailure();
+                xmlCallback.onParseError();
             }
 
         } catch (IOException e) {
             e.printStackTrace();
-            dataCallback.onFailure();
+            xmlCallback.onSourceError();
         }
 
     }
@@ -131,7 +177,7 @@ public class XmlHandler {
      * 提供对XML的解析
      * @param isReader :InputStreamReader
      */
-    private void XmlParse (InputStreamReader isReader) throws IOException, DocumentException, SQLException {
+    private void XmlParse (InputStreamReader isReader,XmlCallback imgCallback) throws IOException, DocumentException, SQLException {
 
 
         //创建Reader对象
@@ -142,8 +188,6 @@ public class XmlHandler {
         Element channelNode = document.getRootElement().element("channel");
 
         Channel channel = new Channel();
-
-
 
         //获取channel的子节点
         Iterator iterator = channelNode.elementIterator();
@@ -178,11 +222,11 @@ public class XmlHandler {
                     break;
                 }
                 //图片 (设置值为其url)
-                case "image":{
-                    Element url = channelSon.element("url");
-                    new Thread(new ImgDownloadThread(channel,url.getText())).start();
-                    break;
-                }
+//                case "image":{
+//                    Element url = channelSon.element("url");
+//                    new Thread(new ImgDownloadThread(channel,url.getText())).start();
+//                    break;
+//                }
                 //文章内容项
                 case "entry":
                 case "item" :{
@@ -191,6 +235,13 @@ public class XmlHandler {
                         channel.setRssLink(url);
                         DataBaseHelper.addChannel(channel);
                     }
+                    //开始对channel图片进行解析
+                    Pattern pattern = Pattern.compile("(http|https)://(www.)?(\\w+(\\.)?)+");
+                    Matcher matcher = pattern.matcher(url);
+                    if(matcher.find()){
+                        new Thread(new ImgUrlFinder(channel,matcher.group(0),imgCallback)).start();
+                    }
+
                     ArticleBrief articleBrief = new ArticleBrief();
                     Iterator itemIterator = channelSon.elementIterator();
                     List<String> categoryList = new ArrayList<>();

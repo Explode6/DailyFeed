@@ -70,18 +70,18 @@ public class AidlBinder extends IMyAidlInterface.Stub {
     /**
      * 下载解析Xml，解析后数据会进入数据库
      * @param url
-     * @param dataCallback
+     * @param xmlCallback
      * @throws RemoteException
      */
     @Override
-    public void downloadParseXml(String url,DataCallback dataCallback) throws RemoteException {
+    public void downloadParseXml(String url,XmlCallback xmlCallback) throws RemoteException {
         //添加对于url的检测，判定url是否合法
         Pattern pattern = Pattern.compile("[a-zA-z]+://[^\\s]*");
         Matcher matcher = pattern.matcher(url);
         if(matcher.matches()){
-            dataService.parseXml(url,dataCallback);
+            dataService.parseXml(url,xmlCallback);
         }else{
-            dataCallback.onError();
+            xmlCallback.onUrlTypeError();
         }
 
 

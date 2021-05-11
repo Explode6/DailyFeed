@@ -20,7 +20,8 @@ public class LocalComment extends LitePalSupport implements Parcelable {
     @Column(unique = true)
     private int id;
 
-    private int articleBriefId;
+    @Column(nullable = false)
+    private int articleBrief_id;
 
     //选中的内容
     private String localContent;
@@ -31,14 +32,14 @@ public class LocalComment extends LitePalSupport implements Parcelable {
     private Date date;
 
     public LocalComment(){
-        this.articleBriefId = -1;
+        this.articleBrief_id = -1;
         this.localContent = "";
         this.comment = "";
         this.date = null;
     }
 
     public LocalComment(int articleBriefId, String localContent, String comment, Date date) {
-        this.articleBriefId = articleBriefId;
+        this.articleBrief_id = articleBriefId;
         this.localContent = localContent;
         this.comment = comment;
         this.date = date;
@@ -47,7 +48,7 @@ public class LocalComment extends LitePalSupport implements Parcelable {
     //序列化使用
     public LocalComment(int id,int articleBriefId, String localContent, String comment, Date date) {
         this.id = id;
-        this.articleBriefId = articleBriefId;
+        this.articleBrief_id = articleBriefId;
         this.localContent = localContent;
         this.comment = comment;
         this.date = date;
@@ -59,11 +60,11 @@ public class LocalComment extends LitePalSupport implements Parcelable {
     }
 
     protected int getArticleBriefId() {
-        return articleBriefId;
+        return articleBrief_id;
     }
 
     protected void setArticleBriefId(int articleBriefId) {
-        this.articleBriefId = articleBriefId;
+        this.articleBrief_id = articleBriefId;
     }
 
     public String getLocalContent() {
@@ -98,7 +99,7 @@ public class LocalComment extends LitePalSupport implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeInt(id);
-        dest.writeInt(articleBriefId);
+        dest.writeInt(articleBrief_id);
         dest.writeString(localContent);
         dest.writeString(comment);
         dest.writeValue(date);

@@ -36,5 +36,6 @@ dependencies {
     implementation 'androidx.cardview:cardview:1.0.0'
     implementation 'androidx.appcompat:appcompat:1.1.0-alpha05'
     implementation 'org.apache.commons:commons-text:1.6'
+    implementation 'org.jsoup:jsoup:1.12.1'
     compile 'com.github.bumptech.glide:glide:4.0.0'
 }

@@ -238,17 +238,17 @@ public class DataService extends Service {
     private class parseXmlThread implements Runnable{
         private String url;
 
-        private DataCallback dataCallback;
+        private XmlCallback xmlCallback;
 
-        parseXmlThread(String url,DataCallback dataCallback){
+
+        parseXmlThread(String url,XmlCallback xmlCallback){
             this.url = url;
-            this.dataCallback = dataCallback;
+            this.xmlCallback = xmlCallback;
         }
         @Override
         public void run() {
-
             try {
-                new XmlHandler(url).startParse(dataCallback);
+                new XmlHandler(url).startParse(xmlCallback);
             } catch (RemoteException e) {
                 e.printStackTrace();
             }
@@ -261,8 +261,8 @@ public class DataService extends Service {
      * 下载解析Xml
      * @param url
      */
-    public void parseXml(String url,DataCallback dataCallback){
-        new Thread(new parseXmlThread(url,dataCallback)).start();
+    public void parseXml(String url,XmlCallback xmlCallback){
+        new Thread(new parseXmlThread(url,xmlCallback)).start();
     }
 
     @Override

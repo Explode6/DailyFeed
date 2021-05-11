@@ -2,6 +2,7 @@
 package com.example.rssreader;
 
 import com.example.rssreader.model.parse.DataCallback;
+import com.example.rssreader.model.parse.XmlCallback;
 
 import com.example.rssreader.model.datamodel.Channel;
 import com.example.rssreader.model.datamodel.ArticleBrief;
@@ -13,12 +14,10 @@ import com.example.rssreader.model.datamodel.AidlDate;
 
 interface IMyAidlInterface {
 
-    void downloadParseXml(String url,in DataCallback dataCallback);
+    void downloadParseXml(String url,in XmlCallback xmlCallback);
 
     List<Channel> getChannel(int offset, int limit);
-    /**
-    * 收藏文章
-    **/
+
     void collectArticle(in ArticleBrief articleBrief,in DataCallback dataCallback);
 
     void addGlobalCommentToArticle(in ArticleBrief articleBrief,in String comment,in AidlDate aidlDate,in DataCallback dataCallback);

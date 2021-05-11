@@ -19,28 +19,29 @@ public class GlobalComment extends LitePalSupport implements Parcelable {
     @Column(unique = true)
     private int id;
 
-    private int articleBriefId;
+    @Column(nullable = false)
+    private int articleBrief_id;
 
     private String comment;
 
     private Date date;
 
     public GlobalComment(){
-        this.articleBriefId = -1;
+        this.articleBrief_id = -1;
         this.comment = "";
         this.date = null;
     }
 
-    public GlobalComment(int articleBriefId, String comment, Date date) {
-        this.articleBriefId = articleBriefId;
+    public GlobalComment(int articleBrief_id, String comment, Date date) {
+        this.articleBrief_id = articleBrief_id;
         this.comment = comment;
         this.date = date;
     }
 
     //序列化使用
-    public GlobalComment(int id,int articleBriefId,String comment,Date date){
+    public GlobalComment(int id, int articleBrief_id, String comment, Date date){
         this.id = id;
-        this.articleBriefId = articleBriefId;
+        this.articleBrief_id = articleBrief_id;
         this.comment = comment;
         this.date = date;
     }
@@ -49,12 +50,12 @@ public class GlobalComment extends LitePalSupport implements Parcelable {
         return id;
     }
 
-    protected int getArticleBriefId() {
-        return articleBriefId;
+    protected int getArticleBrief_id() {
+        return articleBrief_id;
     }
 
-    protected void setArticleBriefId(int articleBriefId) {
-        this.articleBriefId = articleBriefId;
+    protected void setArticleBrief_id(int articleBrief_id) {
+        this.articleBrief_id = articleBrief_id;
     }
 
     public String getComment() {
@@ -81,7 +82,7 @@ public class GlobalComment extends LitePalSupport implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeInt(this.id);
-        dest.writeInt(this.articleBriefId);
+        dest.writeInt(this.articleBrief_id);
         dest.writeString(this.comment);
         dest.writeValue(this.date);
     }

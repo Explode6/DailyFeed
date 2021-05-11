@@ -1,4 +1,4 @@
-package com.example.rssreader.model.datamodel;
+package com.example.rssreader.util;
 
 import android.annotation.SuppressLint;
 import android.content.Context;

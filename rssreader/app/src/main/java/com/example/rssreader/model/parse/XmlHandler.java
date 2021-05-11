@@ -21,6 +21,7 @@ import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
+import java.net.URL;
 import java.net.URLDecoder;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -66,8 +67,21 @@ public class XmlHandler {
             try {
                 org.jsoup.nodes.Document document =  Jsoup.connect(url).get();
                 org.jsoup.select.Elements imgElements = document.select("link[rel=icon]");
-                new Thread(new ImgDownloadThread(channel,imgElements.get(0).attr("href"),xmlCallback)).start();
-            } catch (IOException e) {
+                if(imgElements.size()!=0){
+                    String imgUrl = imgElements.get(0).attr("href");
+                    URL finalUrl = new URL(new URL(url),imgUrl);
+                    new Thread(new ImgDownloadThread(channel,finalUrl.toExternalForm(),xmlCallback)).start();
+                }else{
+                    imgElements = document.select("link[rel=shortcut icon]");
+                    if(imgElements.size()!=0){
+                        String imgUrl = imgElements.get(0).attr("href");
+                        URL finalUrl = new URL(new URL(url),imgUrl);
+                        new Thread(new ImgDownloadThread(channel,finalUrl.toExternalForm(),xmlCallback)).start();
+                    }else{
+                        xmlCallback.onLoadImgError();
+                    }
+                }
+            } catch (IOException | RemoteException e) {
                 try {
                     xmlCallback.onLoadImgError();
                 } catch (RemoteException remoteException) {

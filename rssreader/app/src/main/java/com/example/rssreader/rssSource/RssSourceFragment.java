@@ -20,6 +20,7 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.rssreader.R;
@@ -27,6 +28,8 @@ import com.example.rssreader.RssSource;
 import com.example.rssreader.articleCollection.ArticleCollectionActivity;
 import com.example.rssreader.articlelist.ArticleListActivity;
 import com.google.android.material.navigation.NavigationView;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -395,6 +398,27 @@ public class RssSourceFragment extends Fragment implements RssSourceContract.Rss
     @Override
     public void hideProgressBar() {
         addRssSourceDialog.hideProgressBar();
+    }
+
+    @Override
+    public ItemTouchHelper setItemTouchHelper() {
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new ItemTouchHelper.Callback() {
+            @Override
+            public int getMovementFlags(@NonNull @NotNull RecyclerView recyclerView, @NonNull @NotNull RecyclerView.ViewHolder viewHolder) {
+                return 0;
+            }
+
+            @Override
+            public boolean onMove(@NonNull @NotNull RecyclerView recyclerView, @NonNull @NotNull RecyclerView.ViewHolder viewHolder, @NonNull @NotNull RecyclerView.ViewHolder target) {
+                return false;
+            }
+
+            @Override
+            public void onSwiped(@NonNull @NotNull RecyclerView.ViewHolder viewHolder, int direction) {
+
+            }
+        });
+        return null;
     }
 }
 

@@ -123,7 +123,6 @@ public class RssSourceFragment extends Fragment implements RssSourceContract.Rss
             public void onClick(View view) {
                 if(canEdit == false){
                     enterEditMode();
-                    showProgressBar();
                 }else{
                     exitEditMode();
                 }
@@ -390,12 +389,12 @@ public class RssSourceFragment extends Fragment implements RssSourceContract.Rss
 
     @Override
     public void showProgressBar() {
-        loadingPopupWindow.showAtLocation(this.getView(),Gravity.TOP|Gravity.CENTER_HORIZONTAL,0,1000);
+        addRssSourceDialog.showProgressBar();
     }
 
     @Override
     public void hideProgressBar() {
-        loadingPopupWindow.dismiss();
+        addRssSourceDialog.hideProgressBar();
     }
 }
 

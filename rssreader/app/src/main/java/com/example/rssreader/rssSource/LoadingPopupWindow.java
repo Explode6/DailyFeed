@@ -26,7 +26,7 @@ public class LoadingPopupWindow extends PopupWindow {
         this.setHeight(ViewGroup.LayoutParams.WRAP_CONTENT);
         this.setWidth(ViewGroup.LayoutParams.WRAP_CONTENT);
         //设置背景色
-        this.setBackgroundDrawable(new ColorDrawable(0xb0000000));
+        this.setBackgroundDrawable(context.getResources().getDrawable(android.R.color.transparent));
         //设置窗口为焦点
         this.setFocusable(false);
         //设置窗口不可点击

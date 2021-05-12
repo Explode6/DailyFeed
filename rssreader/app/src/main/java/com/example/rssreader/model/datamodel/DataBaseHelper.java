@@ -59,7 +59,12 @@ public class DataBaseHelper {
             List<ArticleBrief> articleBriefs = LitePal.where("link = ?", articleBrief.getLink())
                     .find(ArticleBrief.class);
             if(!articleBriefs.isEmpty()){
-                //文章已存在, 直接返回
+                //文章已存在, 如果是该源曾经被收藏的文章，重新链接上外键
+                if(articleBriefs.get(0).getCollect() && articleBriefs.get(0).getChannel_id() == -1){
+                    articleBriefs.get(0).setChannel_id(channels.get(0).getId());
+                    articleBriefs.get(0).setPubTime((int)System.currentTimeMillis()/(60*60*24*1000));
+                    articleBriefs.get(0).update(articleBrief.getId());
+                }
                 return;
             }else {
                 //文章不存在, 添加

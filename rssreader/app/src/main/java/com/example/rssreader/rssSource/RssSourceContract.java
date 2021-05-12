@@ -58,6 +58,12 @@ public interface RssSourceContract {
         public void switchToNightMode(MenuItem item);
         //转换为日间模式
         public void switchToDayMode(MenuItem item);
+        //设置加载框
+        public void setProgressBar();
+        //显示加载框
+        public void showProgressBar();
+        //隐藏加载框
+        public void hideProgressBar();
     }
 
     interface RssSourcePresenter extends BasePresenter {

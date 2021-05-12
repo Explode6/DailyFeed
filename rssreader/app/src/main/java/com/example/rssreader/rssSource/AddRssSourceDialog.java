@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 
 import com.example.rssreader.R;
 
@@ -15,6 +16,7 @@ public class AddRssSourceDialog extends Dialog {
     private Button closeBtn;
     private Button addBtn;
     private EditText inputRssSource;
+    private ProgressBar progressBar;
 
     public AddRssSourceDialog(Context context){
         super(context);
@@ -28,6 +30,8 @@ public class AddRssSourceDialog extends Dialog {
         this.setCanceledOnTouchOutside(false);
         //获取输入框
         this.inputRssSource = (EditText)view.findViewById(R.id.rss_link);
+        //获取加载条
+        this.progressBar = (ProgressBar)view.findViewById(R.id.loading_progressBar);
     }
     //设置按钮监听事件
     public void setListener(View.OnClickListener itemsListener){
@@ -44,5 +48,13 @@ public class AddRssSourceDialog extends Dialog {
     //清空RSS链接内容
     public void clearInput(){
         this.inputRssSource.setText("");
+    }
+    //显示加载条
+    public void showProgressBar(){
+        this.progressBar.setVisibility(View.VISIBLE);
+    }
+    //隐藏加载条
+    public void hideProgressBar(){
+        this.progressBar.setVisibility(View.INVISIBLE);
     }
 }

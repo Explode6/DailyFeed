@@ -13,6 +13,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
 import com.example.rssreader.R;
 import com.example.rssreader.model.datamodel.ArticleBrief;
@@ -351,6 +352,11 @@ public class ArticleListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         ArticleBrief articleBrief = mArticleBriefList.get(position);
         boolean isCollect = articleBrief.getCollect();
         articleBrief.setCollect(!isCollect);
+        this.notifyItemChanged(position);
+    }
+
+    public void markRead(int position){
+        mArticleBriefList.get(position).setRead(true);
         this.notifyItemChanged(position);
     }
 }

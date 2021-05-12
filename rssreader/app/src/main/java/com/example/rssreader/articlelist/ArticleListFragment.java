@@ -37,6 +37,8 @@ public class ArticleListFragment extends Fragment implements ArticleListContract
     //recyclerView的adpter
     ArticleListAdapter mArticleListAdapter;
 
+    SwipeRefreshLayout mSwipeRefreshLayout;
+
     //单例模式获取fragment
     public static ArticleListFragment newInstance(){
         return new ArticleListFragment();
@@ -75,13 +77,11 @@ public class ArticleListFragment extends Fragment implements ArticleListContract
         final View root = inflater.inflate(R.layout.article_list_frag, container, false);
 
         //绑定SwipeRefreshLayout，实现下拉刷新功能
-        final SwipeRefreshLayout swipeRefreshLayout = root.findViewById(R.id.refresh_layout);
-        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+        mSwipeRefreshLayout = root.findViewById(R.id.refresh_layout);
+        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                mPresent.reLoadArticle();
-                Toast.makeText(root.getContext(), "刷新成功", Toast.LENGTH_SHORT).show();
-                swipeRefreshLayout.setRefreshing(false);
+                mPresent.refreshChannel(getActivity());
             }
         });
 
@@ -105,7 +105,7 @@ public class ArticleListFragment extends Fragment implements ArticleListContract
             @Override
             public void onDeleteClick(View view, int position) {
                 ArticleBrief articleBrief = mArticleListAdapter.getArticleBrief(position);
-                mPresent.switchCollection(articleBrief, position, articleBrief.getCollect());
+                mPresent.switchCollection(articleBrief, position);
             }
         });
 
@@ -113,7 +113,8 @@ public class ArticleListFragment extends Fragment implements ArticleListContract
         mArticleListAdapter.setOnMarkReadClickListener(new ArticleListAdapter.OnMarkReadClickListener() {
             @Override
             public void onMarkReadClick(View view, int position) {
-                mPresent.markRead(position);
+                ArticleBrief articleBrief = mArticleListAdapter.getArticleBrief(position);
+                mPresent.switchRead(articleBrief, position);
             }
         });
 
@@ -175,8 +176,16 @@ public class ArticleListFragment extends Fragment implements ArticleListContract
      * @param position 标记出这是第几项
      */
     @Override
-    public void markReadAndRefresh(int position){
+    public void switchReadAndRefresh(int position){
         mArticleListAdapter.switchRead(position);
+    }
+
+    /**切换已读后刷新页面
+     * @param position 标记出这是第几项
+     */
+    @Override
+    public void markReadAndRefresh(int position){
+        mArticleListAdapter.markRead(position);
     }
 
     /**添加收藏后刷新页面
@@ -195,4 +204,12 @@ public class ArticleListFragment extends Fragment implements ArticleListContract
     public void giveWrongMessage(String message) {
         Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
     }
+
+    @Override
+    public void stopRefreshUI() {
+        if(mSwipeRefreshLayout != null){
+            mSwipeRefreshLayout.setRefreshing(false);
+        }
+    }
+
 }

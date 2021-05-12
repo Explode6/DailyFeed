@@ -7,13 +7,15 @@ import android.util.Base64;
 import org.litepal.annotation.Column;
 import org.litepal.crud.LitePalSupport;
 
+import java.io.Serializable;
+
 /**
   * @ClassName： Channel
   * @Author Von
   * @Date： 2021/4/24
   * @Description： 频道类，外部可调用的信息包括：标题，订阅链接，原文链接，最后推送日期，频道简介，频道图片
 */
-public class Channel extends LitePalSupport implements Parcelable {
+public class Channel extends LitePalSupport implements Parcelable, Serializable {
 
     @Column(unique = true)
     private int id;

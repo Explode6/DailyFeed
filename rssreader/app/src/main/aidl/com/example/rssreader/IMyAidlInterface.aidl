@@ -10,6 +10,8 @@ import com.example.rssreader.model.datamodel.GlobalComment;
 import com.example.rssreader.model.datamodel.LocalComment;
 import com.example.rssreader.model.datamodel.AidlDate;
 
+import android.os.ParcelFileDescriptor;
+
 // Declare any non-default types here with import statements
 
 interface IMyAidlInterface {
@@ -17,6 +19,8 @@ interface IMyAidlInterface {
     void downloadParseXml(String url,in XmlCallback xmlCallback);
 
     List<Channel> getChannel(int offset, int limit);
+
+    ParcelFileDescriptor getChannel2(int offset,int limit);
 
     void collectArticle(in ArticleBrief articleBrief,in DataCallback dataCallback);
 

@@ -11,7 +11,6 @@ import android.widget.PopupWindow;
 import com.example.rssreader.R;
 
 public class BottomPopupWindow extends PopupWindow {
-    private Context mContext;
     private View view;
     //分别为全选按钮，取消按钮，删除按钮
     private Button selectAllBtn, cancelBtn, delBtn;

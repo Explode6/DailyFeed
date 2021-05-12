@@ -38,6 +38,7 @@ public class RssSourceFragment extends Fragment implements RssSourceContract.Rss
     private GridLayoutManager layoutManager;   //布局管理器
     private BottomPopupWindow bottomPopupWindow;    //底部弹窗
     private AddRssSourceDialog addRssSourceDialog;  //添加RSS源的弹窗
+    private LoadingPopupWindow loadingPopupWindow;  //加载弹窗
     private RecyclerView rssView;
     private boolean canEdit = false;    //是否进入编辑模式
     private Button listBtn;   //选择列表布局按钮
@@ -98,6 +99,8 @@ public class RssSourceFragment extends Fragment implements RssSourceContract.Rss
         setBottomWindow();
         //绑定添加RSS源的弹窗
         setAddRssSrcDialog();
+        //绑定加载弹窗
+        setProgressBar();
         //设置添加RSS源的弹窗相关的点击函数
         setAddRssSrcListener();
         //监听按钮点击事件
@@ -120,6 +123,7 @@ public class RssSourceFragment extends Fragment implements RssSourceContract.Rss
             public void onClick(View view) {
                 if(canEdit == false){
                     enterEditMode();
+                    showProgressBar();
                 }else{
                     exitEditMode();
                 }
@@ -370,13 +374,28 @@ public class RssSourceFragment extends Fragment implements RssSourceContract.Rss
     @Override
     public void switchToNightMode(MenuItem item) {
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-        //getActivity().recreate();
+        getActivity().recreate();
     }
 
     @Override
     public void switchToDayMode(MenuItem item) {
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-        //getActivity().recreate();
+        getActivity().recreate();
+    }
+
+    @Override
+    public void setProgressBar() {
+        loadingPopupWindow = new LoadingPopupWindow(this.getContext());
+    }
+
+    @Override
+    public void showProgressBar() {
+        loadingPopupWindow.showAtLocation(this.getView(),Gravity.TOP|Gravity.CENTER_HORIZONTAL,0,1000);
+    }
+
+    @Override
+    public void hideProgressBar() {
+        loadingPopupWindow.dismiss();
     }
 }
 

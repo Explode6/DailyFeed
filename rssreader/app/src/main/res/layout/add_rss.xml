@@ -3,7 +3,7 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-
+    android:background="@android:color/transparent"
     >
     <Button
         android:id="@+id/close_add_rss_dialog_btn"

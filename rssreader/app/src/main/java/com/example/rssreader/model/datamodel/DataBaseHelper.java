@@ -59,14 +59,15 @@ public class DataBaseHelper {
             List<ArticleBrief> articleBriefs = LitePal.where("link = ?", articleBrief.getLink())
                     .find(ArticleBrief.class);
             if(!articleBriefs.isEmpty()){
-                //文章已存在, 采取覆盖式更新以更新其id
-                articleBrief.setContent_id(articleBriefs.get(0).getContent_id());
-                articleBrief.setChannel_id(articleBriefs.get(0).getChannel_id());
-                articleBrief.setCollect(articleBriefs.get(0).getCollect());
-                articleContent.update(articleBrief.getContent_id());
-                LitePal.delete(ArticleBrief.class, articleBriefs.get(0).getId());
+                //文章已存在, 如果是该源曾经被收藏的文章，重新链接上外键
+                if(articleBriefs.get(0).getCollect() && articleBriefs.get(0).getChannel_id() == -1){
+                    articleBriefs.get(0).setChannel_id(channels.get(0).getId());
+                    articleBriefs.get(0).setPubTime((int)System.currentTimeMillis()/(60*60*24*1000));
+                    articleBriefs.get(0).update(articleBriefs.get(0).getId());
+                }
+                return;
             }else {
-                //文章不存在, 直接添加
+                //文章不存在, 添加
                 articleContent.save();
                 articleBrief.setChannel_id(channels.get(0).getId());
                 articleBrief.setContent_id(articleContent.getId());

@@ -20,6 +20,7 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.rssreader.R;
@@ -27,6 +28,8 @@ import com.example.rssreader.RssSource;
 import com.example.rssreader.articleCollection.ArticleCollectionActivity;
 import com.example.rssreader.articlelist.ArticleListActivity;
 import com.google.android.material.navigation.NavigationView;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -38,6 +41,7 @@ public class RssSourceFragment extends Fragment implements RssSourceContract.Rss
     private GridLayoutManager layoutManager;   //布局管理器
     private BottomPopupWindow bottomPopupWindow;    //底部弹窗
     private AddRssSourceDialog addRssSourceDialog;  //添加RSS源的弹窗
+    private LoadingPopupWindow loadingPopupWindow;  //加载弹窗
     private RecyclerView rssView;
     private boolean canEdit = false;    //是否进入编辑模式
     private Button listBtn;   //选择列表布局按钮
@@ -98,6 +102,8 @@ public class RssSourceFragment extends Fragment implements RssSourceContract.Rss
         setBottomWindow();
         //绑定添加RSS源的弹窗
         setAddRssSrcDialog();
+        //绑定加载弹窗
+        setProgressBar();
         //设置添加RSS源的弹窗相关的点击函数
         setAddRssSrcListener();
         //监听按钮点击事件
@@ -370,13 +376,49 @@ public class RssSourceFragment extends Fragment implements RssSourceContract.Rss
     @Override
     public void switchToNightMode(MenuItem item) {
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-        //getActivity().recreate();
+        getActivity().recreate();
     }
 
     @Override
     public void switchToDayMode(MenuItem item) {
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-        //getActivity().recreate();
+        getActivity().recreate();
+    }
+
+    @Override
+    public void setProgressBar() {
+        loadingPopupWindow = new LoadingPopupWindow(this.getContext());
+    }
+
+    @Override
+    public void showProgressBar() {
+        addRssSourceDialog.showProgressBar();
+    }
+
+    @Override
+    public void hideProgressBar() {
+        addRssSourceDialog.hideProgressBar();
+    }
+
+    @Override
+    public ItemTouchHelper setItemTouchHelper() {
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new ItemTouchHelper.Callback() {
+            @Override
+            public int getMovementFlags(@NonNull @NotNull RecyclerView recyclerView, @NonNull @NotNull RecyclerView.ViewHolder viewHolder) {
+                return 0;
+            }
+
+            @Override
+            public boolean onMove(@NonNull @NotNull RecyclerView recyclerView, @NonNull @NotNull RecyclerView.ViewHolder viewHolder, @NonNull @NotNull RecyclerView.ViewHolder target) {
+                return false;
+            }
+
+            @Override
+            public void onSwiped(@NonNull @NotNull RecyclerView.ViewHolder viewHolder, int direction) {
+
+            }
+        });
+        return null;
     }
 }
 

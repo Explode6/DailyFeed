@@ -6,6 +6,8 @@ import android.os.RemoteException;
 import android.view.MenuItem;
 import android.view.View;
 
+import androidx.recyclerview.widget.ItemTouchHelper;
+
 import com.example.rssreader.RssSource;
 import com.example.rssreader.model.datamodel.Channel;
 import com.example.rssreader.util.BasePresenter;
@@ -58,6 +60,14 @@ public interface RssSourceContract {
         public void switchToNightMode(MenuItem item);
         //转换为日间模式
         public void switchToDayMode(MenuItem item);
+        //设置加载框
+        public void setProgressBar();
+        //显示加载框
+        public void showProgressBar();
+        //隐藏加载框
+        public void hideProgressBar();
+        //设置实现拖动功能的帮助类
+        public ItemTouchHelper setItemTouchHelper();
     }
 
     interface RssSourcePresenter extends BasePresenter {

@@ -47,6 +47,7 @@ public class RssSourcePresenterImpl implements RssSourceContract.RssSourcePresen
     private boolean isNightMode = false;            //是否进入了夜间模式
     private List<RssSource>rssSourceList;   //暂存所有RSS源，用于recyclerView的显示
     private List<Channel>channelList;       //暂存所有channel
+    private boolean addBtnLock = false;        //添加按钮锁，防止用户多次点击按钮出错
 
     private  AlarmManager manager;      //时钟管理器
     private PendingIntent pendingIntent;
@@ -142,39 +143,64 @@ public class RssSourcePresenterImpl implements RssSourceContract.RssSourcePresen
 
     @Override
     public void addRssSrc(String rssLink, final Activity activity) {
-        //首先检查是否添加了重复的RSS源
        try {
+           //给添加按钮加锁防止多时间内多次点击
+           if(addBtnLock == true){
+               rssSourceView.giveHint("加载中，请勿重复点击");
+               return;
+           }
+           addBtnLock = true;
+           //检查是否添加了重复的RSS源
            channelList = myAidlInterface.getChannel(0, 100);
            for(Channel channel : channelList){
                if(channel.getRssLink().equals(rssLink)){
-                   rssSourceView.giveHint("请不要重复添加");
+                   rssSourceView.giveHint("请不要添加重复RSS源");
+                   rssSourceView.closeAndClearAddDialog();
+                   addBtnLock = false;
                    return;
                }
            }
+           rssSourceView.showProgressBar();
            //对RSS链接进行解析加入数据库，并实现回调接口
            myAidlInterface.downloadParseXml(rssLink, new XmlCallback.Stub() {
                @Override
                public void onLoadXmlSuccess() throws RemoteException {
                    //如果成功就获取这个RSS源并刷新RecyclerView
                    channelList = myAidlInterface.getChannel(0, 100);
-                   //把channel列表中的最后一项rssSource列表
+                   //判断是否添加了重复项
+                   if(channelList.size() == rssSourceList.size()){
+                       activity.runOnUiThread(new Runnable() {
+                           @Override
+                           public void run() {
+                               rssSourceView.giveHint("请不要添加重复RSS源");
+                               rssSourceView.closeAndClearAddDialog();
+                           }
+                       });
+                       addBtnLock = false;
+                       rssSourceView.hideProgressBar();
+                       return;
+                   }
+                   //把channel列表中的最后一项加到rssSource列表
                    rssSourceList.add(channelToRssSrc(channelList.get(channelList.size()-1)));
+                   addBtnLock = false;
                    //主线程更新UI
                    activity.runOnUiThread(new Runnable() {
                        @Override
                        public void run() {
                            rssSourceView.refreshView();
+                           rssSourceView.hideProgressBar();
                            rssSourceView.closeAndClearAddDialog();
-                           rssSourceView.giveHint("添加成功");
                        }
                    });
                }
 
                @Override
                public void onUrlTypeError() throws RemoteException {
+                   addBtnLock = false;
                    activity.runOnUiThread(new Runnable() {
                        @Override
                        public void run() {
+                           rssSourceView.hideProgressBar();
                            rssSourceView.giveHint("添加失败，格式错误");
                        }
                    });
@@ -182,9 +208,11 @@ public class RssSourcePresenterImpl implements RssSourceContract.RssSourcePresen
 
                @Override
                public void onParseError() throws RemoteException {
+                   addBtnLock = false;
                    activity.runOnUiThread(new Runnable() {
                        @Override
                        public void run() {
+                           rssSourceView.hideProgressBar();
                            rssSourceView.giveHint("添加失败，解析错误");
                        }
                    });
@@ -192,9 +220,11 @@ public class RssSourcePresenterImpl implements RssSourceContract.RssSourcePresen
 
                @Override
                public void onSourceError() throws RemoteException {
+                   addBtnLock = false;
                    activity.runOnUiThread(new Runnable() {
                        @Override
                        public void run() {
+                           rssSourceView.hideProgressBar();
                            rssSourceView.giveHint("源错误|网络错误");
                        }
                    });
@@ -205,65 +235,29 @@ public class RssSourcePresenterImpl implements RssSourceContract.RssSourcePresen
                    activity.runOnUiThread(new Runnable() {
                        @Override
                        public void run() {
+                           rssSourceView.hideProgressBar();
                            rssSourceView.giveHint("添加失败，读取图片错误");
                        }
                    });
+                   addBtnLock = false;
                }
 
                @Override
                public void onLoadImgSuccess() throws RemoteException {
-                   Log.d("Rss","onLoadImgSuccess");
                    channelList = myAidlInterface.getChannel(0, 100);
+                   //判断是否获得了最新的channel，如果没有就返回
+                   if(rssSourceList.size() < channelList.size()){
+                       return;
+                   }
                    rssSourceList.get(rssSourceList.size()-1).setImage(channelList.get(channelList.size()-1).getImage());
                    activity.runOnUiThread(new Runnable() {
                        @Override
                        public void run() {
                            rssSourceView.refreshView();
-                           rssSourceView.giveHint("添加成功，读取图片成功");
                        }
                    });
                }
            });
-
-//           myAidlInterface.downloadParseXml(rssLink, new DataCallback.Stub() {
-//               @Override
-//               public void onSuccess() throws RemoteException {
-//                    //如果成功就获取这个RSS源并刷新RecyclerView
-//                   channelList = myAidlInterface.getChannel(0, 100);
-//                   //把channel列表中的最后一项rssSource列表
-//                   rssSourceList.add(channelToRssSrc(channelList.get(channelList.size()-1)));
-//                   //主线程更新UI
-//                   activity.runOnUiThread(new Runnable() {
-//                       @Override
-//                       public void run() {
-//                           rssSourceView.refreshView();
-//                           rssSourceView.closeAndClearAddDialog();
-//                           rssSourceView.giveHint("添加成功");
-//                       }
-//                   });
-//               }
-//
-//               //连接服务失败
-//               @Override
-//               public void onFailure() throws RemoteException {
-//                   activity.runOnUiThread(new Runnable() {
-//                       @Override
-//                       public void run() {
-//                           rssSourceView.giveHint("添加失败，请检查网络");
-//                       }
-//                   });
-//               }
-//
-//               @Override
-//               public void onError() throws RemoteException {
-//                   activity.runOnUiThread(new Runnable() {
-//                       @Override
-//                       public void run() {
-//                           rssSourceView.giveHint("添加失败，请输入合法URL");
-//                       }
-//                   });
-//               }
-//           });
        }catch (RemoteException e){
            e.printStackTrace();
        }

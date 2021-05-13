@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.graphics.Canvas;
 import android.os.Bundle;
 import android.os.RemoteException;
+import android.util.Log;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -49,6 +50,7 @@ public class RssSourceFragment extends Fragment implements RssSourceContract.Rss
     private Button listBtn;   //选择列表布局按钮
     private Button gridBtn;    //选择网格布局按钮
     private Button editBtn;     //RSS源编辑按钮
+    private int touchCount = 0;
 
     //空的构造函数
     public RssSourceFragment(){
@@ -440,6 +442,13 @@ public class RssSourceFragment extends Fragment implements RssSourceContract.Rss
             public void onChildDraw(@NonNull @NotNull Canvas c, @NonNull @NotNull RecyclerView recyclerView, @NonNull @NotNull RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
                 super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
             }
+
+
+            @Override
+            public void clearView(@NonNull @NotNull RecyclerView recyclerView, @NonNull @NotNull RecyclerView.ViewHolder viewHolder) {
+                super.clearView(recyclerView, viewHolder);
+            }
+
         });
         return itemTouchHelper;
     }

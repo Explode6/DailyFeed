@@ -51,6 +51,7 @@ public class RssSourcePresenterImpl implements RssSourceContract.RssSourcePresen
     private List<RssSource>rssSourceList;   //暂存所有RSS源，用于recyclerView的显示
     private List<Channel>channelList;       //暂存所有channel
     private boolean addBtnLock = false;        //添加按钮锁，防止用户多次点击按钮出错
+    private int moveCount = 0;
 
     private  AlarmManager manager;      //时钟管理器
     private PendingIntent pendingIntent;
@@ -323,6 +324,8 @@ public class RssSourcePresenterImpl implements RssSourceContract.RssSourcePresen
 
     @Override
     public boolean setMoving(int srcPos, int desPos) {
+        moveCount++;
+        Log.d("moveCount",String.valueOf(moveCount));
         if(rssSourceList.size()==0)
             return false;
         //循环交换两个item的位置

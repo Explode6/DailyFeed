@@ -43,10 +43,10 @@ public class ConfigUtil {
         }
         if(configUtil == null){
             configUtil = new ConfigUtil();
+            //绑定对象
+            configUtil.pref = context.getSharedPreferences(fileName, Context.MODE_PRIVATE);
+            configUtil.editor = configUtil.pref.edit();
         }
-        //绑定对象
-        configUtil.pref = context.getSharedPreferences(fileName, Context.MODE_PRIVATE);
-        configUtil.editor = configUtil.pref.edit();
         return configUtil;
     }
 

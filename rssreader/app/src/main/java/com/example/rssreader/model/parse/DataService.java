@@ -6,6 +6,7 @@ import android.os.IBinder;
 import android.os.MemoryFile;
 import android.os.ParcelFileDescriptor;
 import android.os.RemoteException;
+import android.util.Log;
 
 import com.example.rssreader.model.datamodel.AidlDate;
 import com.example.rssreader.model.datamodel.ArticleBrief;
@@ -28,6 +29,48 @@ public class DataService extends Service {
 
     //添加AidlBinder
     AidlBinder aidlBinder = new AidlBinder(this);
+
+    /**
+     * 更新源的数据
+     * @param offset 偏移量
+     * @param limit 数目
+     */
+    public void updateSource(int offset,int limit){
+        List<Channel> channels = DataBaseHelper.getChannel(offset,limit);
+        for(final Channel channel:channels){
+            new Thread(new parseXmlThread(channel.getRssLink(), new XmlCallback.Stub() {
+                @Override
+                public void onLoadXmlSuccess() throws RemoteException {
+                    Log.d("DataService","updateSource:"+channel.getTitle());
+                }
+
+                @Override
+                public void onUrlTypeError() throws RemoteException {
+
+                }
+
+                @Override
+                public void onParseError() throws RemoteException {
+
+                }
+
+                @Override
+                public void onSourceError() throws RemoteException {
+
+                }
+
+                @Override
+                public void onLoadImgError() throws RemoteException {
+
+                }
+
+                @Override
+                public void onLoadImgSuccess() throws RemoteException {
+
+                }
+            })).start();
+        }
+    }
 
 
     /**

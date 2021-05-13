@@ -76,6 +76,18 @@ public class AidlBinder extends IMyAidlInterface.Stub {
         this.dataService = service;
     }
 
+
+    /**
+     * 更新所有源的数据
+     * @param offset 偏移量
+     * @param limit 数目
+     * @throws RemoteException
+     */
+    @Override
+    public void updateSource(int offset,int limit) throws RemoteException {
+        dataService.updateSource(offset,limit);
+    }
+
     /**
      * 下载解析Xml，解析后数据会进入数据库
      * @param url
@@ -134,9 +146,9 @@ public class AidlBinder extends IMyAidlInterface.Stub {
         try {
             dataService.collectArticle(articleBrief);
             dataCallback.onSuccess();
-        } catch (SQLException throwables) {
+        } catch (SQLException throwable) {
             dataCallback.onFailure();
-            throwables.printStackTrace();
+            throwable.printStackTrace();
         }
     }
 
@@ -153,8 +165,8 @@ public class AidlBinder extends IMyAidlInterface.Stub {
         try{
             dataService.addGlobalCommentToArticle(articleBrief,comment,aidlDate);
             dataCallback.onSuccess();
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
+        } catch (SQLException throwable) {
+            throwable.printStackTrace();
             dataCallback.onFailure();
         }
     }

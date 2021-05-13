@@ -28,10 +28,10 @@ public class DataBaseHelper {
             List<Channel> channels = LitePal
                     .where("rssLink = ?", channel.getRssLink())
                     .find(Channel.class);
-            //对新添加的Channel要设置其order值
+            //对新添加的Channel要设置其sequence值
             if(channels.isEmpty()){
                 int length = LitePal.findAll(Channel.class).size();
-                channel.setOrder(length);
+                channel.setSequence(length);
                 if(channel.save()) LitePal.setTransactionSuccessful();
             }
             //当channel的rssLink已存在，对其进行更新
@@ -229,7 +229,7 @@ public class DataBaseHelper {
      */
     public static List<Channel> getChannel(int offset, int limit){
         return LitePal
-                .order("order")
+                .order("sequence")
                 .offset(offset)
                 .limit(limit)
                 .find(Channel.class);
@@ -465,12 +465,12 @@ public class DataBaseHelper {
                 //删除对应简介
                 LitePal.delete(ArticleBrief.class, articleBrief.getId());
             }
-            //处理order出现的断层
-            String index = Integer.toString(channel.getOrder());
-            List<Channel> channelsOrders = LitePal.where("order > ?", index).find(Channel.class);
-            for(Channel channelOrder : channelsOrders){
-                channelOrder.setOrder(channelOrder.getOrder()-1);
-                channelOrder.update(channelOrder.getId());
+            //处理sequence出现的断层
+            String index = Integer.toString(channel.getSequence());
+            List<Channel> channelsSeqs = LitePal.where("sequence > ?", index).find(Channel.class);
+            for(Channel channelSeq : channelsSeqs){
+                channelSeq.setSequence(channelSeq.getSequence()-1);
+                channelSeq.update(channelSeq.getId());
             }
             //删除频道
             LitePal.delete(Channel.class, channel.getId());

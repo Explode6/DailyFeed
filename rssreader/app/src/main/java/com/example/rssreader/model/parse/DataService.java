@@ -15,6 +15,8 @@ import com.example.rssreader.model.datamodel.DataBaseHelper;
 import com.example.rssreader.model.datamodel.GlobalComment;
 import com.example.rssreader.model.datamodel.LocalComment;
 
+import org.litepal.LitePal;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.FileDescriptor;
@@ -26,6 +28,14 @@ import java.util.Date;
 import java.util.List;
 
 public class DataService extends Service {
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        //连接数据库
+        LitePal.initialize(this);
+        LitePal.getDatabase();
+    }
 
     final static String TAG = "DataService";
 

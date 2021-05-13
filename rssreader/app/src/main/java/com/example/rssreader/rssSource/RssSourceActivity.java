@@ -91,9 +91,7 @@ public class RssSourceActivity extends AppCompatActivity {
         //获取侧滑菜单的导航栏
         navView = (NavigationView) findViewById(R.id.nav_view);
 
-        //连接数据库
-        LitePal.initialize(this);
-        LitePal.getDatabase();
+
         //初始化sharedPreferences
         configUtil = ConfigUtil.getInstance(getApplicationContext());
         //判断用户设置为夜间/日间模式进行不同的初始化

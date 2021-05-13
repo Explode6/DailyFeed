@@ -37,7 +37,7 @@ public class Channel extends LitePalSupport implements Parcelable, Serializable 
     private String description;
 
     //Channel的展示顺序，从0开始！
-    private int order;
+    private int sequence;
 
     @Column(nullable = true)
     private String image;
@@ -51,7 +51,7 @@ public class Channel extends LitePalSupport implements Parcelable, Serializable 
         this.addressLink = new String("");
         this.lastBuildDate = new String("");
         this.description = new String("");
-        this.order = -1;
+        this.sequence = -1;
         this.image = null;
     }
 
@@ -66,15 +66,15 @@ public class Channel extends LitePalSupport implements Parcelable, Serializable 
 
 
     //序列化专用
-    public Channel(int id,String title, String rssLink, String addressLink,
-                   String lastBuildDate, String description,int order, String image) {
+    public Channel(int id, String title, String rssLink, String addressLink,
+                   String lastBuildDate, String description, int sequence, String image) {
         this.id = id;
         this.title = title;
         this.rssLink = rssLink;
         this.addressLink = addressLink;
         this.lastBuildDate = lastBuildDate;
         this.description = description;
-        this.order = order;
+        this.sequence = sequence;
         this.image = image;
     }
 
@@ -129,12 +129,12 @@ public class Channel extends LitePalSupport implements Parcelable, Serializable 
         this.description = description.trim();
     }
 
-    public int getOrder() {
-        return order;
+    public int getSequence() {
+        return sequence;
     }
 
-    public void setOrder(int order) {
-        this.order = order;
+    public void setSequence(int sequence) {
+        this.sequence = sequence;
     }
 
     public byte[] getImage() {
@@ -159,7 +159,7 @@ public class Channel extends LitePalSupport implements Parcelable, Serializable 
         dest.writeString(addressLink);
         dest.writeString(lastBuildDate);
         dest.writeString(description);
-        dest.writeInt(order);
+        dest.writeInt(sequence);
         dest.writeString(image);
 
     }

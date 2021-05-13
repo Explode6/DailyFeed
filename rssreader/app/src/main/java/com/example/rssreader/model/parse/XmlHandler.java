@@ -1,6 +1,7 @@
 package com.example.rssreader.model.parse;
 
 
+import android.graphics.Bitmap;
 import android.os.RemoteException;
 import android.text.Html;
 import android.util.Log;
@@ -71,6 +72,7 @@ public class XmlHandler {
                     String imgUrl = imgElements.get(0).attr("href");
                     URL finalUrl = new URL(new URL(url),imgUrl);
                     new Thread(new ImgDownloadThread(channel,finalUrl.toExternalForm(),xmlCallback)).start();
+                    //new Thread(new ImgDownloadThread(channel,"https://tenfei04.cfp.cn/creative/vcg/veer/1600water/veer-147317368.jpg",xmlCallback)).start();
                 }else{
                     imgElements = document.select("link[rel=shortcut icon]");
                     if(imgElements.size()!=0){
@@ -114,10 +116,12 @@ public class XmlHandler {
             Request request = new Request.Builder()
                     .url(url).build();
             try {
+                long start = System.currentTimeMillis();
                 Response response = client.newCall(request).execute();
                 byte[] bytes = response.body().bytes();
                 channel.setImage(bytes);
                 DataBaseHelper.addChannel(channel);
+                Log.d(TAG,"下载图片使用"+(System.currentTimeMillis()-start));
                 xmlCallback.onLoadImgSuccess();
             } catch (IOException | RemoteException e) {
                 try {

@@ -3,6 +3,8 @@ package com.example.rssreader.model.parse;
 import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
+import android.os.MemoryFile;
+import android.os.ParcelFileDescriptor;
 import android.os.RemoteException;
 
 import com.example.rssreader.model.datamodel.AidlDate;
@@ -12,6 +14,12 @@ import com.example.rssreader.model.datamodel.DataBaseHelper;
 import com.example.rssreader.model.datamodel.GlobalComment;
 import com.example.rssreader.model.datamodel.LocalComment;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.FileDescriptor;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.lang.reflect.Method;
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
@@ -29,8 +37,33 @@ public class DataService extends Service {
      * @param limit 查询返回的最大数目
      * @return the list<Channel>
      */
-    public List<Channel> getChannel(int offset, int limit){
+    public List<Channel> getChannel(int offset, int limit) {
         return DataBaseHelper.getChannel(offset,limit);
+    }
+
+    /**
+     * 获取所有添加的频道(2号选手)
+     *
+     * @param offset 查询偏移量
+     * @param limit 查询返回的最大数目
+     * @return ParcelFileDescriptor 共享内存的位置
+     */
+    public ParcelFileDescriptor getChannel2(int offset, int limit) throws IOException {
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        ObjectOutputStream oos = new ObjectOutputStream(bos);
+        List<Channel> channels = DataBaseHelper.getChannel(offset,limit);
+        oos.writeObject(channels);
+        MemoryFile memoryFile = null;
+        try {
+            memoryFile = new MemoryFile("test_memory", 1024*1024);
+            memoryFile.getOutputStream().write(bos.toByteArray());
+            Method method = MemoryFile.class.getDeclaredMethod("getFileDescriptor");
+            FileDescriptor des = (FileDescriptor) method.invoke(memoryFile);
+            return ParcelFileDescriptor.dup(des);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     /**

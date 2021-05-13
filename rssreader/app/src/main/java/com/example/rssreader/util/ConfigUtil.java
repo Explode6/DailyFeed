@@ -20,8 +20,9 @@ public class ConfigUtil {
 
     //文件存储的路径和文件名
     @SuppressLint("SdCardPath")
-    public static final String filePath = "/data/data/com.example.rssreader/shared_prefs/";
-    public static final String fileName = "rssConfig";
+    private static final String filePath = "/data/data/com.example.rssreader/shared_prefs/";
+    private static final String fileName = "rssConfig";
+    private static final String fileType = ".xml";
 
     //用于读取和写入的对象
     private SharedPreferences pref;
@@ -38,7 +39,7 @@ public class ConfigUtil {
     public static ConfigUtil getInstance(Context context){
         //单例模式
         //检查文件是否存在
-        File f = new File(filePath + fileName);
+        File f = new File(filePath + fileName + fileType);
         //创建配置文件
         if(!f.exists()){
             initConfig(context);

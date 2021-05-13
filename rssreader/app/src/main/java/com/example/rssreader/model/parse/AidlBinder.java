@@ -89,6 +89,16 @@ public class AidlBinder extends IMyAidlInterface.Stub {
     }
 
     /**
+     * 根据传来的Channel的list更新Channel数据
+     * @param channels
+     * @throws RemoteException
+     */
+    @Override
+    public void updateChannels(List<Channel> channels) throws RemoteException {
+        dataService.updateChannels(channels);
+    }
+
+    /**
      * 下载解析Xml，解析后数据会进入数据库
      * @param url
      * @param xmlCallback

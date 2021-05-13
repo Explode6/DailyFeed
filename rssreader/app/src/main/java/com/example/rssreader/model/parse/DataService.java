@@ -27,6 +27,8 @@ import java.util.List;
 
 public class DataService extends Service {
 
+    final static String TAG = "DataService";
+
     //添加AidlBinder
     AidlBinder aidlBinder = new AidlBinder(this);
 
@@ -72,6 +74,15 @@ public class DataService extends Service {
         }
     }
 
+    /**
+     * 更新channel的数据
+     * @param channels 需要更新的Channel对象列表
+     */
+    public void updateChannels(List<Channel> channels){
+        for(Channel channel:channels){
+            DataBaseHelper.addChannel(channel);
+        }
+    }
 
     /**
      * 获取所有添加的频道
@@ -280,7 +291,19 @@ public class DataService extends Service {
      * @param channel 目标频道对象
      */
     public void removeChannel(Channel channel){
-        DataBaseHelper.removeChannel(channel);
+        //开线程去删除
+        class rmChannelThread implements Runnable{
+            private Channel channel;
+            rmChannelThread(Channel channel){
+                this.channel = channel;
+            }
+            @Override
+            public void run() {
+                DataBaseHelper.removeChannel(channel);
+                Log.d(TAG,"删除"+channel.getTitle()+"完成");
+            }
+        }
+        new Thread(new rmChannelThread(channel)).start();
     }
 
     /**

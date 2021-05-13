@@ -18,6 +18,8 @@ interface IMyAidlInterface {
 
     void updateSource(int offset,int limit);
 
+    void updateChannels(in List<Channel> channels);
+
     void downloadParseXml(String url,in XmlCallback xmlCallback);
 
     List<Channel> getChannel(int offset, int limit);

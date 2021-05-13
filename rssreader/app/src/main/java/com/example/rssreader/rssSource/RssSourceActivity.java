@@ -17,6 +17,7 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
@@ -31,6 +32,8 @@ import com.example.rssreader.model.datamodel.DataBaseHelper;
 import com.example.rssreader.model.parse.AidlBinder;
 import com.example.rssreader.model.parse.DataCallback;
 import com.example.rssreader.util.ActivityUtil;
+import com.example.rssreader.util.ApplicationUtil;
+import com.example.rssreader.util.ConfigUtil;
 import com.google.android.material.navigation.NavigationView;
 
 import org.litepal.LitePal;
@@ -52,8 +55,11 @@ public class RssSourceActivity extends AppCompatActivity {
 
     private DrawerLayout mDrawerLayout; //侧滑菜单
     private NavigationView navView; //侧滑菜单的导航栏
+    private boolean isFirstLoad = true; //是否为第一次加载
+    private int count = 0;
     private RssSourceFragment rssSourceFragment;
     private RssSourcePresenterImpl rssSourcePresenter;
+    private ConfigUtil configUtil;
     public IMyAidlInterface myAidlInterface;
 
 
@@ -88,6 +94,17 @@ public class RssSourceActivity extends AppCompatActivity {
         //连接数据库
         LitePal.initialize(this);
         LitePal.getDatabase();
+        //初始化sharedPreferences
+        configUtil = ConfigUtil.getInstance(getApplicationContext());
+        //判断用户设置为夜间/日间模式进行不同的初始化
+        if(ApplicationUtil.getIsFirstLoad() == true){
+            if(configUtil.isDarkMode() == true)
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+            else
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+            ApplicationUtil.setIsFirstLoad(false) ;
+        }
+
         if(AidlBinder.getInstance() != null){
             rssSourceFragment = (RssSourceFragment) getSupportFragmentManager().findFragmentById(R.id.contentFrame);
             if (rssSourceFragment == null) {
@@ -101,23 +118,9 @@ public class RssSourceActivity extends AppCompatActivity {
                 rssSourceFragment.setNavClickListener(navView);
             }
         }
+
+
         //绑定后台服务
-
-//       //新建Fragment
-//        rssSourceFragment = (RssSourceFragment)getSupportFragmentManager().findFragmentById(R.id.contentFrame);
-//        if(rssSourceFragment == null){
-//            rssSourceFragment = RssSourceFragment.newInstance();
-//            ActivityUtil.addFragmentToActivity(getSupportFragmentManager(),rssSourceFragment, R.id.contentFrame);
-//        }
-//       //初始化presenter
-//        rssSourcePresenter = new RssSourcePresenterImpl(rssSourceFragment, myAidlInterface);
-//        //设置侧滑菜单导航栏按钮点击事件
-//        if(navView != null){
-//            rssSourceFragment.setNavClickListener(navView);
-//        }
-
-
-
         /*
          * 以下四行代码是创建model有关
          * 从澍豪的代码拔过来的
@@ -188,26 +191,26 @@ public class RssSourceActivity extends AppCompatActivity {
     /**
      * 数据服务测试
      */
-    public void startDataService() {
-        //这是一个使用共享内存的demo
-        try {
-            byte[] content = new byte[1024*1024];
-            myAidlInterface = AidlBinder.getInstance();
-            ParcelFileDescriptor parcelFileDescriptor = myAidlInterface.getChannel2(0,10);
-            FileDescriptor descriptor = parcelFileDescriptor.getFileDescriptor();
-            FileInputStream fileInputStream = new FileInputStream(descriptor);
-            fileInputStream.read(content);
-            //将内存中的byte数组数据解码为对象（这里的channel需要支持序列化）
-            ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(content);
-            ObjectInputStream objectInputStream = new ObjectInputStream(byteArrayInputStream);
-            List<Channel> channels = (List<Channel>) objectInputStream.readObject();
-            for(Channel channel:channels){
-                Log.d(TAG,channel.getTitle());
-            }
-        } catch (RemoteException | IOException | ClassNotFoundException e) {
-            e.printStackTrace();
-        }
-    }
+//    public void startDataService() {
+//        //这是一个使用共享内存的demo
+//        try {
+//            byte[] content = new byte[1024*1024];
+//            myAidlInterface = AidlBinder.getInstance();
+//            ParcelFileDescriptor parcelFileDescriptor = myAidlInterface.getChannel2(0,10);
+//            FileDescriptor descriptor = parcelFileDescriptor.getFileDescriptor();
+//            FileInputStream fileInputStream = new FileInputStream(descriptor);
+//            fileInputStream.read(content);
+//            //将内存中的byte数组数据解码为对象（这里的channel需要支持序列化）
+//            ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(content);
+//            ObjectInputStream objectInputStream = new ObjectInputStream(byteArrayInputStream);
+//            List<Channel> channels = (List<Channel>) objectInputStream.readObject();
+//            for(Channel channel:channels){
+//                Log.d(TAG,channel.getTitle());
+//            }
+//        } catch (RemoteException | IOException | ClassNotFoundException e) {
+//            e.printStackTrace();
+//        }
+//    }
 }
 
 

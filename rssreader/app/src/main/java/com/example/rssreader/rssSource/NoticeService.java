@@ -32,10 +32,13 @@ public class NoticeService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+
         initNotification(intent);
         showNotification();
+        //关闭闹钟
         AlarmUtil.stopNoticeService(getApplicationContext(), ClockBroadcastReceiver.class,"com.example.rssreader.rssNoticeBroadcast");
         //AlarmUtil.startNoticeService(getApplicationContext(), System.currentTimeMillis()+10*1000, NoticeService.class, "com.ryantang.service.PollingService");
+        //关闭本服务
         Intent intent1 = new Intent(this, NoticeService.class);
         stopService(intent1);
         return super.onStartCommand(intent, flags, startId);

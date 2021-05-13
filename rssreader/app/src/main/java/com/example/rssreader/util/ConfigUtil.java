@@ -3,6 +3,7 @@ package com.example.rssreader.util;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.util.Log;
 
 import java.io.File;
 
@@ -20,12 +21,13 @@ public class ConfigUtil {
     //文件存储的路径和文件名
     @SuppressLint("SdCardPath")
     public static final String filePath = "/data/data/com.example.rssreader/shared_prefs/";
-    public static final String fileName = "rssConfig.xml";
+    public static final String fileName = "rssConfig";
 
     //用于读取和写入的对象
     private SharedPreferences pref;
     private SharedPreferences.Editor editor;
     public static ConfigUtil configUtil;
+    public static int count = 0;
 
     /**
      * 获取ConfigUtil的单例对象，如果是初次获取将初始化配置文件
@@ -43,10 +45,10 @@ public class ConfigUtil {
         }
         if(configUtil == null){
             configUtil = new ConfigUtil();
+            //绑定对象
+            configUtil.pref = context.getSharedPreferences(fileName, Context.MODE_PRIVATE);
+            configUtil.editor = configUtil.pref.edit();
         }
-        //绑定对象
-        configUtil.pref = context.getSharedPreferences(fileName, Context.MODE_PRIVATE);
-        configUtil.editor = configUtil.pref.edit();
         return configUtil;
     }
 
@@ -56,6 +58,7 @@ public class ConfigUtil {
      * @param context
      */
     private static void initConfig(Context context){
+        count++;
         //创建配置文件
         SharedPreferences.Editor editor = context.getSharedPreferences(fileName, Context.MODE_PRIVATE).edit();
         //填入初始化对象
@@ -64,6 +67,7 @@ public class ConfigUtil {
         editor.putInt("textSize", 100);
         editor.putInt("textSpacing,", 0);
         editor.apply();
+        Log.d("PCOUNT",String.valueOf(count));
     }
 
 
@@ -75,9 +79,9 @@ public class ConfigUtil {
      */
     public boolean setMode(int mode){
         if(mode == MODE_LIGHT){
-            editor.putBoolean("mode", true);
-        }else if(mode == MODE_DARK){
             editor.putBoolean("mode", false);
+        }else if(mode == MODE_DARK){
+            editor.putBoolean("mode", true);
         }else return false;
         //写入文件并清除editor对象
         editor.apply();

@@ -448,7 +448,6 @@ public class RssSourceFragment extends Fragment implements RssSourceContract.Rss
             public void clearView(@NonNull @NotNull RecyclerView recyclerView, @NonNull @NotNull RecyclerView.ViewHolder viewHolder) {
                 super.clearView(recyclerView, viewHolder);
             }
-
         });
         return itemTouchHelper;
     }

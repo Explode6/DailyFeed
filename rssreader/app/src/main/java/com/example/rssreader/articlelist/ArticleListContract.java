@@ -1,6 +1,8 @@
 package com.example.rssreader.articlelist;
 
 
+import android.app.Activity;
+
 import com.example.rssreader.model.datamodel.ArticleBrief;
 import com.example.rssreader.util.BasePresenter;
 import com.example.rssreader.util.BaseView;
@@ -24,9 +26,14 @@ public interface ArticleListContract {
 
         void markReadAndRefresh(int position);
 
+        void switchReadAndRefresh(int position);
+
         void switchCollectionAndRefresh(int position);
 
         void giveWrongMessage(String str);
+
+        //停止刷新时转动图标
+        void stopRefreshUI();
     }
     interface ArticleListPresenter extends BasePresenter {
         boolean loadArticle();
@@ -35,8 +42,12 @@ public interface ArticleListContract {
 
         void openArticleDetails(ArticleBrief articleBrief, int pos);
 
-        void markRead(int pos);
+        void markRead(ArticleBrief articleBrief, int pos);
 
-        void switchCollection(ArticleBrief articleBrief, int pos, boolean isCollect);
+        void switchRead(ArticleBrief articleBrief, int pos);
+
+        void switchCollection(ArticleBrief articleBrief, int pos);
+
+        void refreshChannel(Activity activity);
     }
 }

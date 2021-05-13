@@ -1,15 +1,18 @@
 package com.example.rssreader.articlelist;
 
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.IBinder;
 import android.os.RemoteException;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.example.rssreader.IMyAidlInterface;
 import com.example.rssreader.model.datamodel.ArticleBrief;
 import com.example.rssreader.model.datamodel.Channel;
 import com.example.rssreader.model.parse.DataCallback;
+import com.example.rssreader.model.parse.XmlCallback;
 
 import java.util.List;
 
@@ -45,6 +48,7 @@ public class ArticleListPresenter implements ArticleListContract.ArticleListPres
      */
     private boolean isNotInLoading = true;
 
+
     /**
      * Instantiates a new Article list presenter.
      *
@@ -77,7 +81,7 @@ public class ArticleListPresenter implements ArticleListContract.ArticleListPres
     @Override
     public boolean loadArticle(){
         //防止同时拉取数据
-        if(isNotInLoading){
+        if(!notHaveData || isNotInLoading){
             isNotInLoading = false;
 
             List<ArticleBrief> articleBriefList = null;
@@ -106,6 +110,87 @@ public class ArticleListPresenter implements ArticleListContract.ArticleListPres
         //
         else{
             return true;
+        }
+    }
+
+    /**
+     * 现在这个做法不好
+     */
+    @Override
+    public void refreshChannel(final Activity activity) {
+        try {
+            model.downloadParseXml(mChannel.getRssLink(), new XmlCallback.Stub() {
+                @Override
+                public void onLoadXmlSuccess() throws RemoteException {
+                    activity.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            reLoadArticle();
+                            mArticleListView.stopRefreshUI();
+                            mArticleListView.giveWrongMessage("RSS源更新成功");
+                        }
+                    });
+                }
+
+                @Override
+                public void onUrlTypeError() throws RemoteException {
+                    activity.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            loadArticle();
+                            mArticleListView.stopRefreshUI();
+                            mArticleListView.giveWrongMessage("RSS源源地址格式错误");
+                        }
+                    });
+                }
+
+                @Override
+                public void onParseError() throws RemoteException {
+                    activity.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            loadArticle();
+                            mArticleListView.stopRefreshUI();
+                            mArticleListView.giveWrongMessage("RSS源解析失败");
+                        }
+                    });
+                }
+
+                @Override
+                public void onSourceError() throws RemoteException {
+                    activity.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            mArticleListView.stopRefreshUI();
+                            mArticleListView.giveWrongMessage("RSS源地址已失效");
+                        }
+                    });
+                }
+
+                @Override
+                public void onLoadImgError() throws RemoteException {
+                    activity.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            mArticleListView.stopRefreshUI();
+                        }
+                    });
+                }
+
+                @Override
+                public void onLoadImgSuccess() throws RemoteException {
+                    activity.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            mArticleListView.stopRefreshUI();
+                        }
+                    });
+                }
+            });
+        } catch (RemoteException e) {
+            e.printStackTrace();
+            mArticleListView.giveWrongMessage("解析失败");
+            mArticleListView.stopRefreshUI();
         }
     }
 
@@ -144,7 +229,7 @@ public class ArticleListPresenter implements ArticleListContract.ArticleListPres
     @Override
     public void openArticleDetails(ArticleBrief articleBrief, int pos) {
         //先把文章标记为已读
-        markRead(pos);
+        markRead(articleBrief, pos);
         mArticleListView.showArticleDetails(articleBrief);
     }
 
@@ -153,20 +238,36 @@ public class ArticleListPresenter implements ArticleListContract.ArticleListPres
      * @param pos 处在文章list的第几项
      */
     @Override
-    public void markRead(int pos) {
-        // 还没写好
-        // model.setRead()
-        mArticleListView.markReadAndRefresh(pos);
+    public void markRead(ArticleBrief articleBrief, final int pos) {
+        try {
+            model.readArticle(articleBrief, new DataCallback.Stub() {
+                @Override
+                public void onSuccess() throws RemoteException {
+                    mArticleListView.markReadAndRefresh(pos);
+                }
+
+                @Override
+                public void onFailure() throws RemoteException {
+                    mArticleListView.giveWrongMessage("文章已被删除");
+                }
+
+                @Override
+                public void onError() throws RemoteException {
+                    mArticleListView.giveWrongMessage("数据库出错了");
+                }
+            });
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
     }
 
     /**添加文章进收藏（加入数据库），并刷新页面
      * @param articleBrief 需要收藏的文章
      * @param pos 处在文章list的第几项
-     * @param isCollect true:文章已经收藏，则取消收藏;false:文章还没有收藏，执行收藏操作
      */
     @Override
-    public void switchCollection(ArticleBrief articleBrief, final int pos, boolean isCollect) {
-        if(isCollect){
+    public void switchCollection(ArticleBrief articleBrief, final int pos) {
+        if(articleBrief.getCollect()){
             try {
                 model.removeCollection(articleBrief, new DataCallback.Stub() {
                     @Override
@@ -216,10 +317,41 @@ public class ArticleListPresenter implements ArticleListContract.ArticleListPres
         }
     }
 
+    /**切换文章已读/未读属性（加入数据库），并刷新页面
+     * @param articleBrief 需要收藏的文章
+     * @param pos 处在文章list的第几项
+     */
+    @Override
+    public void switchRead(ArticleBrief articleBrief, final int pos) {
+        if(articleBrief.getRead()){
+            try {
+                model.collectArticle(articleBrief, new DataCallback.Stub() {
+                    @Override
+                    public void onSuccess() throws RemoteException {
+                        mArticleListView.switchReadAndRefresh(pos);
+                    }
+
+                    @Override
+                    public void onFailure() throws RemoteException {
+                        mArticleListView.giveWrongMessage("文章已被删除");
+                    }
+
+                    @Override
+                    public void onError() throws RemoteException {
+                        mArticleListView.giveWrongMessage("数据库出错了");
+                    }
+                });
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }else{
+            markRead(articleBrief, pos);
+        }
+    }
+
     //清空当前缓存的数据
     private void reset(){
         articleListBegin = 0;
         notHaveData = false;
     }
-
 }

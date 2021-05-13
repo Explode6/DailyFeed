@@ -5,7 +5,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.IBinder;
+import android.os.MemoryFile;
+import android.os.ParcelFileDescriptor;
 import android.os.RemoteException;
+import android.util.Log;
 
 import com.example.rssreader.IMyAidlInterface;
 import com.example.rssreader.model.datamodel.AidlDate;
@@ -15,10 +18,18 @@ import com.example.rssreader.model.datamodel.DataBaseHelper;
 import com.example.rssreader.model.datamodel.GlobalComment;
 import com.example.rssreader.model.datamodel.LocalComment;
 
+import java.io.FileDescriptor;
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 /**
  * @ClassName： AidlBinder
@@ -61,11 +72,9 @@ public class AidlBinder extends IMyAidlInterface.Stub {
     }
 
 
-
     public AidlBinder(DataService service){
         this.dataService = service;
     }
-
 
     /**
      * 下载解析Xml，解析后数据会进入数据库
@@ -91,11 +100,27 @@ public class AidlBinder extends IMyAidlInterface.Stub {
      * 获取频道的列表
      * @param offset
      * @param limit
-     * @return
+     * @return List<Channel>
      */
     @Override
     public List<Channel> getChannel(int offset, int limit){
         return dataService.getChannel(offset,limit);
+    }
+
+    /**
+     * 获取频道的列表（使用共享内存）
+     * @param offset
+     * @param limit
+     * @return ParcelFileDescriptor
+     */
+    @Override
+    public ParcelFileDescriptor getChannel2(int offset,int limit){
+        try {
+            return dataService.getChannel2(offset,limit);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     /**

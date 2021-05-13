@@ -7,6 +7,7 @@ import android.content.ServiceConnection;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.os.ParcelFileDescriptor;
 import android.os.RemoteException;
 import android.util.Log;
 import android.view.Menu;
@@ -34,9 +35,15 @@ import com.google.android.material.navigation.NavigationView;
 
 import org.litepal.LitePal;
 
+import java.io.ByteArrayInputStream;
+import java.io.FileDescriptor;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.ObjectInput;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.List;
@@ -154,8 +161,8 @@ public class RssSourceActivity extends AppCompatActivity {
                 mDrawerLayout.openDrawer(GravityCompat.START);
                 break;
             case R.id.addButton:
-                rssSourceFragment.showAddRssSrcDialog();
                 //startDataService();
+                rssSourceFragment.showAddRssSrcDialog();
                 break;
             default:
                 break;
@@ -182,85 +189,22 @@ public class RssSourceActivity extends AppCompatActivity {
      * 数据服务测试
      */
     public void startDataService() {
+        //这是一个使用共享内存的demo
         try {
+            byte[] content = new byte[1024*1024];
             myAidlInterface = AidlBinder.getInstance();
-            /*
-             * 世伟看这里
-             * 这是第一步，添加rss源之后先调用这个函数解析这个url，然后写进数据库
-             * 这时候还没有刷新recyclerView，所以你需要重新用下面部分的函数刷新recyclerView
-             */
-//            myAidlInterface.aidlInterface.downloadParseXml("https://tobiasahlin.com/feed.xml", new DataCallback.Stub() {
-//                @Override
-//                public void onSuccess() throws RemoteException {
-//
-//                }
-//
-//                @Override
-//                public void onFailure() throws RemoteException {
-//
-//                }
-//
-//                @Override
-//                public void onError() throws RemoteException {
-//
-//                }
-//            });
-
-            /*
-             * 如果数据已经写进数据库了才能调用这个函数
-             * 这是第二步
-             * 这里的函数从数据库取数据然后再拿去刷新recyclerView
-             */
-            List<Channel> channels = myAidlInterface.getChannel(0, 10);
-            for (Channel channel : channels) {
-                Log.d(TAG, channel.getTitle());
+            ParcelFileDescriptor parcelFileDescriptor = myAidlInterface.getChannel2(0,10);
+            FileDescriptor descriptor = parcelFileDescriptor.getFileDescriptor();
+            FileInputStream fileInputStream = new FileInputStream(descriptor);
+            fileInputStream.read(content);
+            //将内存中的byte数组数据解码为对象（这里的channel需要支持序列化）
+            ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(content);
+            ObjectInputStream objectInputStream = new ObjectInputStream(byteArrayInputStream);
+            List<Channel> channels = (List<Channel>) objectInputStream.readObject();
+            for(Channel channel:channels){
+                Log.d(TAG,channel.getTitle());
             }
-            List<ArticleBrief> articleBriefs = myAidlInterface.getArticleBriefsFromChannel(channels.get(0), 0, 10);
-
-            myAidlInterface.collectArticle(articleBriefs.get(0), new DataCallback.Stub() {
-                @Override
-                public void onSuccess() throws RemoteException {
-                    Log.d(TAG, "collect Success");
-                }
-
-                @Override
-                public void onFailure() throws RemoteException {
-                    Log.d(TAG, "collect Failure");
-                }
-
-                @Override
-                public void onError() throws RemoteException {
-
-                }
-            });
-            List<ArticleBrief> collections = myAidlInterface.getCollection(0, 10);
-            for (ArticleBrief collection : collections) {
-                Log.d(TAG, collection.getTitle());
-            }
-            Log.d(TAG, articleBriefs.get(0).getTitle());
-            myAidlInterface.removeCollection(articleBriefs.get(0), new DataCallback.Stub() {
-                @Override
-                public void onSuccess() throws RemoteException {
-                    Log.d(TAG, "remove Success");
-                }
-
-                @Override
-                public void onFailure() throws RemoteException {
-                    Log.d(TAG, "remove Failure");
-                }
-
-                @Override
-                public void onError() throws RemoteException {
-
-                }
-            });
-            collections = myAidlInterface.getCollection(0, 10);
-            for (ArticleBrief collection : collections) {
-                Log.d(TAG, collection.getTitle());
-            }
-
-            //myAidlInterface.collectArticle(articleBriefs.get(2));
-        } catch (RemoteException e) {
+        } catch (RemoteException | IOException | ClassNotFoundException e) {
             e.printStackTrace();
         }
     }

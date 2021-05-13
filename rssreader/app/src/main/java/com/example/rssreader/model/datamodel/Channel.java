@@ -20,16 +20,24 @@ public class Channel extends LitePalSupport implements Parcelable, Serializable 
     @Column(unique = true)
     private int id;
 
+    //Channel的id
     private String title;
 
+    //Channel的订阅链接
     @Column(unique = true, index = true)
     private String rssLink;
 
+    //Channel的原网站链接
     private String addressLink;
 
+    //rss的最新推送时间
     private String lastBuildDate;
 
+    //Channel的简介
     private String description;
+
+    //Channel的展示顺序，从0开始！
+    private int order;
 
     @Column(nullable = true)
     private String image;
@@ -43,6 +51,7 @@ public class Channel extends LitePalSupport implements Parcelable, Serializable 
         this.addressLink = new String("");
         this.lastBuildDate = new String("");
         this.description = new String("");
+        this.order = -1;
         this.image = null;
     }
 
@@ -57,13 +66,15 @@ public class Channel extends LitePalSupport implements Parcelable, Serializable 
 
 
     //序列化专用
-    public Channel(int id,String title, String rssLink, String addressLink, String lastBuildDate, String description, String image) {
+    public Channel(int id,String title, String rssLink, String addressLink,
+                   String lastBuildDate, String description,int order, String image) {
         this.id = id;
         this.title = title;
         this.rssLink = rssLink;
         this.addressLink = addressLink;
         this.lastBuildDate = lastBuildDate;
         this.description = description;
+        this.order = order;
         this.image = image;
     }
 
@@ -118,6 +129,14 @@ public class Channel extends LitePalSupport implements Parcelable, Serializable 
         this.description = description.trim();
     }
 
+    public int getOrder() {
+        return order;
+    }
+
+    public void setOrder(int order) {
+        this.order = order;
+    }
+
     public byte[] getImage() {
         if(this.image== null || this.image.isEmpty()) return null;
         return Base64.decode(this.image, Base64.DEFAULT);
@@ -140,6 +159,7 @@ public class Channel extends LitePalSupport implements Parcelable, Serializable 
         dest.writeString(addressLink);
         dest.writeString(lastBuildDate);
         dest.writeString(description);
+        dest.writeInt(order);
         dest.writeString(image);
 
     }
@@ -153,8 +173,9 @@ public class Channel extends LitePalSupport implements Parcelable, Serializable 
             String addressLink = source.readString();
             String lastBuildDate = source.readString();
             String description = source.readString();
+            int order = source.readInt();
             String img = source.readString();
-            return new Channel(id,title,rssLink,addressLink,lastBuildDate,description,img);
+            return new Channel(id,title,rssLink,addressLink,lastBuildDate,description,order,img);
         }
 
         @Override

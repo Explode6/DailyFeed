@@ -6,6 +6,7 @@ import android.os.IBinder;
 import android.os.MemoryFile;
 import android.os.ParcelFileDescriptor;
 import android.os.RemoteException;
+import android.util.Log;
 
 import com.example.rssreader.model.datamodel.AidlDate;
 import com.example.rssreader.model.datamodel.ArticleBrief;
@@ -26,9 +27,62 @@ import java.util.List;
 
 public class DataService extends Service {
 
+    final static String TAG = "DataService";
+
     //添加AidlBinder
     AidlBinder aidlBinder = new AidlBinder(this);
 
+    /**
+     * 更新源的数据
+     * @param offset 偏移量
+     * @param limit 数目
+     */
+    public void updateSource(int offset,int limit){
+        List<Channel> channels = DataBaseHelper.getChannel(offset,limit);
+        for(final Channel channel:channels){
+            new Thread(new parseXmlThread(channel.getRssLink(), new XmlCallback.Stub() {
+                @Override
+                public void onLoadXmlSuccess() throws RemoteException {
+                    Log.d("DataService","updateSource:"+channel.getTitle());
+                }
+
+                @Override
+                public void onUrlTypeError() throws RemoteException {
+
+                }
+
+                @Override
+                public void onParseError() throws RemoteException {
+
+                }
+
+                @Override
+                public void onSourceError() throws RemoteException {
+
+                }
+
+                @Override
+                public void onLoadImgError() throws RemoteException {
+
+                }
+
+                @Override
+                public void onLoadImgSuccess() throws RemoteException {
+
+                }
+            })).start();
+        }
+    }
+
+    /**
+     * 更新channel的数据
+     * @param channels 需要更新的Channel对象列表
+     */
+    public void updateChannels(List<Channel> channels){
+        for(Channel channel:channels){
+            DataBaseHelper.addChannel(channel);
+        }
+    }
 
     /**
      * 获取所有添加的频道
@@ -237,7 +291,19 @@ public class DataService extends Service {
      * @param channel 目标频道对象
      */
     public void removeChannel(Channel channel){
-        DataBaseHelper.removeChannel(channel);
+        //开线程去删除
+        class rmChannelThread implements Runnable{
+            private Channel channel;
+            rmChannelThread(Channel channel){
+                this.channel = channel;
+            }
+            @Override
+            public void run() {
+                DataBaseHelper.removeChannel(channel);
+                Log.d(TAG,"删除"+channel.getTitle()+"完成");
+            }
+        }
+        new Thread(new rmChannelThread(channel)).start();
     }
 
     /**

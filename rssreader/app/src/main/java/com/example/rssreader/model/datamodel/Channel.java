@@ -51,7 +51,7 @@ public class Channel extends LitePalSupport implements Parcelable, Serializable 
         this.rssLink = rssLink;
         this.addressLink = addressLink;
         this.lastBuildDate = lastBuildDate;
-        this.description = description;
+        this.description = description.trim();
         this.setImage(image);
     }
 
@@ -115,7 +115,7 @@ public class Channel extends LitePalSupport implements Parcelable, Serializable 
     }
 
     public void setDescription(String description) {
-        this.description = description;
+        this.description = description.trim();
     }
 
     public byte[] getImage() {

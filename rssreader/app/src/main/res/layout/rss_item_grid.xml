@@ -6,13 +6,14 @@
     android:layout_height="wrap_content"
     android:layout_margin="5dp"
     app:cardCornerRadius="5dp"
-    app:cardElevation="5dp">
+    app:cardElevation="5dp"
+    android:background="@color/rssSourceItemColor">
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:minHeight="35dp"
-        android:background="@color/rssSourceItemColor">
+        >
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
@@ -39,6 +40,7 @@
             android:gravity="center_horizontal"
             android:textSize="20sp"
             android:textStyle="bold"
+            android:maxLines="1"
             android:textColor="@color/dayBlackNightGray"/>
         <TextView
             android:id="@+id/rss_source_intro"

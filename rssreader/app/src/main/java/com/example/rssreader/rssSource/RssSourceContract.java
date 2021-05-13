@@ -5,8 +5,10 @@ import android.content.Context;
 import android.os.RemoteException;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.recyclerview.widget.ItemTouchHelper;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.rssreader.RssSource;
 import com.example.rssreader.model.datamodel.Channel;
@@ -68,6 +70,8 @@ public interface RssSourceContract {
         public void hideProgressBar();
         //设置实现拖动功能的帮助类
         public ItemTouchHelper setItemTouchHelper();
+        //拖动后通知界面更新
+        public void refreshAfterMove(int srcPos, int desPos);
     }
 
     interface RssSourcePresenter extends BasePresenter {
@@ -93,6 +97,10 @@ public interface RssSourceContract {
         public void transferChannel(Context srcActivity, int pos);
         //日间/夜间模式切换
         public void modeSwitching(MenuItem item);
+        //设置拖拽功能的方向
+        public int setMovementFlags();
+        //设置拖拽时的处理逻辑
+        public boolean setMoving(int srcPos, int desPos);
     }
 }
 

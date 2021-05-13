@@ -15,6 +15,8 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.ItemTouchHelper;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.rssreader.IMyAidlInterface;
 import com.example.rssreader.R;
@@ -27,6 +29,7 @@ import com.example.rssreader.model.parse.XmlCallback;
 import com.example.rssreader.util.BasePresenter;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -302,5 +305,38 @@ public class RssSourcePresenterImpl implements RssSourceContract.RssSourcePresen
             isNightMode = false;
             //将模式写入配置文件
         }
+    }
+
+    @Override
+    public int setMovementFlags() {
+        int dragFlags = 0;
+        //如果是网格布局那么可以上下左右拖动
+        if(gridChosen == true && listChosen == false){
+            dragFlags = ItemTouchHelper.UP|ItemTouchHelper.DOWN|ItemTouchHelper.LEFT|ItemTouchHelper.RIGHT;
+        }
+        //如果是列表布局那么可以上下拖动
+        else if(gridChosen == false && listChosen == true)
+            dragFlags = ItemTouchHelper.UP|ItemTouchHelper.DOWN;
+        return dragFlags;
+    }
+
+
+    @Override
+    public boolean setMoving(int srcPos, int desPos) {
+        if(rssSourceList.size()==0)
+            return false;
+        //循环交换两个item的位置
+        if (srcPos < desPos) {
+            for (int i = srcPos; i < desPos; i++) {
+                Collections.swap(rssSourceList, i, i + 1);
+            }
+        } else {
+            for (int i = srcPos; i > desPos; i--) {
+                Collections.swap(rssSourceList, i, i - 1);
+            }
+        }
+        //刷新界面
+        rssSourceView.refreshAfterMove(srcPos, desPos);
+        return true;
     }
 }

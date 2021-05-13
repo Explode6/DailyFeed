@@ -75,9 +75,9 @@ public class ConfigUtil {
      */
     public boolean setMode(int mode){
         if(mode == MODE_LIGHT){
-            editor.putBoolean("mode", true);
-        }else if(mode == MODE_DARK){
             editor.putBoolean("mode", false);
+        }else if(mode == MODE_DARK){
+            editor.putBoolean("mode", true);
         }else return false;
         //写入文件并清除editor对象
         editor.apply();

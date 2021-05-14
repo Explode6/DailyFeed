@@ -1,9 +1,8 @@
-package com.example.rssreader.articleCollection;
+package com.example.rssreader.rssdetails.collectionlist;
 
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.RemoteException;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,39 +13,42 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.rssreader.R;
-import com.example.rssreader.articlelist.SlideRecyclerView;
 import com.example.rssreader.lastactivity.LastActivity;
 import com.example.rssreader.model.datamodel.ArticleBrief;
+import com.example.rssreader.rssdetails.ShowListAdapter;
+import com.example.rssreader.rssdetails.ShowListContract;
+import com.example.rssreader.rssdetails.SlideRecyclerView;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * The type Article collection fragment.
- *
- * @ClassName ArticleCollectionFragment
+ * @ClassName CollectionListFragment
  * @Author HaoHaoGe
- * @Date 2021 /4/30
+ * @Date 2021/4/30
  * @Description
  */
-public class ArticleCollectionFragment extends Fragment implements ArticleCollectionContract.View {
+public class CollectionListFragment extends Fragment implements ShowListContract.View {
 
     //presenter层
-    ArticleCollectionContract.ArticleCollectionPresenter mPresent;
+    CollectionListPresenter mPresent;
 
     //recyclerView的adpter
-    ArticleCollectionAdapter mArticleCollectionAdapter;
+    ShowListAdapter mShowListAdapter;
+
+    SwipeRefreshLayout mSwipeRefreshLayout;
 
     //单例模式获取fragment
-    public static ArticleCollectionFragment newInstance(){
-        return new ArticleCollectionFragment();
+    public static CollectionListFragment newInstance(){
+        return new CollectionListFragment();
     }
 
     @Override
-    public void setPresenter(ArticleCollectionContract.ArticleCollectionPresenter presenter) {
-        mPresent = presenter;
+    public void setPresenter(ShowListContract.ShowListPresenter presenter) {
+        mPresent = (CollectionListPresenter) presenter;
     }
 
     /*
@@ -55,7 +57,7 @@ public class ArticleCollectionFragment extends Fragment implements ArticleCollec
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mArticleCollectionAdapter = new ArticleCollectionAdapter(new ArrayList<ArticleBrief>());
+        mShowListAdapter = new ShowListAdapter(new ArrayList<ArticleBrief>());
     }
 
     /*
@@ -64,54 +66,49 @@ public class ArticleCollectionFragment extends Fragment implements ArticleCollec
     @Override
     public void onResume() {
         super.onResume();
-        try {
-            mPresent.start();
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
+        mPresent.start();
     }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        final View root = inflater.inflate(R.layout.article_collection_frag, container, false);
-
+        final View root = inflater.inflate(R.layout.collection_list_frag, container, false);
 
         //绑定自定义的SlideRecyclerView，实现每一项能够侧滑的功能
-        final SlideRecyclerView slideRecyclerView = (SlideRecyclerView)root.findViewById(R.id.article_collection_slideview);
-        slideRecyclerView.setAdapter(mArticleCollectionAdapter);
+        final SlideRecyclerView slideRecyclerView = (SlideRecyclerView)root.findViewById(R.id.slideview);
+        slideRecyclerView.setAdapter(mShowListAdapter);
         LinearLayoutManager layoutManager = new LinearLayoutManager(slideRecyclerView.getContext(), RecyclerView.VERTICAL, false);
 
         //设置每一项的点击事件
-        mArticleCollectionAdapter.setOnItemClickListener(new ArticleCollectionAdapter.OnItemClickListener() {
+        mShowListAdapter.setOnItemClickListener(new ShowListAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(RecyclerView.Adapter adapter, View v, int position) {
-                ArticleBrief articleBrief = mArticleCollectionAdapter.getArticleBrief(position);
+                ArticleBrief articleBrief = mShowListAdapter.getArticleBrief(position);
                 mPresent.openArticleDetails(articleBrief, position);
 
             }
         });
 
         //设置收藏的点击事件
-        mArticleCollectionAdapter.setOnDeleteClickListener(new ArticleCollectionAdapter.OnDeleteClickListener() {
+        mShowListAdapter.setOnCollectClickListener(new ShowListAdapter.OnCollectClickListener() {
             @Override
-            public void onDeleteClick(View view, int position) {
-                ArticleBrief articleBrief = mArticleCollectionAdapter.getArticleBrief(position);
-                mPresent.switchCollection(articleBrief, position, articleBrief.getCollect());
+            public void onCollectClick(View view, int position) {
+                ArticleBrief articleBrief = mShowListAdapter.getArticleBrief(position);
+                mPresent.cancelCollection(articleBrief, position);
             }
         });
 
         //设计标记已读的点击事件
-        mArticleCollectionAdapter.setOnMarkReadClickListener(new ArticleCollectionAdapter.OnMarkReadClickListener() {
+        mShowListAdapter.setOnMarkReadClickListener(new ShowListAdapter.OnMarkReadClickListener() {
             @Override
             public void onMarkReadClick(View view, int position) {
-                mPresent.markRead(position);
+                ArticleBrief articleBrief = mShowListAdapter.getArticleBrief(position);
+                mPresent.switchRead(articleBrief, position);
             }
         });
 
         slideRecyclerView.setLayoutManager(layoutManager);
 
-        //注意：这里有问题，加载完成之后还是能够继续刷新
         slideRecyclerView.addOnScrollListener(new SlideRecyclerView.LoadMoreOnScrollListener(){
             @Override
             public void loadMoreArticle() {
@@ -123,16 +120,19 @@ public class ArticleCollectionFragment extends Fragment implements ArticleCollec
         return root;
     }
 
-
     /**把得到的新数据添加在原数据之后
      * @param articleBriefList 得到的新数据
      * @param begin 原数据的末尾
      * @param size 新数据的长度
      */
     @Override
-    public void showArticleCollection(List<ArticleBrief> articleBriefList, int begin, int size){
-        mArticleCollectionAdapter.addArticleList(articleBriefList);
-        mArticleCollectionAdapter.notifyItemRangeInserted(begin, size);
+    public void showArticleList(List<ArticleBrief> articleBriefList, int begin, int size){
+        mShowListAdapter.addArticleList(articleBriefList);
+        mShowListAdapter.notifyItemRangeInserted(begin+1, size);
+    }
+
+    @Override
+    public void refreshArticleList(List<ArticleBrief> articleBriefList) {
     }
 
     /**点击某一项从而进入对应的文章内容页
@@ -150,37 +150,45 @@ public class ArticleCollectionFragment extends Fragment implements ArticleCollec
      * @param position 标记出这是第几项
      */
     @Override
-    public void markReadAndRefresh(int position){
-        mArticleCollectionAdapter.switchRead(position);
+    public void switchReadAndRefresh(int position){
+        mShowListAdapter.switchRead(position);
     }
 
-    /**添加收藏后刷新页面
+    /**切换已读后刷新页面
+     * @param position 标记出这是第几项
+     */
+    @Override
+    public void markReadAndRefresh(int position){
+        mShowListAdapter.markRead(position);
+    }
+
+    /**取消收藏后刷新页面
      * @param position 标记出这是第几项
      */
     @Override
     public void switchCollectionAndRefresh(int position){
-        mArticleCollectionAdapter.switchCollected(position);
+        mShowListAdapter.cancelCollected(position);
     }
 
     /**
-     * 报告错误信息
-     * @param message 错误信息
+     * 报告信息
+     * @param message 信息
      */
     @Override
-    public void giveWrongMessage(String message) {
+    public void giveNoteMessage(String message) {
         Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
     }
 
-    /**
-     * 改变FooterView，显示已经加载所有数据了
-     */
     @Override
-    public void changeFooterViewStyle() {
-        mArticleCollectionAdapter.setLoadCompletely();
+    public void stopRefreshUI() {
+        if(mSwipeRefreshLayout != null){
+            mSwipeRefreshLayout.setRefreshing(false);
+        }
     }
 
     @Override
-    public void giveLoadSuccessfulMessage() {
-        Toast.makeText(getContext(), "加载成功", Toast.LENGTH_SHORT).show();
+    public void changeFooterViewStyle() {
+        mShowListAdapter.setLoadCompletely();
     }
+
 }

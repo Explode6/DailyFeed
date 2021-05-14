@@ -35,8 +35,8 @@
         </activity>
 
         <activity android:name="com.example.rssreader.lastactivity.LastActivity"></activity>
-        <activity android:name="com.example.rssreader.articlelist.ArticleListActivity"></activity>
-        <activity android:name="com.example.rssreader.articleCollection.ArticleCollectionActivity"></activity>
+        <activity android:name="com.example.rssreader.rssdetails.articlelist.ArticleListActivity"></activity>
+        <activity android:name="com.example.rssreader.rssdetails.collectionlist.CollectionListActivity"></activity>
         <service android:name=".rssSource.NoticeService">
             <intent-filter>
                 <action android:name="com.example.rssreader.rssNoticeService"/>

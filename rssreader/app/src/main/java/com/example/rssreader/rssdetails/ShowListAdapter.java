@@ -1,4 +1,4 @@
-package com.example.rssreader.articlelist;
+package com.example.rssreader.rssdetails;
 
 import android.content.Context;
 import android.util.SparseArray;
@@ -13,7 +13,6 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
 import com.example.rssreader.R;
 import com.example.rssreader.model.datamodel.ArticleBrief;
@@ -21,13 +20,12 @@ import com.example.rssreader.model.datamodel.ArticleBrief;
 import java.util.List;
 
 /**
- * @ClassName ArticleAdapter
+ * @ClassName ShowListAdapter
  * @Author HaoHaoGe
- * @Date 2021/4/25
- * @Description 文章适配器用于展示文章简介页面的recyclerView，
- * 其中implements View.OnClickListener是用于感知每一项的点击，从而判断是否为侧滑
+ * @Date 2021/5/13
+ * @Description
  */
-public class ArticleListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements View.OnClickListener {
+public class ShowListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements View.OnClickListener {
 
     private List<ArticleBrief> mArticleBriefList;
 
@@ -38,7 +36,7 @@ public class ArticleListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     /*
      * 三个按钮对应的点击监听接口
      */
-    private OnDeleteClickListener mDeleteClickListener;
+    private OnCollectClickListener mCollectClickListener;
     private OnItemClickListener mListener;
     private OnMarkReadClickListener mMarkReadClickListener;
 
@@ -63,7 +61,7 @@ public class ArticleListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         ImageView articleImage = null;
         TextView articleTitle = null;
         TextView articleBrief = null;
-        Button deleteCollection = null;
+        Button collectArticle = null;
         Button markRead = null;
 
         private SparseArray<View> mViews;
@@ -76,7 +74,7 @@ public class ArticleListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             articleImage = (ImageView) view .findViewById(R.id.artitle_image);
             articleTitle = (TextView) view.findViewById(R.id.artitle_title);
             articleBrief = (TextView) view.findViewById(R.id.artitle_brief);
-            deleteCollection = (Button) view.findViewById(R.id.delete_collection);
+            collectArticle = (Button) view.findViewById(R.id.collect_article);
             markRead = (Button)view.findViewById(R.id.mark_as_read);
         }
 
@@ -105,7 +103,7 @@ public class ArticleListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     /*
      * adapter维护一个对应的list，能够在缓存中修改数据
      */
-    public ArticleListAdapter(List<ArticleBrief> articleBriefList){
+    public ShowListAdapter(List<ArticleBrief> articleBriefList){
         mArticleBriefList = articleBriefList;
     }
 
@@ -120,7 +118,7 @@ public class ArticleListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         //文章加载完了，显示footerView
         if(viewType == ITEM_TYPE_END){
             View footerView = LayoutInflater.from(mContext).inflate(
-                    R.layout.article_list_footer,
+                    R.layout.showlist_footer,
                     parent,
                     false);
             mFooterHolder = new FooterHolder(footerView);
@@ -129,7 +127,7 @@ public class ArticleListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         //加载正常的文章item
         else{
             View view = LayoutInflater.from(parent.getContext()).inflate(
-                    R.layout.article_list_item,
+                    R.layout.showlist_item,
                     parent,
                     false);
 
@@ -168,6 +166,11 @@ public class ArticleListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             //如果这篇文章没有图片，则不需显示图片
             else{
                 ((ViewHolder) holder).articleImage.setVisibility(View.GONE);
+
+                /*
+                 * UI界面小尝试
+                 */
+                ((ViewHolder) holder).markRead.setVisibility(View.GONE);
             }
 
 
@@ -188,9 +191,9 @@ public class ArticleListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
              * 收藏和已读按钮也会跟随文章的属性变化
              */
             if(articleBrief.getCollect()) {
-                ((ViewHolder) holder).deleteCollection.setText("取消收藏");
+                ((ViewHolder) holder).collectArticle.setText("取消收藏");
             }else{
-                ((ViewHolder) holder).deleteCollection.setText("收藏");
+                ((ViewHolder) holder).collectArticle.setText("收藏");
             }
 
             if(articleBrief.getRead()) {
@@ -202,14 +205,14 @@ public class ArticleListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
              * 绑定删除按钮的点击事件，需要在view层实现
              *
              */
-            View collectionView = ((ViewHolder)holder).getView(R.id.delete_collection);
+            View collectionView = ((ViewHolder)holder).getView(R.id.collect_article);
             collectionView.setTag(position);
             if (!collectionView.hasOnClickListeners()) {
                 collectionView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        if (mDeleteClickListener != null) {
-                            mDeleteClickListener.onDeleteClick(view, (Integer) view.getTag());
+                        if (mCollectClickListener != null) {
+                            mCollectClickListener.onCollectClick(view, (Integer) view.getTag());
                         }
                     }
                 });
@@ -229,8 +232,9 @@ public class ArticleListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 });
             }
         }else if(holder instanceof FooterHolder){
-            //test应该不需要这句
-            //((FooterHolder)holder).textView.setText("下拉加载更多");
+            if(mArticleBriefList.size() < 10) {
+                ((FooterHolder) holder).textView.setText("我也是有底线的");
+            }
         }
     }
 
@@ -243,13 +247,13 @@ public class ArticleListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     /**
      * 暴露删除的点击事件给view层，让view层自定义删除操作
      *
-     * @param listener 也就是下方定义的OnDeleteClickListener接口
+     * @param listener 也就是下方定义的OnCollectClickListener接口
      */
-    public void setOnDeleteClickListener(OnDeleteClickListener listener){
-        this.mDeleteClickListener = listener;
+    public void setOnCollectClickListener(OnCollectClickListener listener){
+        this.mCollectClickListener = listener;
     }
-    public interface OnDeleteClickListener{
-        void onDeleteClick(View view, int position);
+    public interface OnCollectClickListener{
+        void onCollectClick(View view, int position);
     }
 
     /**
@@ -347,7 +351,10 @@ public class ArticleListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         articleBrief.setRead(!isRead);
         this.notifyItemChanged(position);
     }
-
+    public void markRead(int position){
+        mArticleBriefList.get(position).setRead(true);
+        this.notifyItemChanged(position);
+    }
     public void switchCollected(int position){
         ArticleBrief articleBrief = mArticleBriefList.get(position);
         boolean isCollect = articleBrief.getCollect();
@@ -355,8 +362,18 @@ public class ArticleListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         this.notifyItemChanged(position);
     }
 
-    public void markRead(int position){
-        mArticleBriefList.get(position).setRead(true);
-        this.notifyItemChanged(position);
+
+    /** 取消收藏，采用notifyItemRemoved能够显示删除的动画，如果用notifyDataSetChanged只能整个页面重新刷新，可能还会有闪烁
+     *  但是ItemRemoved有bug，删除之后并不会将那一项后面的内容重新绑定，所以后面的内容仍然保留着原先的position，如果这时候用position对那几项访问时，会出现错位
+     *  错位的内容只会出现在所有可视的item中，在removed的之后的item
+     *  所以需要用notifyItemRangeChanged把后面的内容全都重新绑定position
+     * @param position
+     */
+    public void cancelCollected(int position){
+        ArticleBrief articleBrief = mArticleBriefList.get(position);
+        articleBrief.setCollect(false);
+        this.notifyItemRemoved(position);
+        mArticleBriefList.remove(position);
+        this.notifyItemRangeChanged(position, mArticleBriefList.size());
     }
 }

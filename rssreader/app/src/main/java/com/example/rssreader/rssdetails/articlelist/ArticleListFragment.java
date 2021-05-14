@@ -1,9 +1,8 @@
-package com.example.rssreader.articlelist;
+package com.example.rssreader.rssdetails.articlelist;
 
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.RemoteException;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +18,9 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import com.example.rssreader.R;
 import com.example.rssreader.lastactivity.LastActivity;
 import com.example.rssreader.model.datamodel.ArticleBrief;
+import com.example.rssreader.rssdetails.ShowListAdapter;
+import com.example.rssreader.rssdetails.ShowListContract;
+import com.example.rssreader.rssdetails.SlideRecyclerView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,15 +29,15 @@ import java.util.List;
  * @ClassName ArticleListFragment
  * @Author HaoHaoGe
  * @Date 2021/4/30
- * @Description
+ * @Description 该页面用于展示RSS源下的所有文章内容，主体是一个RecyclerView展示文章列表
  */
-public class ArticleListFragment extends Fragment implements ArticleListContract.View {
+public class ArticleListFragment extends Fragment implements ShowListContract.View {
 
     //presenter层
-    ArticleListContract.ArticleListPresenter mPresent;
+    ArticleListPresenter mPresent;
 
     //recyclerView的adpter
-    ArticleListAdapter mArticleListAdapter;
+    ShowListAdapter mShowListAdapter;
 
     SwipeRefreshLayout mSwipeRefreshLayout;
 
@@ -45,8 +47,8 @@ public class ArticleListFragment extends Fragment implements ArticleListContract
     }
 
     @Override
-    public void setPresenter(ArticleListContract.ArticleListPresenter presenter) {
-        mPresent = presenter;
+    public void setPresenter(ShowListContract.ShowListPresenter presenter) {
+        mPresent = (ArticleListPresenter) presenter;
     }
 
     /*
@@ -55,7 +57,7 @@ public class ArticleListFragment extends Fragment implements ArticleListContract
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mArticleListAdapter = new ArticleListAdapter(new ArrayList<ArticleBrief>());
+        mShowListAdapter = new ShowListAdapter(new ArrayList<ArticleBrief>());
     }
 
     /*
@@ -64,11 +66,7 @@ public class ArticleListFragment extends Fragment implements ArticleListContract
     @Override
     public void onResume() {
         super.onResume();
-        try {
-            mPresent.start();
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
+        mPresent.start();
     }
 
     @Nullable
@@ -81,58 +79,51 @@ public class ArticleListFragment extends Fragment implements ArticleListContract
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
+                //下拉刷新时，根据该RSS源的地址检查有没有更新，然后将最新的文章展示
                 mPresent.refreshChannel(getActivity());
             }
         });
 
         //绑定自定义的SlideRecyclerView，实现每一项能够侧滑的功能
-        final SlideRecyclerView slideRecyclerView = (SlideRecyclerView)root.findViewById(R.id.article_list_slideview);
-        slideRecyclerView.setAdapter(mArticleListAdapter);
+        final SlideRecyclerView slideRecyclerView = (SlideRecyclerView)root.findViewById(R.id.slideview);
+        slideRecyclerView.setAdapter(mShowListAdapter);
         LinearLayoutManager layoutManager = new LinearLayoutManager(slideRecyclerView.getContext(), RecyclerView.VERTICAL, false);
 
-        //设置每一项的点击事件
-        mArticleListAdapter.setOnItemClickListener(new ArticleListAdapter.OnItemClickListener() {
+        //设置每一项的点击事件，用于点击文章进入到文章具体内容页面
+        mShowListAdapter.setOnItemClickListener(new ShowListAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(RecyclerView.Adapter adapter, View v, int position) {
-                ArticleBrief articleBrief = mArticleListAdapter.getArticleBrief(position);
+                ArticleBrief articleBrief = mShowListAdapter.getArticleBrief(position);
                 mPresent.openArticleDetails(articleBrief, position);
 
             }
         });
 
-        //设置收藏的点击事件
-        mArticleListAdapter.setOnDeleteClickListener(new ArticleListAdapter.OnDeleteClickListener() {
+        //设置收藏的点击事件，用于将文章加入收藏或者是取消收藏
+        mShowListAdapter.setOnCollectClickListener(new ShowListAdapter.OnCollectClickListener() {
             @Override
-            public void onDeleteClick(View view, int position) {
-                ArticleBrief articleBrief = mArticleListAdapter.getArticleBrief(position);
+            public void onCollectClick(View view, int position) {
+                ArticleBrief articleBrief = mShowListAdapter.getArticleBrief(position);
                 mPresent.switchCollection(articleBrief, position);
             }
         });
 
-        //设计标记已读的点击事件
-        mArticleListAdapter.setOnMarkReadClickListener(new ArticleListAdapter.OnMarkReadClickListener() {
+        //设计标记已读的点击事件，用于将文章标记已读或者是取消已读
+        mShowListAdapter.setOnMarkReadClickListener(new ShowListAdapter.OnMarkReadClickListener() {
             @Override
             public void onMarkReadClick(View view, int position) {
-                ArticleBrief articleBrief = mArticleListAdapter.getArticleBrief(position);
+                ArticleBrief articleBrief = mShowListAdapter.getArticleBrief(position);
                 mPresent.switchRead(articleBrief, position);
             }
         });
 
         slideRecyclerView.setLayoutManager(layoutManager);
 
-        //注意：这里有问题，加载完成之后还是能够继续刷新
+        //上拉加载更多的10篇文章
         slideRecyclerView.addOnScrollListener(new SlideRecyclerView.LoadMoreOnScrollListener(){
             @Override
             public void loadMoreArticle() {
-                //加载后面10篇文章
-                boolean completeLoad = mPresent.loadArticle();
-                if(!completeLoad) {
-                    Toast.makeText(root.getContext(), "加载成功", Toast.LENGTH_SHORT).show();
-                }
-                //如果全都加载完成了，改变FooterView样式
-                else{
-                    mArticleListAdapter.setLoadCompletely();
-                }
+                mPresent.loadArticle();
             }
         });
 
@@ -140,25 +131,24 @@ public class ArticleListFragment extends Fragment implements ArticleListContract
     }
 
 
-    /**把得到的新数据添加在原数据之后
-     * @param articleBriefList 得到的新数据
+    /**将从数据库中获取的articleBriefList展示到当前界面中（放到原先的文章后面）
+     * @param articleBriefList 从数据库取得的数据
      * @param begin 原数据的末尾
      * @param size 新数据的长度
      */
     @Override
     public void showArticleList(List<ArticleBrief> articleBriefList, int begin, int size){
-        mArticleListAdapter.addArticleList(articleBriefList);
-        mArticleListAdapter.notifyItemRangeInserted(begin, size);
+        mShowListAdapter.addArticleList(articleBriefList);
+        mShowListAdapter.notifyItemRangeInserted(begin+1, size);
     }
 
     /**如果重新刷新，需要把数据全都换了，并且调用setChanged直接重新加载recyclerView
      * @param articleBriefList 新的数据list
      */
-    @Override
     public void refreshArticleList(List<ArticleBrief> articleBriefList){
-        mArticleListAdapter.changeData(articleBriefList);
-        mArticleListAdapter.notifyDataSetChanged();
-        mArticleListAdapter.setLoadFirstly();
+        mShowListAdapter.changeData(articleBriefList);
+        mShowListAdapter.notifyDataSetChanged();
+        mShowListAdapter.setLoadFirstly();
     }
 
     /**点击某一项从而进入对应的文章内容页
@@ -172,12 +162,12 @@ public class ArticleListFragment extends Fragment implements ArticleListContract
     }
 
 
-    /**标记已读后刷新页面
+    /**标记已读后刷新页面，用于点击文章进入文章内容页面之前，先把该文章标记为已读
      * @param position 标记出这是第几项
      */
     @Override
     public void switchReadAndRefresh(int position){
-        mArticleListAdapter.switchRead(position);
+        mShowListAdapter.switchRead(position);
     }
 
     /**切换已读后刷新页面
@@ -185,7 +175,7 @@ public class ArticleListFragment extends Fragment implements ArticleListContract
      */
     @Override
     public void markReadAndRefresh(int position){
-        mArticleListAdapter.markRead(position);
+        mShowListAdapter.markRead(position);
     }
 
     /**添加收藏后刷新页面
@@ -193,23 +183,33 @@ public class ArticleListFragment extends Fragment implements ArticleListContract
      */
     @Override
     public void switchCollectionAndRefresh(int position){
-        mArticleListAdapter.switchCollected(position);
+        mShowListAdapter.switchCollected(position);
     }
 
     /**
-     * 报告错误信息
-     * @param message 错误信息
+     * 弹出信息
+     * @param message 信息
      */
     @Override
-    public void giveWrongMessage(String message) {
+    public void giveNoteMessage(String message) {
         Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
     }
 
-    @Override
+    /**
+     * 下拉刷新对应的操作完成后，将刷新的进度条隐藏
+     */
     public void stopRefreshUI() {
         if(mSwipeRefreshLayout != null){
             mSwipeRefreshLayout.setRefreshing(false);
         }
+    }
+
+    /**
+     * 文章全部展示时给出提示
+     */
+    @Override
+    public void changeFooterViewStyle() {
+        mShowListAdapter.setLoadCompletely();
     }
 
 }

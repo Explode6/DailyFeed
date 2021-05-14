@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.util.Log;
 
 import java.io.File;
+import java.util.Calendar;
 
 /**
  * @ClassName: ConfigUtil
@@ -28,7 +29,6 @@ public class ConfigUtil {
     private SharedPreferences pref;
     private SharedPreferences.Editor editor;
     public static ConfigUtil configUtil;
-    public static int count = 0;
 
     /**
      * 获取ConfigUtil的单例对象，如果是初次获取将初始化配置文件
@@ -59,16 +59,15 @@ public class ConfigUtil {
      * @param context
      */
     private static void initConfig(Context context){
-        count++;
         //创建配置文件
         SharedPreferences.Editor editor = context.getSharedPreferences(fileName, Context.MODE_PRIVATE).edit();
         //填入初始化对象
         editor.putBoolean("mode", false);
-        editor.putLong("time", 0);
+        editor.putInt("hour", 0);
+        editor.putInt("minute", 0);
         editor.putInt("textSize", 100);
         editor.putInt("textSpacing,", 0);
         editor.apply();
-        Log.d("PCOUNT",String.valueOf(count));
     }
 
 
@@ -102,23 +101,45 @@ public class ConfigUtil {
     /**
      * 设置定时更新的时间，初始值是0
      *
-     * @param time 设定的时间
+     * @param hour 设定的小时数
      * @return 添加成功返回true，否则返回false
      */
-    public boolean setTime(long time){
-        editor.putLong("time", time);
+    public boolean setHour(int hour){
+        editor.putInt("hour", hour);
         editor.apply();
         editor.clear();
         return true;
     }
 
     /**
-     * 获取上次设定的更新时间
+     * 获取上次设定的更新时间的小时数
      *
-     * @return the long
+     * @return the int
      */
-    public long getTime(){
-        return pref.getLong("time", 0);
+    public int getHour(){
+        return pref.getInt("hour", 0);
+    }
+
+    /**
+     * 设置定时更新的小时数，初始值是0
+     *
+     * @param minute 设定的分钟数
+     * @return 添加成功返回true，否则返回false
+     */
+    public boolean setMinute(int minute){
+        editor.putInt("minute", minute);
+        editor.apply();
+        editor.clear();
+        return true;
+    }
+
+    /**
+     * 获取上次设定的更新时间的分钟数
+     *
+     * @return the int
+     */
+    public int getMinute(){
+        return pref.getInt("minute", 0);
     }
 
     /**

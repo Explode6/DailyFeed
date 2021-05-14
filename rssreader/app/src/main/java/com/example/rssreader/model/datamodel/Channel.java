@@ -36,7 +36,7 @@ public class Channel extends LitePalSupport implements Parcelable, Serializable 
     //Channel的简介
     private String description;
 
-    //Channel的展示顺序，从0开始！
+    //Channel的展示顺序，从1开始！
     private int sequence;
 
     @Column(nullable = true)
@@ -51,7 +51,7 @@ public class Channel extends LitePalSupport implements Parcelable, Serializable 
         this.addressLink = new String("");
         this.lastBuildDate = new String("");
         this.description = new String("");
-        this.sequence = -1;
+        this.sequence = 0;
         this.image = null;
     }
 

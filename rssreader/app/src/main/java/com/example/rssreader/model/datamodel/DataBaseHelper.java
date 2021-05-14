@@ -31,7 +31,7 @@ public class DataBaseHelper {
             //对新添加的Channel要设置其sequence值
             if(channels.isEmpty()){
                 int length = LitePal.findAll(Channel.class).size();
-                channel.setSequence(length);
+                channel.setSequence(length+1);
                 if(channel.save()) LitePal.setTransactionSuccessful();
             }
             //当channel的rssLink已存在，对其进行更新

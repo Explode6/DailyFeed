@@ -17,6 +17,13 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+    sourceSets {
+        main {
+            res {
+                srcDirs 'src\\main\\res', 'src\\main\\res-night'
+            }
+        }
+    }
 }
 
 dependencies {
@@ -40,6 +47,6 @@ dependencies {
     implementation 'skin.support:skin-support-appcompat:4.0.5'
     implementation 'skin.support:skin-support-design:4.0.5'
     implementation 'skin.support:skin-support-cardview:4.0.5'
-    implementation 'skin.support:skin-support-constraint-layout:4.0.5' 
+    implementation 'skin.support:skin-support-constraint-layout:4.0.5'
 
 }

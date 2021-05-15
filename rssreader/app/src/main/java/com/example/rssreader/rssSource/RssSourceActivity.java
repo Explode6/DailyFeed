@@ -54,6 +54,8 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.List;
 
+import skin.support.SkinCompatManager;
+
 public class RssSourceActivity extends AppCompatActivity {
 
     private DrawerLayout mDrawerLayout; //侧滑菜单
@@ -108,9 +110,9 @@ public class RssSourceActivity extends AppCompatActivity {
         //判断用户设置为夜间/日间模式进行不同的初始化
         if(ApplicationUtil.getIsFirstLoad() == true){
             if(configUtil.isDarkMode() == true)
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+                SkinCompatManager.getInstance().loadSkin("night", SkinCompatManager.SKIN_LOADER_STRATEGY_BUILD_IN);
             else
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+                SkinCompatManager.getInstance().restoreDefaultTheme();
             ApplicationUtil.setIsFirstLoad(false) ;
         }
 

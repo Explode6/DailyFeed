@@ -37,6 +37,8 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
+import skin.support.SkinCompatManager;
+
 public class RssSourceFragment extends Fragment implements RssSourceContract.RssSourceView {
     private RssSourceContract.RssSourcePresenter rssSourcePresenter;
     private RssSrcAdapter rssSrcAdapter;    //显示RSS源的适配器
@@ -365,14 +367,12 @@ public class RssSourceFragment extends Fragment implements RssSourceContract.Rss
 
     @Override
     public void switchToNightMode(MenuItem item) {
-        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-        getActivity().recreate();
+        SkinCompatManager.getInstance().loadSkin("night", SkinCompatManager.SKIN_LOADER_STRATEGY_BUILD_IN);
     }
 
     @Override
     public void switchToDayMode(MenuItem item) {
-        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-        getActivity().recreate();
+        SkinCompatManager.getInstance().restoreDefaultTheme();
     }
 
     @Override

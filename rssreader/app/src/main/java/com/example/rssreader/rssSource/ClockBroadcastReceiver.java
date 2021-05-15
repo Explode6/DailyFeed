@@ -10,8 +10,6 @@ public class ClockBroadcastReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         //启动闹钟服务，执行更新和发送消息的动作
         Intent i  = new Intent(context, NoticeService.class);
-        i.putExtra("mykey","更新已完成");
-        Toast.makeText(context, "广播启动service",Toast.LENGTH_SHORT).show();
         context.startService(i);
     }
 }

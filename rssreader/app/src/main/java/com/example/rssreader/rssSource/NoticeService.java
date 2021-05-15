@@ -10,18 +10,14 @@ import android.os.Build;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.util.Log;
-import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 
 import com.example.rssreader.IMyAidlInterface;
 import com.example.rssreader.R;
-import com.example.rssreader.model.datamodel.Channel;
 import com.example.rssreader.model.parse.AidlBinder;
-import com.example.rssreader.model.parse.XmlCallback;
-
-import java.util.List;
+import com.example.rssreader.util.AlarmUtil;
 
 public class NoticeService extends Service {
 
@@ -37,7 +33,6 @@ public class NoticeService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        Toast.makeText(this, "service创建成功",Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -71,22 +66,19 @@ public class NoticeService extends Service {
                 Log.d("NoticeService","update fail");
             }
         }
-        initNotification(intent);
+        initNotification(intent, "更新成功");
         showNotification();
         //关闭闹钟
         AlarmUtil.stopNoticeService(getApplicationContext(), ClockBroadcastReceiver.class,"com.example.rssreader.rssNoticeBroadcast");
-        //AlarmUtil.startNoticeService(getApplicationContext(), System.currentTimeMillis()+10*1000, NoticeService.class, "com.ryantang.service.PollingService");
+        long oneDaySec = 24*60*60*1000;
+        //一天之后重新通知
+        AlarmUtil.startNoticeService(getApplicationContext(), System.currentTimeMillis()+oneDaySec, ClockBroadcastReceiver.class, "com.ryantang.service.PollingService");
         return super.onStartCommand(intent, flags, startId);
     }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        Toast.makeText(this, "service停止运行",Toast.LENGTH_SHORT).show();
-    }
+    
 
     //初始化通知内容
-    private void initNotification(Intent intent){
+    private void initNotification(Intent intent, String content){
         notificationManager = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
         if(Build.VERSION.SDK_INT>= Build.VERSION_CODES.O){
             NotificationChannel channel = new NotificationChannel("2222"
@@ -97,7 +89,7 @@ public class NoticeService extends Service {
                 .setSmallIcon(R.drawable.add_icon)
                 .setContentTitle("通知")
                 .setWhen(System.currentTimeMillis())
-                .setContentText(intent.getStringExtra("mykey"));
+                .setContentText(content);
     }
 
     private void showNotification(){

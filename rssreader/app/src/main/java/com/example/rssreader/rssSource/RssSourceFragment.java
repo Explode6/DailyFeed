@@ -44,13 +44,12 @@ public class RssSourceFragment extends Fragment implements RssSourceContract.Rss
     private ItemTouchHelper itemTouchHelper;    //实现拖拽功能的帮助类
     private BottomPopupWindow bottomPopupWindow;    //底部弹窗
     private AddRssSourceDialog addRssSourceDialog;  //添加RSS源的弹窗
-    private LoadingPopupWindow loadingPopupWindow;  //加载弹窗
+    public TimeChooseDialog timeChooseDialog;      //设置定时通知时间的弹窗
     private RecyclerView rssView;
     private boolean canEdit = false;    //是否进入编辑模式
     private Button listBtn;   //选择列表布局按钮
     private Button gridBtn;    //选择网格布局按钮
     private Button editBtn;     //RSS源编辑按钮
-    private int touchCount = 0;
 
     //空的构造函数
     public RssSourceFragment(){
@@ -109,10 +108,12 @@ public class RssSourceFragment extends Fragment implements RssSourceContract.Rss
         setBottomWindow();
         //绑定添加RSS源的弹窗
         setAddRssSrcDialog();
-        //绑定加载弹窗
-        setProgressBar();
+        //绑定定时通知弹窗
+        setTimeChooseDialog();
         //设置添加RSS源的弹窗相关的点击函数
         setAddRssSrcListener();
+        //设置定时通知弹窗相关的点击函数
+        setTimeChooseClickListener();
         //监听按钮点击事件
         listBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -292,33 +293,10 @@ public class RssSourceFragment extends Fragment implements RssSourceContract.Rss
                     //定时更新的时间设置
                     case R.id.update_time_setting:
                         RssSourceActivity activity = (RssSourceActivity)getActivity();
+                        //关闭侧滑菜单
                         activity.closeNavView();
-                        final TimeChooseDialog dialog = new TimeChooseDialog(getActivity());
-                        dialog.show();
-                        dialog.setListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                switch (view.getId()){
-                                    case R.id.time_chosen_btn:
-                                        Calendar calendar = Calendar.getInstance();
-                                        //设置为当前系统时间
-                                        calendar.setTimeInMillis(System.currentTimeMillis());
-                                        //设置为用户选择的时间
-                                        calendar.set(Calendar.HOUR_OF_DAY, dialog.getHour());
-                                        calendar.set(Calendar.MINUTE, dialog.getMinute());
-                                        Toast.makeText(getContext(), String.valueOf(dialog.getHour()), Toast.LENGTH_SHORT).show();
-                                        Toast.makeText(getContext(), String.valueOf(dialog.getMinute()), Toast.LENGTH_SHORT).show();
-                                        calendar.set(Calendar.SECOND, 0);
-                                        //开启广播
-                                        AlarmUtil.startNoticeService(getContext(),calendar.getTimeInMillis(),ClockBroadcastReceiver.class,"com.example.rssreader.rssNoticeBroadcast");
-                                        dialog.dismiss();
-                                        break;
-                                    case R.id.close_time_choose_dialog_btn:
-                                        dialog.dismiss();
-                                        break;
-                                }
-                            }
-                        });
+                        //显示定时通知弹窗
+                        showTimeChooseDialog();
                         break;
 
                     //主题设置，夜间/日间模式切换
@@ -398,11 +376,6 @@ public class RssSourceFragment extends Fragment implements RssSourceContract.Rss
     }
 
     @Override
-    public void setProgressBar() {
-        loadingPopupWindow = new LoadingPopupWindow(this.getContext());
-    }
-
-    @Override
     public void showProgressBar() {
         addRssSourceDialog.showProgressBar();
     }
@@ -457,6 +430,78 @@ public class RssSourceFragment extends Fragment implements RssSourceContract.Rss
     public void refreshAfterMove(int srcPos, int desPos) {
         rssSrcAdapter.notifyItemMoved(srcPos, desPos);
         rssSrcAdapter.notifyItemRangeChanged(Math.min(srcPos, desPos), Math.abs(srcPos-desPos)+1);
+    }
+
+    @Override
+    public void setTimeChooseDialog() {
+        timeChooseDialog = new TimeChooseDialog(getActivity());
+    }
+
+    @Override
+    public void setTimeChooseClickListener() {
+        timeChooseDialog.setListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                switch (view.getId()){
+                    //点击确定按钮时
+                    case R.id.time_chosen_btn:
+                        rssSourcePresenter.setRegularUpdate();
+                        hideTimeChooseDialog();
+                        break;
+                    case R.id.close_time_choose_dialog_btn:
+                        rssSourcePresenter.whenCloseTimeChooseDialog();
+                        break;
+                    case R.id.close_time_choose:
+                        rssSourcePresenter.openOrCloseRegularUpdate();
+                }
+            }
+        });
+    }
+
+    @Override
+    public void showTimeChooseDialog() {
+        timeChooseDialog.show();
+        if(rssSourcePresenter.isTimedUpdateEnabled() == true){
+            openTimeChooseView();
+        }else{
+            closeTimeChooseView();
+        }
+    }
+
+    @Override
+    public void openTimeChooseView() {
+        timeChooseDialog.okBtn.setVisibility(View.VISIBLE);
+        timeChooseDialog.openOrCloseBtn.setText("关闭服务");
+        timeChooseDialog.chosenTime.setVisibility(View.VISIBLE);
+        timeChooseDialog.noticeTextView.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void closeTimeChooseView() {
+        timeChooseDialog.okBtn.setVisibility(View.GONE);
+        timeChooseDialog.openOrCloseBtn.setText("打开服务");
+        timeChooseDialog.chosenTime.setVisibility(View.GONE);
+        timeChooseDialog.noticeTextView.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void hideTimeChooseDialog() {
+        timeChooseDialog.dismiss();
+    }
+
+    @Override
+    public int getChosenHour() {
+        return timeChooseDialog.getHour();
+    }
+
+    @Override
+    public int getChosenMinute() {
+        return timeChooseDialog.getMinute();
+    }
+
+    @Override
+    public void setDefaultTime() {
+        timeChooseDialog.setDefaultTime();
     }
 }
 

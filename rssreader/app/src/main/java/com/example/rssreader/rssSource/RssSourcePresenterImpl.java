@@ -5,38 +5,27 @@ import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.RemoteException;
-import android.os.SystemClock;
-import android.util.Base64;
-import android.util.Log;
 import android.view.MenuItem;
-import android.widget.Toast;
 
-import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.ItemTouchHelper;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.rssreader.IMyAidlInterface;
-import com.example.rssreader.R;
 import com.example.rssreader.RssSource;
 import com.example.rssreader.articlelist.ArticleListActivity;
 import com.example.rssreader.model.datamodel.Channel;
-import com.example.rssreader.model.parse.AidlBinder;
-import com.example.rssreader.model.parse.DataCallback;
 import com.example.rssreader.model.parse.XmlCallback;
+import com.example.rssreader.util.AlarmUtil;
 import com.example.rssreader.util.ApplicationUtil;
-import com.example.rssreader.util.BasePresenter;
 import com.example.rssreader.util.ConfigUtil;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-
-import kotlin.jvm.internal.Ref;
 
 public class RssSourcePresenterImpl implements RssSourceContract.RssSourcePresenter {
 
@@ -244,7 +233,7 @@ public class RssSourcePresenterImpl implements RssSourceContract.RssSourcePresen
                        @Override
                        public void run() {
                            rssSourceView.hideProgressBar();
-                           rssSourceView.giveHint("添加失败，读取图片错误");
+                           rssSourceView.giveHint("读取图片错误");
                        }
                    });
                    addBtnLock = false;
@@ -344,5 +333,71 @@ public class RssSourcePresenterImpl implements RssSourceContract.RssSourcePresen
         //刷新界面
         rssSourceView.refreshAfterMove(srcPos, desPos);
         return true;
+    }
+
+    @Override
+    public boolean isTimedUpdateEnabled() {
+        if(configUtil.getHour() == -1)
+            return false;
+        else
+            return true;
+    }
+
+    /**
+     * 设置定时更新
+     */
+    @Override
+    public void setRegularUpdate() {
+        long oneDaySec = 24*60*60*1000;
+        Calendar calendar = Calendar.getInstance();
+        //设置为当前系统时间
+        calendar.setTimeInMillis(System.currentTimeMillis());
+        //设置为用户选择的时间
+        calendar.set(Calendar.HOUR_OF_DAY, rssSourceView.getChosenHour());
+        calendar.set(Calendar.MINUTE, rssSourceView.getChosenMinute());
+        //将设置时间存入配置文件
+        configUtil.setHour(rssSourceView.getChosenHour());
+        configUtil.setMinute(rssSourceView.getChosenMinute());
+
+        rssSourceView.giveHint(String.valueOf(rssSourceView.getChosenHour()));
+        rssSourceView.giveHint(String.valueOf(rssSourceView.getChosenMinute()));
+        //开启闹钟，如果用户选择的时间比当前时间小就要把闹钟开启时间延后一天
+        if(calendar.getTimeInMillis()+1000 < System.currentTimeMillis()) {
+            calendar.set(Calendar.SECOND, 0);
+            AlarmUtil.startNoticeService(ApplicationUtil.getContext(), calendar.getTimeInMillis() + oneDaySec, ClockBroadcastReceiver.class, "com.example.rssreader.rssNoticeBroadcast");
+        }
+        else{
+            calendar.set(Calendar.SECOND, 0);
+            AlarmUtil.startNoticeService(ApplicationUtil.getContext(), calendar.getTimeInMillis(), ClockBroadcastReceiver.class, "com.example.rssreader.rssNoticeBroadcast");
+        }
+
+    }
+
+    @Override
+    public void openOrCloseRegularUpdate() {
+        //如果是要打开定时通知服务
+        if(isTimedUpdateEnabled() == false){
+            rssSourceView.openTimeChooseView();
+            //将设定时间设置为默认时间
+            rssSourceView.setDefaultTime();
+            setRegularUpdate();
+        }else{
+            rssSourceView.closeTimeChooseView();
+            //关闭闹钟
+            AlarmUtil.stopNoticeService(ApplicationUtil.getContext(), ClockBroadcastReceiver.class,"com.example.rssreader.rssNoticeBroadcast");
+            configUtil.setHour(-1);
+            configUtil.setMinute(-1);
+        }
+    }
+
+    @Override
+    public void whenCloseTimeChooseDialog() {
+        //如果定时更新处于关闭状态直接关闭弹窗
+        if(isTimedUpdateEnabled() == false){
+            rssSourceView.hideTimeChooseDialog();
+        }else{
+            setRegularUpdate();
+            rssSourceView.hideTimeChooseDialog();
+        }
     }
 }

@@ -63,8 +63,8 @@ public class ConfigUtil {
         SharedPreferences.Editor editor = context.getSharedPreferences(fileName, Context.MODE_PRIVATE).edit();
         //填入初始化对象
         editor.putBoolean("mode", false);
-        editor.putInt("hour", 0);
-        editor.putInt("minute", 0);
+        editor.putInt("hour", -1);
+        editor.putInt("minute", -1);
         editor.putInt("textSize", 100);
         editor.putInt("textSpacing,", 0);
         editor.apply();
@@ -85,7 +85,6 @@ public class ConfigUtil {
         }else return false;
         //写入文件并清除editor对象
         editor.apply();
-        editor.clear();
         return true;
     }
 
@@ -107,7 +106,6 @@ public class ConfigUtil {
     public boolean setHour(int hour){
         editor.putInt("hour", hour);
         editor.apply();
-        editor.clear();
         return true;
     }
 
@@ -117,7 +115,7 @@ public class ConfigUtil {
      * @return the int
      */
     public int getHour(){
-        return pref.getInt("hour", 0);
+        return pref.getInt("hour", -1);
     }
 
     /**
@@ -129,7 +127,6 @@ public class ConfigUtil {
     public boolean setMinute(int minute){
         editor.putInt("minute", minute);
         editor.apply();
-        editor.clear();
         return true;
     }
 
@@ -139,7 +136,7 @@ public class ConfigUtil {
      * @return the int
      */
     public int getMinute(){
-        return pref.getInt("minute", 0);
+        return pref.getInt("minute", -1);
     }
 
     /**
@@ -152,7 +149,6 @@ public class ConfigUtil {
         if(textSize <= 0) return false;
         editor.putInt("textSize", textSize);
         editor.apply();
-        editor.clear();
         return true;
     }
 
@@ -175,7 +171,6 @@ public class ConfigUtil {
         if(textSpacing<0) return false;
         editor.putInt("textSpacing", textSpacing);
         editor.apply();
-        editor.clear();
         return true;
     }
 

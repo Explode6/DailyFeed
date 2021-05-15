@@ -62,8 +62,6 @@ public interface RssSourceContract {
         public void switchToNightMode(MenuItem item);
         //转换为日间模式
         public void switchToDayMode(MenuItem item);
-        //设置加载框
-        public void setProgressBar();
         //显示加载框
         public void showProgressBar();
         //隐藏加载框
@@ -72,6 +70,24 @@ public interface RssSourceContract {
         public ItemTouchHelper setItemTouchHelper();
         //拖动后通知界面更新
         public void refreshAfterMove(int srcPos, int desPos);
+        //设置定时更新弹窗
+        public void setTimeChooseDialog();
+        //显示定时更新弹窗
+        public void showTimeChooseDialog();
+        // 隐藏定时更新弹窗
+        public void hideTimeChooseDialog();
+        //设置定时通知弹窗的点击事件
+        public void setTimeChooseClickListener();
+        //获用户设置的定时更新的hour
+        public int getChosenHour();
+        //获用户设置的定时更新的minute
+        public int getChosenMinute();
+        //开启定时通知时的视图
+        public void openTimeChooseView();
+        //关闭定时通知时的视图
+        public void closeTimeChooseView();
+        //设置更新默认时间
+        public void setDefaultTime();
     }
 
     interface RssSourcePresenter extends BasePresenter {
@@ -101,6 +117,14 @@ public interface RssSourceContract {
         public int setMovementFlags();
         //设置拖拽时的处理逻辑
         public boolean setMoving(int srcPos, int desPos);
+        //检查是否开启了定时更新服务
+        public boolean isTimedUpdateEnabled();
+        //设置定时更新
+        public void setRegularUpdate();
+        //设置打开/关闭定时通知功能时的时间
+        public void openOrCloseRegularUpdate();
+        //设置关闭定时通知弹窗时的事件
+        public void whenCloseTimeChooseDialog();
     }
 }
 

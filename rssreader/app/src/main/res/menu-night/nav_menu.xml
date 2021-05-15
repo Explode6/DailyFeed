@@ -11,8 +11,8 @@
         <menu>
             <item
                 android:id="@+id/theme_setting"
-                android:title="夜间模式"
-                android:icon="@drawable/nav_night"/>
+                android:title="日间模式"
+                android:icon="@drawable/nav_day"/>
             <item
                 android:id="@+id/update_time_setting"
                 android:title="更新时间"

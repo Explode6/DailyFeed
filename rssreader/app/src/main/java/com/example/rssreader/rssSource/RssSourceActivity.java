@@ -18,6 +18,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
+import androidx.appcompat.app.SkinAppCompatDelegateImpl;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
@@ -37,6 +38,7 @@ import com.example.rssreader.util.ApplicationUtil;
 import com.example.rssreader.util.ConfigUtil;
 import com.google.android.material.navigation.NavigationView;
 
+import org.jetbrains.annotations.NotNull;
 import org.litepal.LitePal;
 
 import java.io.ByteArrayInputStream;
@@ -69,6 +71,14 @@ public class RssSourceActivity extends AppCompatActivity {
      * 以下代码是和model有关，从澍豪代码迁移过来
      */
 //    public IMyAidlInterface myAidlInterface;
+
+
+    @NonNull
+    @NotNull
+    @Override
+    public AppCompatDelegate getDelegate() {
+        return SkinAppCompatDelegateImpl.get(this, this);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

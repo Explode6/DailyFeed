@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <shape xmlns:android="http://schemas.android.com/apk/res/android">
-    <stroke android:color="@color/dayGrayNightBlack"
+    <stroke android:color="@color/dayGrayNightBlack_night"
         android:width="1dp"
         />
 
     <!--填充设置-->
-    <solid android:color="@color/dayWhiteNightTBlack"/>
-    <corners android:radius="10dp"/>
+    <solid android:color="@color/dayWhiteNightTBlack_night"/>
 </shape>

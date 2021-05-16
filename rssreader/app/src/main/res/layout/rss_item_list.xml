@@ -6,12 +6,12 @@
     android:layout_height="wrap_content"
     android:layout_margin="5dp"
     app:cardCornerRadius="5dp"
-    app:cardElevation="5dp">
+    app:cardElevation="5dp"
+    app:cardBackgroundColor="@color/rssSourceItemColor">
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:minHeight="35dp"
-        android:background="@color/rssSourceItemColor">
+        android:minHeight="35dp">
         <LinearLayout
             android:id="@+id/rss_item_list_left"
             android:layout_width="wrap_content"

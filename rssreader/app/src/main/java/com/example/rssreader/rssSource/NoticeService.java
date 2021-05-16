@@ -72,7 +72,7 @@ public class NoticeService extends Service {
         AlarmUtil.stopNoticeService(getApplicationContext(), ClockBroadcastReceiver.class,"com.example.rssreader.rssNoticeBroadcast");
         long oneDaySec = 24*60*60*1000;
         //一天之后重新通知
-        AlarmUtil.startNoticeService(getApplicationContext(), System.currentTimeMillis()+oneDaySec, ClockBroadcastReceiver.class, "com.ryantang.service.PollingService");
+        AlarmUtil.startNoticeService(getApplicationContext(), System.currentTimeMillis()+oneDaySec, ClockBroadcastReceiver.class, "com.example.rssreader.rssNoticeBroadcast");
         return super.onStartCommand(intent, flags, startId);
     }
     

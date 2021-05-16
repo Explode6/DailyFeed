@@ -59,9 +59,9 @@ public interface RssSourceContract {
         //通过toast给出提示
         public void giveHint(String hint);
         //转换为夜间模式
-        public void switchToNightMode(MenuItem item);
+        public void switchToNightMode();
         //转换为日间模式
-        public void switchToDayMode(MenuItem item);
+        public void switchToDayMode();
         //显示加载框
         public void showProgressBar();
         //隐藏加载框
@@ -125,6 +125,10 @@ public interface RssSourceContract {
         public void openOrCloseRegularUpdate();
         //设置关闭定时通知弹窗时的事件
         public void whenCloseTimeChooseDialog();
+        //列表和网格按钮切换模式
+        public void listAndGridBtnModeSwitch();
+        //当用户一次拖拽完成后执行的后台事件
+        public void afterOneDrag();
     }
 }
 

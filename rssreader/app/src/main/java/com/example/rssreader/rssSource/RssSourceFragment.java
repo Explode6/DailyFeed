@@ -29,6 +29,7 @@ import com.example.rssreader.R;
 import com.example.rssreader.RssSource;
 import com.example.rssreader.articleCollection.ArticleCollectionActivity;
 import com.example.rssreader.articlelist.ArticleListActivity;
+import com.example.rssreader.util.ConfigUtil;
 import com.google.android.material.navigation.NavigationView;
 
 import org.jetbrains.annotations.NotNull;
@@ -40,6 +41,7 @@ import java.util.List;
 import skin.support.SkinCompatManager;
 
 public class RssSourceFragment extends Fragment implements RssSourceContract.RssSourceView {
+    private RssSourceActivity activity;
     private RssSourceContract.RssSourcePresenter rssSourcePresenter;
     private RssSrcAdapter rssSrcAdapter;    //显示RSS源的适配器
     private GridLayoutManager layoutManager;   //布局管理器
@@ -74,6 +76,7 @@ public class RssSourceFragment extends Fragment implements RssSourceContract.Rss
         //新建适配器
         rssSrcAdapter = new RssSrcAdapter( new ArrayList<RssSource>(0),
                 true, false);
+        activity = (RssSourceActivity)getActivity();
     }
 
     @Nullable
@@ -294,7 +297,6 @@ public class RssSourceFragment extends Fragment implements RssSourceContract.Rss
                 switch (menuItem.getItemId()){
                     //定时更新的时间设置
                     case R.id.update_time_setting:
-                        RssSourceActivity activity = (RssSourceActivity)getActivity();
                         //关闭侧滑菜单
                         activity.closeNavView();
                         //显示定时通知弹窗
@@ -366,13 +368,18 @@ public class RssSourceFragment extends Fragment implements RssSourceContract.Rss
     }
 
     @Override
-    public void switchToNightMode(MenuItem item) {
+    public void switchToNightMode() {
         SkinCompatManager.getInstance().loadSkin("night", SkinCompatManager.SKIN_LOADER_STRATEGY_BUILD_IN);
+        activity.convertToNightMode();
+        rssSourcePresenter.listAndGridBtnModeSwitch();
+
     }
 
     @Override
-    public void switchToDayMode(MenuItem item) {
+    public void switchToDayMode() {
         SkinCompatManager.getInstance().restoreDefaultTheme();
+        activity.convertToDayMode();
+        rssSourcePresenter.listAndGridBtnModeSwitch();
     }
 
     @Override
@@ -412,14 +419,9 @@ public class RssSourceFragment extends Fragment implements RssSourceContract.Rss
             }
 
             @Override
-            public void onChildDraw(@NonNull @NotNull Canvas c, @NonNull @NotNull RecyclerView recyclerView, @NonNull @NotNull RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
-                super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
-            }
-
-
-            @Override
             public void clearView(@NonNull @NotNull RecyclerView recyclerView, @NonNull @NotNull RecyclerView.ViewHolder viewHolder) {
                 super.clearView(recyclerView, viewHolder);
+                rssSourcePresenter.afterOneDrag();
             }
         });
         return itemTouchHelper;

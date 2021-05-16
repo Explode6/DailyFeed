@@ -7,7 +7,8 @@
     android:layout_margin="5dp"
     app:cardCornerRadius="5dp"
     app:cardElevation="5dp"
-    android:background="@color/rssSourceItemColor">
+    app:cardBackgroundColor="@color/rssSourceItemColor"
+    >
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"

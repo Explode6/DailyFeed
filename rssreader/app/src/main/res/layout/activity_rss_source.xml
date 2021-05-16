@@ -48,6 +48,7 @@
         app:headerLayout="@layout/nav_header"
         app:menu="@menu/nav_menu"
         app:itemTextColor="@color/navItemTextColor"
+        app:itemIconTint="#808080"
         android:background="@color/navBackgroundColor"
         app:insetForeground="@android:color/transparent"
         />

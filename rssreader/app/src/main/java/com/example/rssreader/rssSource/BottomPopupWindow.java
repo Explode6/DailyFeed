@@ -2,13 +2,17 @@ package com.example.rssreader.rssSource;
 
 import android.content.Context;
 import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.PopupWindow;
 
+import androidx.core.content.ContextCompat;
+
 import com.example.rssreader.R;
+import com.example.rssreader.util.ApplicationUtil;
 
 public class BottomPopupWindow extends PopupWindow {
     private View view;

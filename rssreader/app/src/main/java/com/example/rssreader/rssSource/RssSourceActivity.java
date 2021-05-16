@@ -65,6 +65,8 @@ public class RssSourceActivity extends AppCompatActivity {
     private RssSourceFragment rssSourceFragment;
     private RssSourcePresenterImpl rssSourcePresenter;
     private ConfigUtil configUtil;
+    private Toolbar toolbar;
+    private ActionBar actionBar;
     public IMyAidlInterface myAidlInterface;
 
 
@@ -86,20 +88,16 @@ public class RssSourceActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_rss_source);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.main_toolbar);
+        toolbar = (Toolbar) findViewById(R.id.main_toolbar);
         //为toolbar引入actionbar的功能
         setSupportActionBar(toolbar);
         //获取侧滑菜单
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         //获取标题栏
-        ActionBar actionBar = getSupportActionBar();
+        actionBar = getSupportActionBar();
         //设置导航按钮
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
-            //获取导航按钮图片
-            Drawable navBtnImg = ContextCompat.getDrawable(this, R.drawable.menu);
-            //显示导航按钮图片
-            actionBar.setHomeAsUpIndicator(navBtnImg);
         }
         //获取侧滑菜单的导航栏
         navView = (NavigationView) findViewById(R.id.nav_view);
@@ -109,10 +107,12 @@ public class RssSourceActivity extends AppCompatActivity {
         configUtil = ConfigUtil.getInstance(getApplicationContext());
         //判断用户设置为夜间/日间模式进行不同的初始化
         if(ApplicationUtil.getIsFirstLoad() == true){
-            if(configUtil.isDarkMode() == true)
+            if(configUtil.isDarkMode() == true) {
                 SkinCompatManager.getInstance().loadSkin("night", SkinCompatManager.SKIN_LOADER_STRATEGY_BUILD_IN);
-            else
+            }
+            else {
                 SkinCompatManager.getInstance().restoreDefaultTheme();
+            }
             ApplicationUtil.setIsFirstLoad(false) ;
         }
 
@@ -165,6 +165,13 @@ public class RssSourceActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.toolbar, menu);
+        if(menu!= null){
+            MenuItem menuItem = menu.getItem(0);
+            if(configUtil.isDarkMode() == false)
+                menuItem.setIcon(ContextCompat.getDrawable(this, R.drawable.add_icon));
+            else
+                menuItem.setIcon(ContextCompat.getDrawable(this, R.drawable.add_icon_night));
+        }
         return true;
     }
 
@@ -182,6 +189,40 @@ public class RssSourceActivity extends AppCompatActivity {
                 break;
         }
         return true;
+    }
+
+    //转换为夜间模式时切换部分显示内容
+    public void convertToNightMode(){
+        //切换导航按钮图片
+        actionBar.setHomeAsUpIndicator(ContextCompat.getDrawable(this, R.drawable.menu_night));
+        //切换菜单项图片
+        Menu menu = toolbar.getMenu();
+        if(menu.size()!=0){
+            MenuItem menuItem = menu.getItem(0);
+            menuItem.setIcon(ContextCompat.getDrawable(this, R.drawable.add_icon_night));
+        }
+        //切换侧滑菜单图片
+        Menu subMenu = navView.getMenu().getItem(1).getSubMenu();
+        MenuItem modeConvert = subMenu.getItem(0);
+        modeConvert.setIcon(ContextCompat.getDrawable(this, R.drawable.nav_day));
+        modeConvert.setTitle("日间模式");
+    }
+
+    //转换为日间模式时切换部分显示内容
+    public void convertToDayMode(){
+        //切换导航按钮图片
+        actionBar.setHomeAsUpIndicator(ContextCompat.getDrawable(this, R.drawable.menu));
+        //切换菜单项图片
+        Menu menu = toolbar.getMenu();
+        if(menu.size() != 0){
+            MenuItem menuItem = menu.getItem(0);
+            menuItem.setIcon(ContextCompat.getDrawable(this, R.drawable.add_icon));
+        }
+        //切换侧滑菜单图片
+        Menu subMenu = navView.getMenu().getItem(1).getSubMenu();
+        MenuItem modeConvert = subMenu.getItem(0);
+        modeConvert.setIcon(ContextCompat.getDrawable(this, R.drawable.nav_mode));
+        modeConvert.setTitle("夜间模式");
     }
 
     public void closeNavView() {

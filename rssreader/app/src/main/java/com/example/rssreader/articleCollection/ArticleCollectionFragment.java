@@ -17,7 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.rssreader.R;
 import com.example.rssreader.articlelist.SlideRecyclerView;
-import com.example.rssreader.lastactivity.LastActivity;
+import com.example.rssreader.comments.CommentsActivity;
 import com.example.rssreader.model.datamodel.ArticleBrief;
 
 import java.util.ArrayList;
@@ -140,7 +140,7 @@ public class ArticleCollectionFragment extends Fragment implements ArticleCollec
      */
     @Override
     public void showArticleDetails(ArticleBrief articleBrief) {
-        Intent intent = new Intent(getContext(), LastActivity.class);
+        Intent intent = new Intent(getContext(), CommentsActivity.class);
         intent.putExtra("articleBrief", articleBrief);
         startActivity(intent);
     }

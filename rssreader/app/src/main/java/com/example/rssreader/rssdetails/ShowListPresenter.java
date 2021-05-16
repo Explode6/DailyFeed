@@ -106,8 +106,6 @@ public abstract class ShowListPresenter implements ShowListContract.ShowListPres
     }
 
 
-
-
     /**切换文章已读/未读属性（加入数据库），并刷新页面
      * @param articleBrief 需要收藏的文章
      * @param pos 处在文章list的第几项

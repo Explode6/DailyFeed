@@ -1,6 +1,7 @@
 package com.example.rssreader.rssdetails.articlelist;
 
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -41,6 +42,8 @@ public class ArticleListFragment extends Fragment implements ShowListContract.Vi
 
     SwipeRefreshLayout mSwipeRefreshLayout;
 
+    Context mContext;
+
     //单例模式获取fragment
     public static ArticleListFragment newInstance(){
         return new ArticleListFragment();
@@ -58,6 +61,7 @@ public class ArticleListFragment extends Fragment implements ShowListContract.Vi
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mShowListAdapter = new ShowListAdapter(new ArrayList<ArticleBrief>());
+        mContext = getContext();
     }
 
     /*
@@ -156,7 +160,7 @@ public class ArticleListFragment extends Fragment implements ShowListContract.Vi
      */
     @Override
     public void showArticleDetails(ArticleBrief articleBrief) {
-        Intent intent = new Intent(getContext(), LastActivity.class);
+        Intent intent = new Intent(mContext, LastActivity.class);
         intent.putExtra("articleBrief", articleBrief);
         startActivity(intent);
     }
@@ -192,7 +196,7 @@ public class ArticleListFragment extends Fragment implements ShowListContract.Vi
      */
     @Override
     public void giveNoteMessage(String message) {
-        Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
+        Toast.makeText(mContext, message, Toast.LENGTH_SHORT).show();
     }
 
     /**

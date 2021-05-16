@@ -1,5 +1,6 @@
 package com.example.rssreader.rssdetails.articlelist;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.widget.TextView;
 
@@ -55,5 +56,9 @@ public class ArticleListActivity extends AppCompatActivity {
 
     }
 
-
+    @Override
+    protected void onDestroy() {
+        mArticleListPresenter.closeAct();
+        super.onDestroy();
+    }
 }

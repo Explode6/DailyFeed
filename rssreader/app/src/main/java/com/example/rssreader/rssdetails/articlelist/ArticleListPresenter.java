@@ -1,7 +1,13 @@
 package com.example.rssreader.rssdetails.articlelist;
 
 import android.app.Activity;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.os.RemoteException;
+import android.util.Log;
+
+import androidx.annotation.NonNull;
 
 import com.example.rssreader.IMyAidlInterface;
 import com.example.rssreader.model.datamodel.ArticleBrief;
@@ -13,6 +19,7 @@ import com.example.rssreader.rssdetails.ShowListPresenter;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.lang.ref.WeakReference;
 import java.util.List;
 
 /**
@@ -25,15 +32,24 @@ class ArticleListPresenter extends ShowListPresenter {
 
     Channel mChannel;
 
+    Handler mHandler;
+
+    private boolean isActive;
+
+    static final int RELOAD = 1;
+    static final int STOPREFRESH = 2;
+    static final int GIVEMESSAGE = 3;
+
     /**
      * Instantiates a new Article list presenter.
      *
      * @param model model层对象
      * @param articleListView  view层对象
      */
-    public ArticleListPresenter(IMyAidlInterface model, ShowListContract.View articleListView, Channel channel) {
+    public ArticleListPresenter(IMyAidlInterface model, final ShowListContract.View articleListView, Channel channel) {
         super(model, articleListView);
         mChannel = channel;
+        isActive = true;
     }
 
     @Override
@@ -99,69 +115,67 @@ class ArticleListPresenter extends ShowListPresenter {
             model.downloadParseXml(mChannel.getRssLink(), new XmlCallback.Stub() {
                 @Override
                 public void onLoadXmlSuccess() throws RemoteException {
-                    activity.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            reLoadArticle();
-                            mShowListView.stopRefreshUI();
-                            mShowListView.giveNoteMessage("RSS源更新成功");
-                        }
-                    });
+
+
+                    if(isActive) {
+                        activity.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                reLoadArticle();
+                                mShowListView.stopRefreshUI();
+                                mShowListView.giveNoteMessage("RSS源更新成功");
+                            }
+                        });
+                    }
                 }
 
                 @Override
                 public void onUrlTypeError() throws RemoteException {
-                    activity.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            loadArticle();
-                            mShowListView.stopRefreshUI();
-                            mShowListView.giveNoteMessage("RSS源源地址格式错误");
-                        }
-                    });
+                    if (isActive){
+                        activity.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                loadArticle();
+                                mShowListView.stopRefreshUI();
+                                mShowListView.giveNoteMessage("RSS源源地址格式错误");
+                            }
+                        });
+                    }
                 }
 
                 @Override
                 public void onParseError() throws RemoteException {
-                    activity.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            loadArticle();
-                            mShowListView.stopRefreshUI();
-                            mShowListView.giveNoteMessage("RSS源解析失败");
-                        }
-                    });
+                    if (isActive) {
+                        activity.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                loadArticle();
+                                mShowListView.stopRefreshUI();
+                                mShowListView.giveNoteMessage("RSS源解析失败");
+                            }
+                        });
+                    }
                 }
 
                 @Override
                 public void onSourceError() throws RemoteException {
-                    activity.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            mShowListView.stopRefreshUI();
-                            mShowListView.giveNoteMessage("RSS源地址已失效");
-                        }
-                    });
+                    if (isActive) {
+                        activity.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                mShowListView.stopRefreshUI();
+                                mShowListView.giveNoteMessage("RSS源地址已失效");
+                            }
+                        });
+                    }
                 }
 
                 @Override
                 public void onLoadImgError() throws RemoteException {
-                    activity.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            mShowListView.stopRefreshUI();
-                        }
-                    });
                 }
 
                 @Override
                 public void onLoadImgSuccess() throws RemoteException {
-                    activity.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            mShowListView.stopRefreshUI();
-                        }
-                    });
                 }
             });
         } catch (RemoteException e) {
@@ -232,4 +246,7 @@ class ArticleListPresenter extends ShowListPresenter {
         notHaveData = false;
     }
 
+    public void closeAct(){
+        isActive = false;
+    }
 }

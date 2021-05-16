@@ -7,12 +7,15 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.os.Build;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.ActionMode;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.webkit.ValueCallback;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
 
 import androidx.annotation.RequiresApi;
 
@@ -32,12 +35,13 @@ public class ShowArticleWebView extends WebView {
     private int textSize = 100;
     //设定的文字颜色，默认值0x000000（黑色）
     private int textColor = 0x000000;
-    //设定的文字间隔，默认值0
-    private int textSpacing = 0;
+    //设定的行间距离，默认值100
+    private int lineHeight = 110;
     //设置WebView的对象
     private WebSettings webSettings;
     //封装了JavaScript代码的内部类
     private JS js;
+    private ShowArticleWebView wv;
 
     //WebView信息交互的的回调接口
     interface getSelectedDataCallBack{
@@ -84,15 +88,15 @@ public class ShowArticleWebView extends WebView {
      *
      * @param textSize    文字大小
      * @param textColor   文字颜色
-     * @param textSpacing 文字间隔
+     * @param lineHeight  行间距离
      */
     @SuppressLint("SetJavaScriptEnabled")
-    public void initWebView(int textSize, int textColor, int textSpacing){
+    public void initWebView(int textSize, int textColor, int lineHeight){
 
         //用设置清单中的配置初始化WebView的文字效果
         this.textSize = textSize;
         this.textColor = textColor;
-        this.textSpacing = textSpacing;
+        this.lineHeight = lineHeight;
         //获取设置对象和JS工具对象
         webSettings = this.getSettings();
         this.js = new JS();
@@ -104,9 +108,35 @@ public class ShowArticleWebView extends WebView {
         //禁止缩放
         webSettings.setSupportZoom(false);
         webSettings.setDisplayZoomControls(false);
+        //阻塞网页加载
+        webSettings.setBlockNetworkImage(true);
+        this.setWebViewClient(getClient());
         //设置背景色透明
         this.setBackgroundColor(0);
+        wv = this;
     }
+
+    /**
+     * 获取网页加载图片的代理
+     *
+     * @return the WebViewClient
+     */
+    private WebViewClient getClient(){
+        return new WebViewClient(){
+            @Override
+            public void onPageFinished(WebView view, String url) {
+                super.onPageFinished(view, url);
+                view.setVisibility(View.VISIBLE);
+                //开始加载网页
+                wv.webSettings.setBlockNetworkImage(false);
+                if (!wv.webSettings.getLoadsImagesAutomatically()) {
+                    wv.webSettings.setLoadsImagesAutomatically(true);
+                }
+                wv.webSettings.setBlockNetworkImage(true);
+            }
+        };
+    }
+
 
     /**
      * 绑定WebView展现的内容，并进行渲染及展示
@@ -118,7 +148,6 @@ public class ShowArticleWebView extends WebView {
         this.text = content;
         //获取渲染并展示
         content = this.js.getHtml(this);
-        this.setTextSize(this.textSize);
         this.loadDataWithBaseURL(null, content,"text/html","utf-8",null);
     }
 
@@ -129,7 +158,7 @@ public class ShowArticleWebView extends WebView {
      */
     public void setTextSize(int type){
         this.textSize = type;
-        this.webSettings.setTextZoom(type);
+        this.showContent(this.text);
     }
 
     /**
@@ -143,12 +172,12 @@ public class ShowArticleWebView extends WebView {
     }
 
     /**
-     * 设置字体间距
+     * 设置行间距
      *
-     * @param spacing 字体间距
+     * @param lineHeight 行间距
      */
-    public void setTextSpacing(int spacing){
-        this.textSpacing = spacing;
+    public void setTextSpacing(int lineHeight){
+        this.lineHeight = lineHeight;
         this.showContent(this.text);
     }
 
@@ -272,15 +301,18 @@ public class ShowArticleWebView extends WebView {
         /**
          * 获取设定文字颜色和间距的Html5代码
          *
-         * @param testColor   文字颜色
-         * @param testSpacing 文字间距
+         * @param textSize    文字大小
+         * @param textColor   文字颜色
+         * @param lineHeight 文字间距
          * @return 设定样式的Html5代码
          */
-        public String getStyle(int testColor , int testSpacing){
+        public String getStyle(int textSize,  int textColor , int lineHeight){
             //类型转换，注意int转颜色类型
-            String stringTestColor = String.format("#%06X", 0xFFFFFF & testColor);
-            String stringTestSpacing = Integer.toString(testSpacing);
-            return "<style>*{color: " + stringTestColor + "; letter-spacing:"+ stringTestSpacing+"px ;}</style>";
+            String stringTestColor = String.format("#%06X", 0xFFFFFF & textColor);
+            return "<style id=\"localStyle\"  type=\"text/css\">*{color: " + stringTestColor + " !important; "
+                    + "line-height:"+ lineHeight + "% !important;"
+                    + "font-size:" + textSize +"% !important;"
+                    + "}</style>";
         }
 
 
@@ -293,11 +325,12 @@ public class ShowArticleWebView extends WebView {
         public String getHtml(ShowArticleWebView webView){
             String head = "<head>"
                     + "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0, user-scalable=no\"> "
-                    + "<style>img{max-width: 100%; width:auto; height:auto!important;}</style>"
-                    + getStyle(webView.textColor, webView.textSpacing)
+                    + "<style>img{max-width: 100% !important; width:auto !important; height:auto !important;}</style>"
+                    + "<style>video{max-width: 100% !important; width:auto !important; height:auto !important;}</style>"
+                    + getStyle(webView.textSize, webView.textColor, webView.lineHeight)
                     + "</head>";
             String jquery = "<script src=\"https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js\"></script>";
-            String body = "<body style = \" border-top:1px solid rgba(0,0,0,.2);\">"
+            String body = "<body style = \"max-width:100% !important; margin:3px; border-top:1px solid rgba(0,0,0,.2);\">"
                     + webView.text  + jquery
                     + "</body>";
             return "<html>" + head + body + "</html>";

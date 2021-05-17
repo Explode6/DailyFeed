@@ -2,6 +2,7 @@ package com.example.rssreader.rssSource;
 
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.ComponentName;
 import android.content.Intent;
@@ -79,17 +80,24 @@ public class NoticeService extends Service {
 
     //初始化通知内容
     private void initNotification(Intent intent, String content){
+        Intent activityIntent = new Intent(this,RssSourceActivity.class);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this,0,activityIntent,0);
         notificationManager = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
+        //判断Android版本来进行不同的初始化
         if(Build.VERSION.SDK_INT>= Build.VERSION_CODES.O){
             NotificationChannel channel = new NotificationChannel("2222"
                     , "name", NotificationManager.IMPORTANCE_DEFAULT);
             notificationManager.createNotificationChannel(channel);
+            builder= new NotificationCompat.Builder(this,"2222");
+        }else{
+            builder= new NotificationCompat.Builder(this);
         }
-        builder= new NotificationCompat.Builder(this,"2222")
-                .setSmallIcon(R.drawable.add_icon)
+        builder.setSmallIcon(R.drawable.add_icon)
                 .setContentTitle("通知")
                 .setWhen(System.currentTimeMillis())
-                .setContentText(content);
+                .setContentText(content)
+                .setContentIntent(pendingIntent)
+                .setAutoCancel(true);
     }
 
     private void showNotification(){

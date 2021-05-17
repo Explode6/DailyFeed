@@ -4,8 +4,10 @@ import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.RemoteException;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -30,6 +32,7 @@ import com.example.rssreader.R;
 import com.example.rssreader.model.datamodel.ArticleBrief;
 import com.example.rssreader.model.datamodel.GlobalComment;
 import com.example.rssreader.model.datamodel.LocalComment;
+import com.example.rssreader.util.ShareUtil;
 import com.example.zhouwei.library.CustomPopWindow;
 
 import org.jetbrains.annotations.NotNull;
@@ -187,6 +190,18 @@ public class Comments_Fragment extends Fragment implements CommentsContract.Comm
             }
         });
 
+        /**
+         * 测试分享图片功能
+         */
+        Button btn_share = (Button)root.findViewById(R.id.share_picture);
+        btn_share.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Bitmap bmp =  showArticleWebView.getPicture();
+                ShareUtil.shareImg(view.getContext(),bmp, true);
+            }
+        });
+
 
         showAllComments = root.findViewById(R.id.show_allcomments);
 
@@ -294,9 +309,9 @@ public class Comments_Fragment extends Fragment implements CommentsContract.Comm
 
     //加载webView
     @Override
-    public void showWebview(String html) {
-        showArticleWebView.initWebView(100,0x000000,0);
-        showArticleWebView.showContent(html);
+    public void showWebview(String title, String author, String html) {
+        showArticleWebView.initWebView(100,0x000000,120);
+        showArticleWebView.showContent(title, author, html);
     }
 
      //加载popupwindow

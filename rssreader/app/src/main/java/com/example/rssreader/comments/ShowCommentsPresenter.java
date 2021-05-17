@@ -66,7 +66,7 @@ public class ShowCommentsPresenter implements CommentsContract.CommentsPresenter
                 }
             });
             //获得文章内容后展示
-            mCommentsView.showWebview(html);
+            mCommentsView.showWebview(particleBrief.getTitle(), particleBrief.getCreator(), html);
         } catch (RemoteException e) {
             e.printStackTrace();
         }

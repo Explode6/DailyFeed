@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.Build;
 import android.util.AttributeSet;
@@ -19,6 +20,9 @@ import android.webkit.WebViewClient;
 
 import androidx.annotation.RequiresApi;
 
+import com.example.rssreader.R;
+import com.example.rssreader.util.ConfigUtil;
+
 import java.util.List;
 
 /**
@@ -29,6 +33,10 @@ import java.util.List;
  */
 public class ShowArticleWebView extends WebView {
 
+    //绑定文章标题
+    private String title;
+    //绑定文章作者
+    private String author;
     //绑定的文章内容
     private String text;
     //设定的文字大小，默认值100
@@ -141,10 +149,14 @@ public class ShowArticleWebView extends WebView {
     /**
      * 绑定WebView展现的内容，并进行渲染及展示
      *
+     * @param title 文章标题
+     * @param author 文章作者
      * @param content 文章内容
      */
-    public void showContent(String content){
-        //绑定内容
+    public void showContent(String title, String author, String content){
+        //绑定信息
+        this.title = title;
+        this.author = author;
         this.text = content;
         //获取渲染并展示
         content = this.js.getHtml(this);
@@ -158,7 +170,7 @@ public class ShowArticleWebView extends WebView {
      */
     public void setTextSize(int type){
         this.textSize = type;
-        this.showContent(this.text);
+        this.webSettings.setTextZoom(type);
     }
 
     /**
@@ -168,7 +180,7 @@ public class ShowArticleWebView extends WebView {
      */
     public void setTextColor(int color){
         this.textColor = color;
-        this.showContent(this.text);
+        this.showContent(this.title, this.author, this.text);
     }
 
     /**
@@ -178,7 +190,7 @@ public class ShowArticleWebView extends WebView {
      */
     public void setTextSpacing(int lineHeight){
         this.lineHeight = lineHeight;
-        this.showContent(this.text);
+        this.showContent(this.title, this.author, this.text);
     }
 
     /**
@@ -213,11 +225,16 @@ public class ShowArticleWebView extends WebView {
                                     final onActionClickListener listener){
         if(actionMode != null){
             Menu menu = actionMode.getMenu();
-           // 加入自定义的菜单
-            for(String s:actionList) menu.add(1,1,2,s);
+            //记录Web Search的id
+            int id = menu.getItem(menu.size()-1).getItemId();
+           // 加入自定义的菜单, 设定order偏移量为6，在该页中从第4个开始展示
+            for(int i =0; i<actionList.size(); ++i) menu.add(1, i, i+6, actionList.get(i));
             //设置点击事件
-            for(int i = 0; i < actionList.size(); i++){
+            for(int i = 3; i < actionList.size()+4; i++){
                 MenuItem item = menu.getItem(i);
+                //跳过Web Search
+                if(item.getItemId()==id) continue;
+                item.setShowAsAction(6);
                 item.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
                     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
                     @Override
@@ -245,6 +262,7 @@ public class ShowArticleWebView extends WebView {
      *
      * @return BitMap类型的网页内容截图
      */
+    @SuppressLint("ResourceAsColor")
     public Bitmap getPicture(){
         //设定尺寸布局
         //public final void measure(int widthMeasureSpec, int heightMeasureSpec)
@@ -254,6 +272,8 @@ public class ShowArticleWebView extends WebView {
         //创建Bitmap对象承载图象，尺寸应与WebView内容一致
         Bitmap longImage = Bitmap.createBitmap(this.getMeasuredWidth(),
                 this.getMeasuredHeight(), Bitmap.Config.ARGB_8888);
+        //填充背景色
+        longImage.eraseColor(R.color.dayWhiteNightBlack);
         //创建Canvas对象作为作图工具
         Canvas canvas = new Canvas(longImage);
         Paint paint = new Paint();
@@ -309,12 +329,19 @@ public class ShowArticleWebView extends WebView {
         public String getStyle(int textSize,  int textColor , int lineHeight){
             //类型转换，注意int转颜色类型
             String stringTestColor = String.format("#%06X", 0xFFFFFF & textColor);
-            return "<style id=\"localStyle\"  type=\"text/css\">*{color: " + stringTestColor + " !important; "
+            return "<style id=\"localStyle\"  type=\"text/css\">*{"
+                    //+"color: " + stringTestColor + " !important; "
                     + "line-height:"+ lineHeight + "% !important;"
-                    + "font-size:" + textSize +"% !important;"
+                    //+ "font-size:" + textSize +"% !important;"
                     + "}</style>";
         }
 
+        public String getTitle(String title, String author){
+            return "<div style = \"border-bottom:1px solid rgba(0,0,0,.2); margin:0px;\">"
+                    + "<h2>" + title + "</h2>"
+                    +"<div align = \"right\"><p style=\"margin-bottom:1px; margin-right:5px;\">" +author+"</p></div>"
+                    +"</div>";
+        }
 
         /**
          * 获取封装了文章内容的完整Html代码（**添加标题和作者等资料
@@ -330,10 +357,10 @@ public class ShowArticleWebView extends WebView {
                     + getStyle(webView.textSize, webView.textColor, webView.lineHeight)
                     + "</head>";
             String jquery = "<script src=\"https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js\"></script>";
-            String body = "<body style = \"max-width:100% !important; margin:3px; border-top:1px solid rgba(0,0,0,.2);\">"
+            String body = "<body style = \"margin:5px;\">"
                     + webView.text  + jquery
                     + "</body>";
-            return "<html>" + head + body + "</html>";
+            return "<html>" + head + getTitle(webView.title, webView.author) + body + "</html>";
         }
 
         /**

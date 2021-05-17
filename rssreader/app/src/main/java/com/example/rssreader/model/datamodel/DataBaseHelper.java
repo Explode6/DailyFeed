@@ -188,10 +188,7 @@ public class DataBaseHelper {
                 .where("rssLink = ?", rssLink)
                 .find(Channel.class);
         if (channels.isEmpty()) throw new SQLException("不存在该频道");
-        else{
-            LitePal.setTransactionSuccessful();
-            return channels.get(0).getLastBuildDate();
-        }
+        else return channels.get(0).getLastBuildDate();
     }
 
     /**
@@ -305,7 +302,6 @@ public class DataBaseHelper {
      * @throws SQLException 对应的文章简介不存在
      */
     public static List<LocalComment> getLocalCommentsOfArticle(ArticleBrief articleBrief) throws SQLException{
-        LitePal.beginTransaction();
         //查表确认对应的ArticleBrief
         ArticleBrief articleBrief1 = LitePal.find(ArticleBrief.class, articleBrief.getId());
         if(articleBrief1 == null) throw new SQLException("文章不存在");

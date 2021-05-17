@@ -14,7 +14,7 @@ import java.util.List;
 public interface CommentsContract {
     interface CommentsView extends BaseView<CommentsPresenter> {
 
-        void showWebview(String html);//根据html加载webview
+        void showWebview(String title, String author, String html);//根据html加载webview
 
         void loadPopUpWindow(View contentView);//加载pupupwindow
 

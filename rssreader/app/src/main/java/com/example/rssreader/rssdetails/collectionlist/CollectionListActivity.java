@@ -1,10 +1,17 @@
 package com.example.rssreader.rssdetails.collectionlist;
 
+import android.app.Activity;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.example.rssreader.IMyAidlInterface;
 import com.example.rssreader.R;
@@ -22,6 +29,8 @@ public class CollectionListActivity extends AppCompatActivity {
 
     private CollectionListPresenter mCollectionListPresenter;
 
+    private SearchListPresenter mSearchListPresenter;
+
     /**
      * 数据服务的引用
      */
@@ -36,7 +45,7 @@ public class CollectionListActivity extends AppCompatActivity {
         setContentView(R.layout.collection_list_act);
 
 
-        Toolbar toolbar = (Toolbar)findViewById(R.id.main_toolbar);
+        Toolbar toolbar = (Toolbar)findViewById(R.id.toolbar);
         //为toolbar引入actionbar的功能
         setSupportActionBar(toolbar);
 
@@ -52,5 +61,40 @@ public class CollectionListActivity extends AppCompatActivity {
         // Create the presenter
         mCollectionListPresenter = new CollectionListPresenter(AidlBinder.getInstance(), collectionListFragment);
 
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.collection_toobar, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.search_button:
+                replaceFragment();
+                break;
+            case R.id.home:
+
+            default:
+        }
+        return true;
+    }
+
+
+    private void replaceFragment(){
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
+        SearchListFragment searchListFragment = SearchListFragment.newInstance();
+        mSearchListPresenter = new SearchListPresenter(AidlBinder.getInstance(), searchListFragment);
+        ActivityUtil.replaceFragment(fragmentManager, searchListFragment, R.id.showlist_frag);
+//        SearchListFragment searchListFragment = (SearchListFragment)getSupportFragmentManager().findFragmentById(R.id.showlist_frag);
+//        if(searchListFragment == null){
+//            searchListFragment = SearchListFragment.newInstance();
+//        }
+//
+//        mSearchListPresenter = new SearchListPresenter(AidlBinder.getInstance(), searchListFragment);
+//        ActivityUtil.replaceFragment(getSupportFragmentManager(), searchListFragment, R.id.showlist_frag);
     }
 }

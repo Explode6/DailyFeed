@@ -1,11 +1,13 @@
 package com.example.rssreader.rssdetails;
 
 import android.app.Activity;
+import android.content.Context;
 import android.os.RemoteException;
 
 import com.example.rssreader.IMyAidlInterface;
 import com.example.rssreader.model.datamodel.ArticleBrief;
 import com.example.rssreader.model.parse.DataCallback;
+import com.example.rssreader.util.ShareUtil;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -138,4 +140,9 @@ public abstract class ShowListPresenter implements ShowListContract.ShowListPres
         }
     }
 
+    @Override
+    public void shareArticle(Context context, ArticleBrief articleBrief) {
+        ShareUtil.shareUrl(context, articleBrief.getTitle(), articleBrief.getLink());
+        mShowListView.giveNoteMessage("分享成功");
+    }
 }

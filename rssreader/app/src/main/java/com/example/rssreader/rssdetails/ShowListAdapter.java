@@ -39,6 +39,7 @@ public class ShowListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     private OnCollectClickListener mCollectClickListener;
     private OnItemClickListener mListener;
     private OnMarkReadClickListener mMarkReadClickListener;
+    private OnShareClickListener mShareClickListener;
 
     //FooterView最下面显示是否有文章
     private FooterHolder mFooterHolder;
@@ -231,9 +232,22 @@ public class ShowListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                     }
                 });
             }
+
+            View shareView = ((ViewHolder)holder).getView(R.id.share_article_list);
+            shareView.setTag(position);
+            if (!shareView.hasOnClickListeners()) {
+                shareView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        if (mShareClickListener != null) {
+                            mShareClickListener.onShareClick(view, (Integer) view.getTag());
+                        }
+                    }
+                });
+            }
         }else if(holder instanceof FooterHolder){
             if(mArticleBriefList.size() < 10) {
-                ((FooterHolder) holder).textView.setText("我也是有底线的");
+                ((FooterHolder) holder).textView.setText("没有更多文章了哦");
             }
         }
     }
@@ -278,6 +292,18 @@ public class ShowListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     }
     public interface OnMarkReadClickListener{
         void onMarkReadClick(View v, int postion);
+    }
+
+    /**
+     * 暴露分享的点击事件给view层，让view层实现点击文章进入文章详情页
+     *
+     * @param listener 也就是下方定义的OnShareClickListener接口
+     */
+    public void setOnShareClickListener(OnShareClickListener listener){
+        this.mShareClickListener = listener;
+    }
+    public interface OnShareClickListener{
+        void onShareClick(View v, int postion);
     }
 
 
@@ -331,11 +357,11 @@ public class ShowListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
      */
     public void setLoadCompletely(){
         if(mFooterHolder != null) {
-            mFooterHolder.textView.setText("我也是有底线的");
+            mFooterHolder.textView.setText("没有更多文章了哦");
         }
     }
-    public void setLoadFirstly(){
-        if(mFooterHolder != null) {
+    public void setLoadFirstly() {
+        if (mFooterHolder != null) {
             mFooterHolder.textView.setText("加载更多");
         }
     }

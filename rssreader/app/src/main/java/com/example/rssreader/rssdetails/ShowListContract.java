@@ -2,6 +2,7 @@ package com.example.rssreader.rssdetails;
 
 
 import android.app.Activity;
+import android.content.Context;
 
 import com.example.rssreader.model.datamodel.ArticleBrief;
 import com.example.rssreader.util.BasePresenter;
@@ -57,5 +58,7 @@ public interface ShowListContract {
 
         //已读/未读属性写入数据库并刷新页面
         void switchRead(ArticleBrief articleBrief, int pos);
+
+        void shareArticle(Context context, ArticleBrief articleBrief);
     }
 }

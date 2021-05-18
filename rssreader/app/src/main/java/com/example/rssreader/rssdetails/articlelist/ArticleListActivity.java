@@ -1,13 +1,8 @@
-package com.example.rssreader.articlelist;
+package com.example.rssreader.rssdetails.articlelist;
 
-import android.content.ComponentName;
-import android.content.Context;
-import android.content.Intent;
-import android.content.ServiceConnection;
+import android.app.Activity;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -16,28 +11,19 @@ import com.example.rssreader.IMyAidlInterface;
 import com.example.rssreader.R;
 import com.example.rssreader.model.datamodel.Channel;
 import com.example.rssreader.model.parse.AidlBinder;
-import com.example.rssreader.model.parse.DataService;
 import com.example.rssreader.util.ActivityUtil;
 
 /**
- * The type Article list activity.
+ * 当前界面是点击RSS源之后进入的，能够查看该RSS源所有文章的界面
  */
 public class ArticleListActivity extends AppCompatActivity {
 
     private ArticleListPresenter mArticleListPresenter;
 
-
-
     /**
      * 数据服务的引用
      */
-    private IMyAidlInterface myAidlInterface;
-
     String TAG = "ArticleListActivity";
-
-
-
-
 
 
     @Override
@@ -45,22 +31,24 @@ public class ArticleListActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.article_list_act);
 
+        //从第一个界面获取当前是需要展示哪一个RSS源的文章
         Channel channel = (Channel)getIntent().getParcelableExtra("channel");
 
         Toolbar toolbar = (Toolbar)findViewById(R.id.main_toolbar);
-
-        TextView textView = (TextView)findViewById(R.id.article_list_title);
-        textView.setText(channel.getTitle());
         //为toolbar引入actionbar的功能
         setSupportActionBar(toolbar);
 
+        //把标题栏设置为该RSS源名称
+        TextView textView = (TextView)findViewById(R.id.title);
+        textView.setText(channel.getTitle());
 
-        //单例模式创建fragment界面并绑定到布局上
+
+        //单例模式创建fragment界面并绑定到布局上，Fragment主要是文章的RecyclerView界面
         ArticleListFragment articleListFragment =
-                (ArticleListFragment) getSupportFragmentManager().findFragmentById(R.id.artlist_frag);
+                (ArticleListFragment) getSupportFragmentManager().findFragmentById(R.id.showlist_frag);
         if (articleListFragment == null){
             articleListFragment = ArticleListFragment.newInstance();
-            ActivityUtil.addFragmentToActivity(getSupportFragmentManager(), articleListFragment, R.id.artlist_frag);
+            ActivityUtil.addFragmentToActivity(getSupportFragmentManager(), articleListFragment, R.id.showlist_frag);
         }
 
         // Create the presenter
@@ -68,5 +56,9 @@ public class ArticleListActivity extends AppCompatActivity {
 
     }
 
-
+    @Override
+    protected void onDestroy() {
+        mArticleListPresenter.closeAct();
+        super.onDestroy();
+    }
 }

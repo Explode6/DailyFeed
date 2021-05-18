@@ -9,9 +9,6 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.RemoteException;
-import android.os.SystemClock;
-import android.util.Base64;
-import android.util.Log;
 import android.view.MenuItem;
 import android.widget.Toast;
 
@@ -20,12 +17,9 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.rssreader.IMyAidlInterface;
-import com.example.rssreader.R;
 import com.example.rssreader.RssSource;
-import com.example.rssreader.articlelist.ArticleListActivity;
+import com.example.rssreader.rssdetails.articlelist.ArticleListActivity;
 import com.example.rssreader.model.datamodel.Channel;
-import com.example.rssreader.model.parse.AidlBinder;
-import com.example.rssreader.model.parse.DataCallback;
 import com.example.rssreader.model.parse.XmlCallback;
 import com.example.rssreader.util.ApplicationUtil;
 import com.example.rssreader.util.BasePresenter;
@@ -35,8 +29,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-
-import kotlin.jvm.internal.Ref;
 
 public class RssSourcePresenterImpl implements RssSourceContract.RssSourcePresenter {
 

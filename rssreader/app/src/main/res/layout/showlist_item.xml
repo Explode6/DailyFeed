@@ -58,7 +58,7 @@
         android:orientation="vertical">
         <Button
             android:layout_marginTop="10dp"
-            android:id="@+id/delete_collection"
+            android:id="@+id/collect_article"
             android:layout_width="match_parent"
             android:layout_height="30dp"
             android:text="收藏"

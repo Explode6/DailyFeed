@@ -2,10 +2,12 @@ package com.example.rssreader.comments;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.net.Uri;
 import android.os.Build;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -14,6 +16,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.webkit.ValueCallback;
+import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -23,6 +26,7 @@ import androidx.annotation.RequiresApi;
 import com.example.rssreader.R;
 import com.example.rssreader.util.ConfigUtil;
 
+import java.net.URL;
 import java.util.List;
 
 /**
@@ -141,6 +145,17 @@ public class ShowArticleWebView extends WebView {
                     wv.webSettings.setLoadsImagesAutomatically(true);
                 }
                 wv.webSettings.setBlockNetworkImage(true);
+            }
+
+            @Override
+            public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
+                //拉起系统的浏览器加载新页面
+                Intent intent = new Intent();
+                intent.setAction("android.intent.action.VIEW");
+                intent.setData(request.getUrl());
+                view.getContext().startActivity(intent);
+                Log.d("页面拦截", "shouldOverrideUrlLoading: ");
+                return true;
             }
         };
     }
@@ -352,9 +367,12 @@ public class ShowArticleWebView extends WebView {
         public String getHtml(ShowArticleWebView webView){
             String head = "<head>"
                     + "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0, user-scalable=no\"> "
-                    + "<style>img{max-width: 100% !important; width:auto !important; height:auto !important;}</style>"
-                    + "<style>video{max-width: 100% !important; width:auto !important; height:auto !important;}</style>"
-                    + "<style>a{max-width: 100% !important; width:auto !important; height:auto !important;}</style>"
+
+                    + "<style text=\"text/css\">"
+                    + "*{max-width:100% !important; width:auto !important; height:auto !important;}"
+                    + "a{display:block !important; overflow:hidden !important; text-overflow:ellipsis !important;}"
+                    + "table{word-break:break-all !important;}"
+                    + "</style>"
                     + getStyle(webView.textSize, webView.textColor, webView.lineHeight)
                     + "</head>";
             String jquery = "<script src=\"https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js\"></script>";

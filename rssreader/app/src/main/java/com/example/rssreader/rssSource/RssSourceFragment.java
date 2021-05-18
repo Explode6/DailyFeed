@@ -27,8 +27,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.rssreader.R;
 import com.example.rssreader.RssSource;
-import com.example.rssreader.articleCollection.ArticleCollectionActivity;
-import com.example.rssreader.articlelist.ArticleListActivity;
+import com.example.rssreader.rssdetails.collectionlist.CollectionListActivity;
 import com.google.android.material.navigation.NavigationView;
 
 import org.jetbrains.annotations.NotNull;
@@ -327,7 +326,7 @@ public class RssSourceFragment extends Fragment implements RssSourceContract.Rss
                         break;
 
                     case R.id.my_collection:
-                        Intent intent = new Intent(getContext(), ArticleCollectionActivity.class);
+                        Intent intent = new Intent(getContext(), CollectionListActivity.class);
                         startActivity(intent);
                         break;
                 }

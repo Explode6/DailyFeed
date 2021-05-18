@@ -1,4 +1,4 @@
-package com.example.rssreader.articlelist;
+package com.example.rssreader.rssdetails;
 
 import android.content.Context;
 import android.graphics.Rect;
@@ -19,7 +19,7 @@ import androidx.recyclerview.widget.RecyclerView;
  * @ClassName SlideRecyclerView
  * @Author name
  * @Date 2021/4/27
- * @Description
+ * @Description 继承RecyclerView并通过拦截touchEvent从而捕获横向滑动，实现侧滑
  */
 public class SlideRecyclerView extends RecyclerView {
 

@@ -39,7 +39,10 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
+import static android.content.Context.INPUT_METHOD_SERVICE;
 import static androidx.core.util.Preconditions.checkNotNull;
 
 public class Comments_Fragment extends Fragment implements CommentsContract.CommentsView,View.OnClickListener {
@@ -65,7 +68,7 @@ public class Comments_Fragment extends Fragment implements CommentsContract.Comm
     private Button add_local_comment;                  // 添加本地评论
     private  TextView firstC;                          //第一条评论
     private  TextView secondC;                        //第二条评论
-    private  TextView date1;                          //第一条时间
+    private  TextView date1;                         //第一条时间
     private  TextView date2;                        //第二条时间
     private EditText editComment;                    //需要添加的全局评论
     private CustomPopWindow localCommentWin;        //部分评论的popupwindow
@@ -79,8 +82,9 @@ public class Comments_Fragment extends Fragment implements CommentsContract.Comm
     private Button spaceIncrease;       // 间距变大
     private Button spaceDecrease;      // 间距变小
     private View localCommentsView;   //展示local
-    private View addLocalView;       //添加本地评论
-    private EditText editLocalComment;//局部评论的编写
+    private View addLocalView;             //添加本地评论
+    private EditText editLocalComment;    //局部评论的编写
+    private EditText fakeAdd;   //局部评论的编写
     private ProgressBar sizeprogressbar;
     private ProgressBar spaceprogressbar;
     private CommentsActivity comments_activity;
@@ -160,7 +164,6 @@ public class Comments_Fragment extends Fragment implements CommentsContract.Comm
     @Override
     public View onCreateView(@NotNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
         root = inflater.inflate(R.layout.comment_fragment, container, false);
 
         showArticleWebView = (ShowArticleWebView) root.findViewById(R.id.web_View);
@@ -202,7 +205,6 @@ public class Comments_Fragment extends Fragment implements CommentsContract.Comm
             }
         });
 
-
         showAllComments = root.findViewById(R.id.show_allcomments);
 
         showPartComments = root.findViewById(R.id.show_partcomments);
@@ -213,13 +215,21 @@ public class Comments_Fragment extends Fragment implements CommentsContract.Comm
 
         add_local_comment = addLocalView.findViewById(R.id.add_local_comment);
 
+        fakeAdd = root.findViewById(R.id.fake_add);
+        fakeAdd.setFocusable(false);
+        fakeAdd.setOnClickListener(this);
+
         editLocalComment = addLocalView.findViewById(R.id.edit_local_comment);
 
         editComment = contentView.findViewById(R.id.edit_comment);
 
         firstC = root.findViewById(R.id.comment_first);
+        firstC.setClickable(true);
+        firstC.setOnClickListener(this);
 
         secondC = root.findViewById(R.id.comment_second);
+        secondC.setClickable(true);
+        secondC.setOnClickListener(this);
 
         date1 = root.findViewById(R.id.date_first);
 
@@ -322,6 +332,25 @@ public class Comments_Fragment extends Fragment implements CommentsContract.Comm
 
     }
 
+    @Override
+    public void loadFakePopUpWindow(View contentView, final EditText editText) {
+        editText.requestFocus();
+        editText.requestFocusFromTouch();
+        mListPopWindow.showAtLocation(mView.findViewById(R.id.show_allcomments), Gravity.BOTTOM, 0, 0);
+        //为了让数据加载完全，等待888ms打开软键盘
+        Timer timer = new Timer();
+        timer.schedule(new TimerTask() {
+                           public void run() {
+                               InputMethodManager inputManager =
+                                       (InputMethodManager) editText.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                               inputManager.showSoftInput(editText, 0);
+
+                           }
+
+                       },
+                888);
+    }
+
     //重新设置需要加载的globalcommentlist
     @Override
     public void setGlobalList(List<GlobalComment> globalList) {
@@ -386,7 +415,6 @@ public class Comments_Fragment extends Fragment implements CommentsContract.Comm
 
         recyclerView.setLayoutManager(manager);
 
-
         mAdapter = new GlobalCommentsAdapter(getContext(),mGlobalList);
 
         //------------------------------点击删除评论--------------------------------------------------------------//
@@ -400,13 +428,15 @@ public class Comments_Fragment extends Fragment implements CommentsContract.Comm
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                       //先从数据库中删除 再到list中删除
+
                        mPresenter.deleteGlobalComment(mGlobalList.get(position));
-                       //在fragment中删除是为了下次能够获得的globalcomment对象
-                       mGlobalList.remove(position);
-                        //在adapter中删除
+
+                        //在adapter,adapter中删除那么fragment中也会被删除，fragment中有GlobalComment是为了下次能够获得的globalcomment对象
                        mPresenter.deleteGlobalCommentFromView(position);
+
                        //设置评论
                        mPresenter.setTwoComments(date1,firstC,date2,secondC);
+
                     }
                 });
                 builder.setNegativeButton("取消",null);
@@ -541,7 +571,7 @@ public class Comments_Fragment extends Fragment implements CommentsContract.Comm
                     Toast.makeText(getContext(),"请输入内容再添加",Toast.LENGTH_SHORT).show();
 
                 //按下发送之后软键盘消失
-                InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                InputMethodManager imm = (InputMethodManager) getContext().getSystemService(INPUT_METHOD_SERVICE);
                 imm.hideSoftInputFromWindow(editComment.getWindowToken(), 0);
                 break;
 
@@ -575,8 +605,21 @@ public class Comments_Fragment extends Fragment implements CommentsContract.Comm
                 }
                 else
                     Toast.makeText(getContext(),"Please enter sth",Toast.LENGTH_SHORT).show();
-                InputMethodManager immL = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+
+                InputMethodManager immL = (InputMethodManager) getContext().getSystemService(INPUT_METHOD_SERVICE);
                 immL.hideSoftInputFromWindow(editLocalComment.getWindowToken(), 0);
+                break;
+
+            case R.id.fake_add:
+                mPresenter.fakeShowPopUpwindow(contentView,editComment);
+                break;
+
+            case R.id.comment_first:
+                mPresenter.showPopUpWindow(contentView);
+                break;
+
+            case R.id.comment_second:
+                mPresenter.showPopUpWindow(contentView);
                 break;
             default:
                 break;

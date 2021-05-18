@@ -1,5 +1,6 @@
 package com.example.rssreader.comments;
 
+import android.content.Context;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -17,6 +18,8 @@ public interface CommentsContract {
         void showWebview(String title, String author, String html);//根据html加载webview
 
         void loadPopUpWindow(View contentView);//加载pupupwindow
+
+        void loadFakePopUpWindow(View contentView, EditText editText);
 
         void initializeAdapter();//初始化全局评论的adapter
 
@@ -68,6 +71,9 @@ public interface CommentsContract {
         void fill_webview();
 
         void showPopUpWindow(View contentView);
+
+        //弹出有软键盘的popupwindow
+        void fakeShowPopUpwindow(View contentView, EditText editText);
 
         void createAdapter();
 

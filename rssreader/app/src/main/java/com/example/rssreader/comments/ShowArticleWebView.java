@@ -354,6 +354,7 @@ public class ShowArticleWebView extends WebView {
                     + "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0, user-scalable=no\"> "
                     + "<style>img{max-width: 100% !important; width:auto !important; height:auto !important;}</style>"
                     + "<style>video{max-width: 100% !important; width:auto !important; height:auto !important;}</style>"
+                    + "<style>a{max-width: 100% !important; width:auto !important; height:auto !important;}</style>"
                     + getStyle(webView.textSize, webView.textColor, webView.lineHeight)
                     + "</head>";
             String jquery = "<script src=\"https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js\"></script>";

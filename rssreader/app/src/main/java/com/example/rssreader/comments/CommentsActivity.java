@@ -3,6 +3,7 @@ package com.example.rssreader.comments;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.TextView;
+import android.widget.Toolbar;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -24,6 +25,9 @@ public class CommentsActivity extends AppCompatActivity {
         //获得articleBrief
         Intent intent = getIntent();
         ArticleBrief articleBrief = intent.getParcelableExtra("articleBrief");
+
+        androidx.appcompat.widget.Toolbar toolbar = findViewById(R.id.comments_toolbar);
+        setSupportActionBar(toolbar);
 
         TextView textView = (TextView)findViewById(R.id.item_title);
         textView.setText(articleBrief.getTitle());

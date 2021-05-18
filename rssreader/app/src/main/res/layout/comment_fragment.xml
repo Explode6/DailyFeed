@@ -22,6 +22,13 @@
             android:layout_height="wrap_content"
             android:fillViewport="true" />
 
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="写下你的评论..."
+            android:id="@+id/fake_add"
+            />
         <!--两条评论-->
         <LinearLayout
             android:layout_width="match_parent"

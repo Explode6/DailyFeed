@@ -1,5 +1,6 @@
 package com.example.rssreader.comments;
 
+import android.content.Context;
 import android.os.RemoteException;
 import android.util.Log;
 import android.view.View;
@@ -75,6 +76,11 @@ public class ShowCommentsPresenter implements CommentsContract.CommentsPresenter
     @Override
     public void showPopUpWindow(View contentView) {
         mCommentsView.loadPopUpWindow(contentView);
+    }
+
+    @Override
+    public void fakeShowPopUpwindow(View contentView, EditText editText) {
+        mCommentsView.loadFakePopUpWindow(contentView,editText);
     }
 
 

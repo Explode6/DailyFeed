@@ -26,7 +26,7 @@ public class ShareUtil {
      * @param needRecycle 位图是否回收
      */
     public static void shareImg(Context context, final Bitmap bmp, boolean needRecycle){
-        if(bmp == null)
+        if(bmp == null) return;
         shareIntent = new Intent();
         shareIntent.setAction(Intent.ACTION_SEND);
         //保存图片并获取其Uri

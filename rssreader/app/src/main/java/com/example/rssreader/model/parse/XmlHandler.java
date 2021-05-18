@@ -121,7 +121,7 @@ public class XmlHandler {
                 byte[] bytes = response.body().bytes();
                 channel.setImage(bytes);
                 DataBaseHelper.addChannel(channel);
-                Log.d(TAG,"下载图片使用"+(System.currentTimeMillis()-start));
+                Log.d(TAG,"下载图片使用"+(System.currentTimeMillis()-start)+"毫秒");
                 xmlCallback.onLoadImgSuccess();
             } catch (IOException | RemoteException e) {
                 try {

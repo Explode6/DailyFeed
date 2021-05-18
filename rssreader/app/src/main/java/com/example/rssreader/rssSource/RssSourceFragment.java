@@ -1,8 +1,10 @@
 package com.example.rssreader.rssSource;
 
 import android.content.Intent;
+import android.graphics.Canvas;
 import android.os.Bundle;
 import android.os.RemoteException;
+import android.util.Log;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -38,6 +40,7 @@ public class RssSourceFragment extends Fragment implements RssSourceContract.Rss
     private RssSourceContract.RssSourcePresenter rssSourcePresenter;
     private RssSrcAdapter rssSrcAdapter;    //显示RSS源的适配器
     private GridLayoutManager layoutManager;   //布局管理器
+    private ItemTouchHelper itemTouchHelper;    //实现拖拽功能的帮助类
     private BottomPopupWindow bottomPopupWindow;    //底部弹窗
     private AddRssSourceDialog addRssSourceDialog;  //添加RSS源的弹窗
     private LoadingPopupWindow loadingPopupWindow;  //加载弹窗
@@ -46,6 +49,7 @@ public class RssSourceFragment extends Fragment implements RssSourceContract.Rss
     private Button listBtn;   //选择列表布局按钮
     private Button gridBtn;    //选择网格布局按钮
     private Button editBtn;     //RSS源编辑按钮
+    private int touchCount = 0;
 
     //空的构造函数
     public RssSourceFragment(){
@@ -79,6 +83,9 @@ public class RssSourceFragment extends Fragment implements RssSourceContract.Rss
         GridLayoutManager layoutManager = new GridLayoutManager(this.getContext(), 2);
         rssView.setLayoutManager(layoutManager);
         rssView.setAdapter(rssSrcAdapter);
+        //绑定itemTouchHelper
+        itemTouchHelper = setItemTouchHelper();
+        itemTouchHelper.attachToRecyclerView(rssView);
         //添加动画效果
         rssView.setItemAnimator(new DefaultItemAnimator());
         rssSrcAdapter.setRssOnClickListener(new RssSrcAdapter.RssOnClickListener() {
@@ -191,10 +198,13 @@ public class RssSourceFragment extends Fragment implements RssSourceContract.Rss
         });
         //设置适配器
         rssView.setAdapter(rssSrcAdapter);
+        itemTouchHelper = setItemTouchHelper();
+        //itemTouchHelper.attachToRecyclerView(rssView);
     }
 
     @Override
     public void convertToGrid(List<RssSource>list) {
+
         layoutManager = new GridLayoutManager(this.getContext(), 2);
         rssView.setLayoutManager(layoutManager);
         rssSrcAdapter = new RssSrcAdapter(list, true, canEdit);
@@ -213,6 +223,8 @@ public class RssSourceFragment extends Fragment implements RssSourceContract.Rss
         });
         //设置适配器
         rssView.setAdapter(rssSrcAdapter);
+        itemTouchHelper = setItemTouchHelper();
+        //itemTouchHelper.attachToRecyclerView(rssView);
     }
 
     @Override
@@ -404,20 +416,46 @@ public class RssSourceFragment extends Fragment implements RssSourceContract.Rss
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new ItemTouchHelper.Callback() {
             @Override
             public int getMovementFlags(@NonNull @NotNull RecyclerView recyclerView, @NonNull @NotNull RecyclerView.ViewHolder viewHolder) {
-                return 0;
+                return makeMovementFlags(rssSourcePresenter.setMovementFlags(), 0);
             }
 
             @Override
             public boolean onMove(@NonNull @NotNull RecyclerView recyclerView, @NonNull @NotNull RecyclerView.ViewHolder viewHolder, @NonNull @NotNull RecyclerView.ViewHolder target) {
+                return rssSourcePresenter.setMoving(viewHolder.getAdapterPosition(), target.getAdapterPosition());
+            }
+
+            @Override
+            public void onSwiped(@NonNull @NotNull RecyclerView.ViewHolder viewHolder, int direction) {}
+
+            @Override
+            public boolean isLongPressDragEnabled() {
+                return true;
+            }
+
+            @Override
+            public boolean isItemViewSwipeEnabled() {
                 return false;
             }
 
             @Override
-            public void onSwiped(@NonNull @NotNull RecyclerView.ViewHolder viewHolder, int direction) {
+            public void onChildDraw(@NonNull @NotNull Canvas c, @NonNull @NotNull RecyclerView recyclerView, @NonNull @NotNull RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
+                super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
+            }
 
+
+            @Override
+            public void clearView(@NonNull @NotNull RecyclerView recyclerView, @NonNull @NotNull RecyclerView.ViewHolder viewHolder) {
+                super.clearView(recyclerView, viewHolder);
             }
         });
-        return null;
+        return itemTouchHelper;
+    }
+
+
+    @Override
+    public void refreshAfterMove(int srcPos, int desPos) {
+        rssSrcAdapter.notifyItemMoved(srcPos, desPos);
+        rssSrcAdapter.notifyItemRangeChanged(Math.min(srcPos, desPos), Math.abs(srcPos-desPos)+1);
     }
 }
 

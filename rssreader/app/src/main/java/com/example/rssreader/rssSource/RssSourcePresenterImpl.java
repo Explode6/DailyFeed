@@ -5,18 +5,28 @@ import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.RemoteException;
 import android.view.MenuItem;
+import android.widget.Toast;
+
+import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.ItemTouchHelper;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.rssreader.IMyAidlInterface;
 import com.example.rssreader.RssSource;
 import com.example.rssreader.rssdetails.articlelist.ArticleListActivity;
 import com.example.rssreader.model.datamodel.Channel;
 import com.example.rssreader.model.parse.XmlCallback;
+import com.example.rssreader.util.ApplicationUtil;
+import com.example.rssreader.util.BasePresenter;
+import com.example.rssreader.util.ConfigUtil;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -26,13 +36,13 @@ public class RssSourcePresenterImpl implements RssSourceContract.RssSourcePresen
     private final RssSourceContract.RssSourceView rssSourceView;
     //获取对rssSourceModel的引用
     private IMyAidlInterface myAidlInterface;
+    //获取配置文件工具类的引用
+    ConfigUtil configUtil;
     //记录是否为第一次加载
     private boolean isFirstLoaded = true;
     //记录当前列表/网格布局是否被选中（默认为网格布局）
     private  boolean listChosen = false;
     private boolean gridChosen = true;
-    private boolean canEdit = false;        //是否进入编辑模式
-    private boolean isNightMode = false;            //是否进入了夜间模式
     private List<RssSource>rssSourceList;   //暂存所有RSS源，用于recyclerView的显示
     private List<Channel>channelList;       //暂存所有channel
     private boolean addBtnLock = false;        //添加按钮锁，防止用户多次点击按钮出错
@@ -47,6 +57,8 @@ public class RssSourcePresenterImpl implements RssSourceContract.RssSourcePresen
         this.myAidlInterface = myAidlInterface;
         //view绑定presenter
         rssSourceView.setPresenter(this);
+        //获取配置文件工具类的实例
+        configUtil = ConfigUtil.getInstance(ApplicationUtil.getContext());
     }
     @Override
     public void start() throws RemoteException {
@@ -280,15 +292,49 @@ public class RssSourcePresenterImpl implements RssSourceContract.RssSourcePresen
     @Override
     public void modeSwitching(MenuItem item) {
         //如果现在为日间模式
-        if(isNightMode == false){
+        if(configUtil.isDarkMode() == false){
+            //将模式写入配置文件
+            configUtil.setMode(ConfigUtil.MODE_DARK);
             //界面切换为夜间模式
             rssSourceView.switchToNightMode(item);
-            isNightMode = true;
-            //将模式写入配置文件
+
         }else{
-            rssSourceView.switchToDayMode(item);
-            isNightMode = false;
             //将模式写入配置文件
+            configUtil.setMode(ConfigUtil.MODE_LIGHT);
+            rssSourceView.switchToDayMode(item);
         }
+    }
+
+    @Override
+    public int setMovementFlags() {
+        int dragFlags = 0;
+        //如果是网格布局那么可以上下左右拖动
+        if(gridChosen == true && listChosen == false){
+            dragFlags = ItemTouchHelper.UP|ItemTouchHelper.DOWN|ItemTouchHelper.LEFT|ItemTouchHelper.RIGHT;
+        }
+        //如果是列表布局那么可以上下拖动
+        else if(gridChosen == false && listChosen == true)
+            dragFlags = ItemTouchHelper.UP|ItemTouchHelper.DOWN;
+        return dragFlags;
+    }
+
+
+    @Override
+    public boolean setMoving(int srcPos, int desPos) {
+        if(rssSourceList.size()==0)
+            return false;
+        //循环交换两个item的位置
+        if (srcPos < desPos) {
+            for (int i = srcPos; i < desPos; i++) {
+                Collections.swap(rssSourceList, i, i + 1);
+            }
+        } else {
+            for (int i = srcPos; i > desPos; i--) {
+                Collections.swap(rssSourceList, i, i - 1);
+            }
+        }
+        //刷新界面
+        rssSourceView.refreshAfterMove(srcPos, desPos);
+        return true;
     }
 }

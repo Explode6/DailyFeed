@@ -3,8 +3,10 @@ package com.example.rssreader.util;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.util.Log;
 
 import java.io.File;
+import java.util.Calendar;
 
 /**
  * @ClassName: ConfigUtil
@@ -19,8 +21,9 @@ public class ConfigUtil {
 
     //文件存储的路径和文件名
     @SuppressLint("SdCardPath")
-    public static final String filePath = "/data/data/com.example.rssreader/shared_prefs/";
-    public static final String fileName = "rssConfig.xml";
+    private static final String filePath = "/data/data/com.example.rssreader/shared_prefs/";
+    private static final String fileName = "rssConfig";
+    private static final String fileType = ".xml";
 
     //用于读取和写入的对象
     private SharedPreferences pref;
@@ -36,17 +39,17 @@ public class ConfigUtil {
     public static ConfigUtil getInstance(Context context){
         //单例模式
         //检查文件是否存在
-        File f = new File(filePath + fileName);
+        File f = new File(filePath + fileName + fileType);
         //创建配置文件
         if(!f.exists()){
             initConfig(context);
         }
         if(configUtil == null){
             configUtil = new ConfigUtil();
+            //绑定对象
+            configUtil.pref = context.getSharedPreferences(fileName, Context.MODE_PRIVATE);
+            configUtil.editor = configUtil.pref.edit();
         }
-        //绑定对象
-        configUtil.pref = context.getSharedPreferences(fileName, Context.MODE_PRIVATE);
-        configUtil.editor = configUtil.pref.edit();
         return configUtil;
     }
 
@@ -60,9 +63,10 @@ public class ConfigUtil {
         SharedPreferences.Editor editor = context.getSharedPreferences(fileName, Context.MODE_PRIVATE).edit();
         //填入初始化对象
         editor.putBoolean("mode", false);
-        editor.putLong("time", 0);
+        editor.putInt("hour", -1);
+        editor.putInt("minute", -1);
         editor.putInt("textSize", 100);
-        editor.putInt("textSpacing,", 0);
+        editor.putInt("lineHeight,", 120);
         editor.apply();
     }
 
@@ -75,13 +79,12 @@ public class ConfigUtil {
      */
     public boolean setMode(int mode){
         if(mode == MODE_LIGHT){
-            editor.putBoolean("mode", true);
-        }else if(mode == MODE_DARK){
             editor.putBoolean("mode", false);
+        }else if(mode == MODE_DARK){
+            editor.putBoolean("mode", true);
         }else return false;
         //写入文件并清除editor对象
         editor.apply();
-        editor.clear();
         return true;
     }
 
@@ -95,29 +98,49 @@ public class ConfigUtil {
     }
 
     /**
-     * 设置定时更新的时间，初始值是0
+     * 设置定时更新的时间，初始值是-1
      *
-     * @param time 设定的时间
+     * @param hour 设定的小时数
      * @return 添加成功返回true，否则返回false
      */
-    public boolean setTime(long time){
-        editor.putLong("time", time);
+    public boolean setHour(int hour){
+        editor.putInt("hour", hour);
         editor.apply();
-        editor.clear();
         return true;
     }
 
     /**
-     * 获取上次设定的更新时间
+     * 获取上次设定的更新时间的小时数
      *
-     * @return the long
+     * @return the int
      */
-    public long getTime(){
-        return pref.getLong("time", 0);
+    public int getHour(){
+        return pref.getInt("hour", -1);
     }
 
     /**
-     * 设定展示文章内容的文字大小，初始值是100
+     * 设置定时更新的小时数，初始值是-1
+     *
+     * @param minute 设定的分钟数
+     * @return 添加成功返回true，否则返回false
+     */
+    public boolean setMinute(int minute){
+        editor.putInt("minute", minute);
+        editor.apply();
+        return true;
+    }
+
+    /**
+     * 获取上次设定的更新时间的分钟数
+     *
+     * @return the int
+     */
+    public int getMinute(){
+        return pref.getInt("minute", -1);
+    }
+
+    /**
+     * 设定展示文章内容的文字大小，初始值是100%
      *
      * @param textSize 设定的文字大小
      * @return 设定成功返回true，否则返回false
@@ -126,7 +149,6 @@ public class ConfigUtil {
         if(textSize <= 0) return false;
         editor.putInt("textSize", textSize);
         editor.apply();
-        editor.clear();
         return true;
     }
 
@@ -140,25 +162,24 @@ public class ConfigUtil {
     }
 
     /**
-     * 设定文章内容展示的文字间隔，初始值为0
+     * 设定文章内容展示的行间距离，初始值为120
      *
-     * @param textSpacing
+     * @param lineHeight
      * @return 设定成功返回true，否则返回false
      */
-    public boolean setTextSpacing(int textSpacing){
-        if(textSpacing<0) return false;
-        editor.putInt("textSpacing", textSpacing);
+    public boolean setLineHeight(int lineHeight){
+        if(lineHeight<100) return false;
+        editor.putInt("lineHeight", lineHeight);
         editor.apply();
-        editor.clear();
         return true;
     }
 
     /**
-     * 获取上次设定的文字间隔
+     * 获取上次设定的行间距离
      *
      * @return the int
      */
-    public int getTextSpacing(){
-        return pref.getInt("textSpacing", 0);
+    public int getLineHeight(){
+        return pref.getInt("lineHeight", 120);
     }
 }

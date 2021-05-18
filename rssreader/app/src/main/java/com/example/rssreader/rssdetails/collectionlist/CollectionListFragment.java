@@ -17,7 +17,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.rssreader.R;
-import com.example.rssreader.lastactivity.LastActivity;
+import com.example.rssreader.comments.CommentsActivity;
+
 import com.example.rssreader.model.datamodel.ArticleBrief;
 import com.example.rssreader.rssdetails.ShowListAdapter;
 import com.example.rssreader.rssdetails.ShowListContract;
@@ -152,7 +153,7 @@ public class CollectionListFragment extends Fragment implements ShowListContract
      */
     @Override
     public void showArticleDetails(ArticleBrief articleBrief) {
-        Intent intent = new Intent(mContext, LastActivity.class);
+        Intent intent = new Intent(mContext, CommentsActivity.class);
         intent.putExtra("articleBrief", articleBrief);
         startActivity(intent);
     }

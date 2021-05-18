@@ -3,15 +3,25 @@ package com.example.rssreader.rssSource;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.Service;
+import android.content.ComponentName;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Build;
 import android.os.IBinder;
+import android.os.RemoteException;
+import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 
+import com.example.rssreader.IMyAidlInterface;
 import com.example.rssreader.R;
+import com.example.rssreader.model.datamodel.Channel;
+import com.example.rssreader.model.parse.AidlBinder;
+import com.example.rssreader.model.parse.XmlCallback;
+
+import java.util.List;
 
 public class NoticeService extends Service {
 
@@ -32,12 +42,40 @@ public class NoticeService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        //绑定|启动后台服务
+        if(AidlBinder.getInstance()==null){
+            AidlBinder.bindService(new ServiceConnection() {
+                @Override
+                public void onServiceConnected(ComponentName name, IBinder service) {
+                    AidlBinder.setInstance(IMyAidlInterface.Stub.asInterface(service));
+                    IMyAidlInterface model =  AidlBinder.getInstance();
+                    try {
+                        model.updateSource(0,100);
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                        Log.d("NoticeService","update fail");
+                    }
+                }
+
+                @Override
+                public void onServiceDisconnected(ComponentName name) {
+
+                }
+            },getApplicationContext());
+        }else{ //后台服务存在
+            IMyAidlInterface model =  AidlBinder.getInstance();
+            try {
+                model.updateSource(0,100);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+                Log.d("NoticeService","update fail");
+            }
+        }
         initNotification(intent);
         showNotification();
+        //关闭闹钟
         AlarmUtil.stopNoticeService(getApplicationContext(), ClockBroadcastReceiver.class,"com.example.rssreader.rssNoticeBroadcast");
         //AlarmUtil.startNoticeService(getApplicationContext(), System.currentTimeMillis()+10*1000, NoticeService.class, "com.ryantang.service.PollingService");
-        Intent intent1 = new Intent(this, NoticeService.class);
-        stopService(intent1);
         return super.onStartCommand(intent, flags, startId);
     }
 

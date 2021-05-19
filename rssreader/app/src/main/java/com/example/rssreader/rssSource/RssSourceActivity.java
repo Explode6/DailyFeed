@@ -60,8 +60,6 @@ public class RssSourceActivity extends AppCompatActivity {
 
     private DrawerLayout mDrawerLayout; //侧滑菜单
     private NavigationView navView; //侧滑菜单的导航栏
-    private boolean isFirstLoad = true; //是否为第一次加载
-    private int count = 0;
     private RssSourceFragment rssSourceFragment;
     private RssSourcePresenterImpl rssSourcePresenter;
     private ConfigUtil configUtil;
@@ -108,9 +106,11 @@ public class RssSourceActivity extends AppCompatActivity {
         //判断用户设置为夜间/日间模式进行不同的初始化
         if(ApplicationUtil.getIsFirstLoad() == true){
             if(configUtil.isDarkMode() == true) {
+                //切换为夜间模式
                 SkinCompatManager.getInstance().loadSkin("night", SkinCompatManager.SKIN_LOADER_STRATEGY_BUILD_IN);
             }
             else {
+                //切换为日间模式
                 SkinCompatManager.getInstance().restoreDefaultTheme();
             }
             ApplicationUtil.setIsFirstLoad(false) ;

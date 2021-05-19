@@ -30,6 +30,7 @@ public class ApplicationUtil extends Application {
                 .addInflater(new SkinCardViewInflater())                // CardView v7 控件换肤初始化[可选]
                 .loadSkin();
     }
+
     public static Context getContext(){
         return context;
     }

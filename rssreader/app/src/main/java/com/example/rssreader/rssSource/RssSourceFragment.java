@@ -205,8 +205,6 @@ public class RssSourceFragment extends Fragment implements RssSourceContract.Rss
         });
         //设置适配器
         rssView.setAdapter(rssSrcAdapter);
-        itemTouchHelper = setItemTouchHelper();
-        //itemTouchHelper.attachToRecyclerView(rssView);
     }
 
     @Override
@@ -230,8 +228,6 @@ public class RssSourceFragment extends Fragment implements RssSourceContract.Rss
         });
         //设置适配器
         rssView.setAdapter(rssSrcAdapter);
-        itemTouchHelper = setItemTouchHelper();
-        //itemTouchHelper.attachToRecyclerView(rssView);
     }
 
     @Override

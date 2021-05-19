@@ -66,7 +66,7 @@ public class ConfigUtil {
         editor.putInt("hour", -1);
         editor.putInt("minute", -1);
         editor.putInt("textSize", 100);
-        editor.putInt("textSpacing,", 0);
+        editor.putInt("lineHeight,", 120);
         editor.apply();
     }
 
@@ -98,7 +98,7 @@ public class ConfigUtil {
     }
 
     /**
-     * 设置定时更新的时间，初始值是0
+     * 设置定时更新的时间，初始值是-1
      *
      * @param hour 设定的小时数
      * @return 添加成功返回true，否则返回false
@@ -119,7 +119,7 @@ public class ConfigUtil {
     }
 
     /**
-     * 设置定时更新的小时数，初始值是0
+     * 设置定时更新的小时数，初始值是-1
      *
      * @param minute 设定的分钟数
      * @return 添加成功返回true，否则返回false
@@ -140,7 +140,7 @@ public class ConfigUtil {
     }
 
     /**
-     * 设定展示文章内容的文字大小，初始值是100
+     * 设定展示文章内容的文字大小，初始值是100%
      *
      * @param textSize 设定的文字大小
      * @return 设定成功返回true，否则返回false
@@ -162,24 +162,24 @@ public class ConfigUtil {
     }
 
     /**
-     * 设定文章内容展示的文字间隔，初始值为0
+     * 设定文章内容展示的行间距离，初始值为120
      *
-     * @param textSpacing
+     * @param lineHeight
      * @return 设定成功返回true，否则返回false
      */
-    public boolean setTextSpacing(int textSpacing){
-        if(textSpacing<0) return false;
-        editor.putInt("textSpacing", textSpacing);
+    public boolean setLineHeight(int lineHeight){
+        if(lineHeight<100) return false;
+        editor.putInt("lineHeight", lineHeight);
         editor.apply();
         return true;
     }
 
     /**
-     * 获取上次设定的文字间隔
+     * 获取上次设定的行间距离
      *
      * @return the int
      */
-    public int getTextSpacing(){
-        return pref.getInt("textSpacing", 0);
+    public int getLineHeight(){
+        return pref.getInt("lineHeight", 120);
     }
 }

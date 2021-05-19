@@ -8,13 +8,13 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <com.example.rssreader.articlelist.SlideRecyclerView
+        <com.example.rssreader.rssdetails.SlideRecyclerView
 
-            android:id="@+id/article_list_slideview"
+            android:id="@+id/slideview"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-        </com.example.rssreader.articlelist.SlideRecyclerView>
+        </com.example.rssreader.rssdetails.SlideRecyclerView>
 
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 

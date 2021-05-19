@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="rssdetails.articlelist.ArticleListActivity">
+    tools:context=".rssdetails.collectionlist.CollectionListActivity">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
@@ -18,7 +18,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:text="文章内容"
+            android:text="      我的收藏"
             android:textColor="@color/dayBlackNightGray"
             android:textSize="26dp"
             android:textStyle="bold" />

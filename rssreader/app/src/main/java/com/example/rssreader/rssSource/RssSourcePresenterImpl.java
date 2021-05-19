@@ -14,7 +14,7 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 
 import com.example.rssreader.IMyAidlInterface;
 import com.example.rssreader.RssSource;
-import com.example.rssreader.articlelist.ArticleListActivity;
+import com.example.rssreader.rssdetails.articlelist.ArticleListActivity;
 import com.example.rssreader.model.datamodel.Channel;
 import com.example.rssreader.model.parse.XmlCallback;
 import com.example.rssreader.util.AlarmUtil;

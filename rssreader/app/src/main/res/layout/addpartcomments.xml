@@ -1,0 +1,33 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/pop_up_part_window"
+    android:background="@color/dayWhiteNightBlack"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+     <EditText
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:layout_weight="8"
+      android:maxLines="2"
+      android:id="@+id/edit_local_comment"
+      android:hint="What's your idea?"
+      />
+
+        <Button
+            android:id="@+id/add_local_comment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="ADD LOCAL COMMENT" />
+    </LinearLayout>
+
+
+
+
+</LinearLayout>

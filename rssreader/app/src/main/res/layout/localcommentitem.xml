@@ -13,13 +13,22 @@
         android:id="@+id/local_content_Item"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
         android:background="@color/dayWhiteNightBlack"
+        android:textSize="14dp"
+        android:textColor="@color/dimgray"
         />
     <TextView
         android:id="@+id/local_comment_Item"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/dayWhiteNightBlack"
+        android:layout_marginBottom="2dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginLeft="2dp"
+        android:layout_marginRight="2dp"
+        android:textSize="18dp"
+        android:textStyle="italic"
+        android:textColor="@color/minblack"
         />
     <View
         android:layout_width="match_parent"

@@ -19,7 +19,7 @@ public interface CommentsContract {
 
         void loadPopUpWindow(View contentView);//加载pupupwindow
 
-        void loadFakePopUpWindow(View contentView, EditText editText);
+        void loadFakePopUpWindow( EditText editText);
 
         void initializeAdapter();//初始化全局评论的adapter
 
@@ -39,8 +39,6 @@ public interface CommentsContract {
         void increaseSpace();
 
         void decreaseSpace();
-
-        void onAddlocalcomments(String localComment);
 
         //删除一条全局评论
         void onDeleteGlobalCommentFromView(int position);
@@ -64,6 +62,9 @@ public interface CommentsContract {
         void initialLocalAdapter();
 
 
+        //测试添加全局评论窗口
+        public void showEditpop(EditText editText);
+
 
     }
     interface CommentsPresenter extends BasePresenter {
@@ -73,7 +74,7 @@ public interface CommentsContract {
         void showPopUpWindow(View contentView);
 
         //弹出有软键盘的popupwindow
-        void fakeShowPopUpwindow(View contentView, EditText editText);
+        void fakeShowPopUpwindow(EditText editText);
 
         void createAdapter();
 
@@ -117,6 +118,15 @@ public interface CommentsContract {
 
         //从Fragment中删除评论
         void deleteLocalCommentFromView(int position);
+
+        //打开与关闭toolbar
+        void testClose();
+
+        void testOpen();
+
+        //测试添加全局评论窗口
+        void showGlbC(EditText editText);
+
 
     }
 }

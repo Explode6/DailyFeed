@@ -10,9 +10,11 @@ import android.os.RemoteException;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.view.animation.AccelerateInterpolator;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
@@ -23,6 +25,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -50,11 +53,12 @@ public class Comments_Fragment extends Fragment implements CommentsContract.Comm
     private Button showAllComments;                                    //全局评论
     private Button showPartComments;                                  //部分评论
     private  ShowArticleWebView showArticleWebView;                  //webview展示
-    private  View contentView;
+    private  View contentView;                                      //第一个窗口
     //popUpWindow的view
     private  View navigatioinView;                                //导航栏的view
     private  View progressView;                                  //修改字体大小的view
     private  View root;
+    private  View mainView;                                     //获取mainView
     private CustomPopWindow mListPopWindow;                     //全局评论的popUpWindow
     private CustomPopWindow navigationWindow;                  //底部导航栏弹窗
     private CustomPopWindow progressWindow;                   //调整字体大小弹窗与行间距
@@ -64,33 +68,35 @@ public class Comments_Fragment extends Fragment implements CommentsContract.Comm
     private GlobalCommentsAdapter mAdapter;               //全局评论recyclerView的adapter
     private LocalCommentsAdapter mLocalAdapter;          //局部评论recyclerView的adapter
     private  Button closeWin;                            //关闭popupwindow
-    private Button add_globe_comment;                   // 添加全局评论
-    private Button add_local_comment;                  // 添加本地评论
+    private  Button add_globe_comment;                   // 添加全局评论
+    private  Button add_global_comment;
+    private  Button add_local_comment;                  // 添加本地评论
     private  TextView firstC;                          //第一条评论
     private  TextView secondC;                        //第二条评论
     private  TextView date1;                         //第一条时间
     private  TextView date2;                        //第二条时间
-    private EditText editComment;                    //需要添加的全局评论
     private CustomPopWindow localCommentWin;        //部分评论的popupwindow
     private CustomPopWindow addLocalCommentWin;         //添加本地评论的win
     private RecyclerView partrecyclerView;         //部分评论的recyclerView
-    private  String mhtml;                        //用来测试的html
     private  PopupWindow popupwindow;            //用来监控nestedscrollview
     private Button setting;                //设置字体大小
     private Button sizeIncrease;          // 字体变大
     private Button sizeDecrease;         // 字体变小
     private Button spaceIncrease;       // 间距变大
     private Button spaceDecrease;      // 间距变小
+    private Button share_photo;      // 间距变小
     private View localCommentsView;   //展示local
     private View addLocalView;             //添加本地评论
     private EditText editLocalComment;    //局部评论的编写
-    private EditText fakeAdd;   //局部评论的编写
+    private EditText fakeAdd;            //第一个popupwindow界面的edittext
+    private EditText editComment;       //第二个popupwindow界面的edittext
+    private EditText editGlobalC;      //第三个popupwindow界面的edittext(仅有这个生效）
     private ProgressBar sizeprogressbar;
     private ProgressBar spaceprogressbar;
     private CommentsActivity comments_activity;
     private ArticleBrief mArticleBrief;
     private int textsize = 100;         //初始字体大小为100
-    private int textspacing = 0;      //初始间距为0
+    private int textspacing = 150;      //初始间距为0
     private int textcolor = 0x000000; //白色
     private LinearLayoutManager manager;
     private LinearLayoutManager localmanager;
@@ -98,6 +104,9 @@ public class Comments_Fragment extends Fragment implements CommentsContract.Comm
     private List<GlobalComment> mGlobalList; //用以展示的全局评论列表
     private List<LocalComment> mLocalList; //用以展示的全局评论列表
     private String localContent;
+    private int tag = 1;
+    private View editView;
+    private CustomPopWindow editGlobalComment;         //弹出输入
 
     public Comments_Fragment(){
 
@@ -112,13 +121,13 @@ public class Comments_Fragment extends Fragment implements CommentsContract.Comm
             public void onActionClick(String title, String text) {
                 switch (title){
                     case "comment":
-                        localContent = text;
+                        localContent = text.replace("\\n","\n");
                         addLocalCommentWin= new CustomPopWindow.PopupWindowBuilder(getContext())
                                 .setView(addLocalView)
                                 .setFocusable(true)
-                                .size(600,350)//显示大小
+                                .size(600,300)//显示大小
                                 .create()
-                                .showAtLocation(mView.findViewById(R.id.show_allcomments), Gravity.RIGHT, 0, 0);
+                                .showAtLocation(mView.findViewById(R.id.show_allcomments), Gravity.RIGHT, 0, -100);
                         break;
                     default:
                         break;
@@ -132,6 +141,7 @@ public class Comments_Fragment extends Fragment implements CommentsContract.Comm
         return new Comments_Fragment();
     }
 
+    @SuppressLint("ResourceAsColor")
     @Override
     public void onResume() {
         super.onResume();
@@ -178,17 +188,33 @@ public class Comments_Fragment extends Fragment implements CommentsContract.Comm
 
         progressView= inflater.from(getContext()).inflate(R.layout.probarpopupwindow,null);
 
+        editView = inflater.from(getContext()).inflate(R.layout.editpopup,null);
+
         mnestedScrollView = root.findViewById(R.id.nested);
 
         mnestedScrollView.setOnScrollChangeListener( new NestedScrollView.OnScrollChangeListener() {
             @Override
             public void onScrollChange(NestedScrollView v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
                 //上滑 并且 正在显示底部栏
-                if (scrollY - oldScrollY > 0 && popupwindow.isShowing()) {
+
+                if (scrollY - oldScrollY > 60 && popupwindow.isShowing() ) {
                     mPresenter.closeNavigationWin();
 
-                } else if (scrollY - oldScrollY < 0 && !popupwindow.isShowing()) {
+                }
+                //下滑 并且没有正在显示
+                if (scrollY - oldScrollY < -60 && !popupwindow.isShowing()) {
+
                     navigationWindow.showAtLocation(root.findViewById(R.id.show_allcomments), Gravity.BOTTOM, 0, 0);
+                }
+                if(scrollY - oldScrollY > 60 && tag==1){
+                    mPresenter.testClose();
+                    tag--;
+                }
+                if(scrollY - oldScrollY < -60 && tag==0){
+                    mPresenter.testOpen();
+                    tag++;
+                }
+                if (scrollY == (v.getChildAt(0).getMeasuredHeight() - v.getMeasuredHeight())){
                 }
             }
         });
@@ -213,6 +239,9 @@ public class Comments_Fragment extends Fragment implements CommentsContract.Comm
 
         add_globe_comment = contentView.findViewById(R.id.add_globe_comment);
 
+        add_global_comment = editView.findViewById(R.id.add_final);
+        add_global_comment.setOnClickListener(this);
+
         add_local_comment = addLocalView.findViewById(R.id.add_local_comment);
 
         fakeAdd = root.findViewById(R.id.fake_add);
@@ -222,6 +251,12 @@ public class Comments_Fragment extends Fragment implements CommentsContract.Comm
         editLocalComment = addLocalView.findViewById(R.id.edit_local_comment);
 
         editComment = contentView.findViewById(R.id.edit_comment);
+        editComment.setFocusable(false);
+        editComment.setOnClickListener(this);
+
+        editGlobalC = editView.findViewById(R.id.edit_global_comment);
+        editGlobalC.setFocusableInTouchMode(true);
+        editGlobalC.setFocusable(true);
 
         firstC = root.findViewById(R.id.comment_first);
         firstC.setClickable(true);
@@ -242,6 +277,9 @@ public class Comments_Fragment extends Fragment implements CommentsContract.Comm
         setting = navigatioinView.findViewById(R.id.n1);
         setting.setOnClickListener(this);
 
+        share_photo = navigatioinView.findViewById(R.id.share_photo);
+        share_photo.setOnClickListener(this);
+
         sizeIncrease = progressView.findViewById(R.id.size_increase);
         sizeIncrease.setOnClickListener(this);
 
@@ -260,7 +298,7 @@ public class Comments_Fragment extends Fragment implements CommentsContract.Comm
         sizeprogressbar.setProgress(50);
 
         spaceprogressbar = progressView.findViewById(R.id.space_progress);
-        spaceprogressbar.setProgress(0);
+        spaceprogressbar.setProgress(50);
 
         closeWin.setOnClickListener(this);
 
@@ -280,15 +318,15 @@ public class Comments_Fragment extends Fragment implements CommentsContract.Comm
         mListPopWindow = new CustomPopWindow.PopupWindowBuilder(getContext())
                 .setView(contentView)
                 .setFocusable(true)
-                .setSoftInputMode(PopupWindow.INPUT_METHOD_NEEDED)
-                .setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)//防止PopupWindow被软件盘挡住
-                .size(ViewGroup.LayoutParams.MATCH_PARENT,1500)//显示大小
+//                .setSoftInputMode(PopupWindow.INPUT_METHOD_NEEDED)
+                .setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING)//软键盘弹出不影响任何布局
+                .size(ViewGroup.LayoutParams.MATCH_PARENT,1600)//显示大小
                 .create();
 
          navigationWindow = new CustomPopWindow.PopupWindowBuilder(getContext())
                 .setView(navigatioinView)
                 .setFocusable(false)
-                .size(ViewGroup.LayoutParams.MATCH_PARENT,120)//显示大小
+                .size(ViewGroup.LayoutParams.MATCH_PARENT,160)//显示大小
                 .create();
 
         popupwindow = navigationWindow.getPopupWindow();
@@ -313,14 +351,44 @@ public class Comments_Fragment extends Fragment implements CommentsContract.Comm
                 .setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)//防止PopupWindow被软件盘挡住
                 .size(400,80)//显示大小
                 .create();
+
+        //
+        editGlobalComment = new CustomPopWindow.PopupWindowBuilder(getContext())
+                .setView(editView)
+//                .setFocusable(true)        //点击外部不触发事件
+//                .setTouchable(true)
+                .setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING)
+                .size(ViewGroup.LayoutParams.MATCH_PARENT,960)//显示大小
+                .create();
+
+
         mView = root;
         return root;
+    }
+    @Override
+    public void showEditpop(final EditText editText) {
+        //不同的显示方式
+        editGlobalComment.showAtLocation(mView.findViewById(R.id.show_allcomments), Gravity.BOTTOM, 0, 0);
+        editText.setFocusable(true);
+        //截断edittext获得焦点？
+//        editText.setFocusableInTouchMode(true);
+//        editText.requestFocus();
+        //为了让数据加载完全，等待88ms打开软键盘
+        Timer timer = new Timer();
+        timer.schedule(new TimerTask()
+        {
+            public void run()
+            {
+                InputMethodManager inputManager =(InputMethodManager)editText.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                inputManager.showSoftInput(editText, 0);
+            }
+        },88);
     }
 
     //加载webView
     @Override
     public void showWebview(String title, String author, String html) {
-        showArticleWebView.initWebView(100,0x000000,120);
+        showArticleWebView.initWebView(textsize,textcolor,textspacing);
         showArticleWebView.showContent(title, author, html);
     }
 
@@ -333,22 +401,22 @@ public class Comments_Fragment extends Fragment implements CommentsContract.Comm
     }
 
     @Override
-    public void loadFakePopUpWindow(View contentView, final EditText editText) {
-        editText.requestFocus();
-        editText.requestFocusFromTouch();
+    public void loadFakePopUpWindow(final EditText editText) {
         mListPopWindow.showAtLocation(mView.findViewById(R.id.show_allcomments), Gravity.BOTTOM, 0, 0);
-        //为了让数据加载完全，等待888ms打开软键盘
+        editGlobalComment.showAtLocation(mView.findViewById(R.id.show_allcomments), Gravity.BOTTOM, 0, 0);
+//  `      editText.setFocusable(true);
+//        editText.setFocusableInTouchMode(true);`
+        editText.requestFocus();
+//        //为了让数据加载完全，等待66ms打开软键盘
         Timer timer = new Timer();
-        timer.schedule(new TimerTask() {
-                           public void run() {
-                               InputMethodManager inputManager =
-                                       (InputMethodManager) editText.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-                               inputManager.showSoftInput(editText, 0);
-
-                           }
-
-                       },
-                888);
+        timer.schedule(new TimerTask()
+        {
+            public void run()
+            {
+                InputMethodManager inputManager =(InputMethodManager)editText.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                inputManager.showSoftInput(editText, 0);
+            }
+        },1000);
     }
 
     //重新设置需要加载的globalcommentlist
@@ -503,41 +571,31 @@ public class Comments_Fragment extends Fragment implements CommentsContract.Comm
             textsize = textsize - 10;
             showArticleWebView.setTextSize(textsize);
             int pro = sizeprogressbar.getProgress();
-            pro -= 10;
+            pro = pro - 10;
             sizeprogressbar.setProgress(pro);
         }
     }
 
     @Override
     public void increaseSpace() {
-        if(textspacing<10){
-            textspacing = textspacing+1;
+        if(spaceprogressbar.getProgress()<100){
+            textspacing = textspacing+10;
             showArticleWebView.setTextSpacing(textspacing);
-            int pro = sizeprogressbar.getProgress();
-            pro +=1;
+            int pro = spaceprogressbar.getProgress();
+            pro = pro + 10;
             spaceprogressbar.setProgress(pro);
         }
     }
 
     @Override
     public void decreaseSpace() {
-        if(textspacing>0){
-            textspacing = textspacing-1;
+        if(spaceprogressbar.getProgress()>0){
+            textspacing = textspacing-10;
             showArticleWebView.setTextSpacing(textspacing);
-            int pro = sizeprogressbar.getProgress();
-            pro -=1;
+            int pro = spaceprogressbar.getProgress();
+            pro -=10;
             spaceprogressbar.setProgress(pro);
         }
-    }
-
-    @Override
-    public void onAddlocalcomments(String lc) {
-        if(lc!=null)
-            //向数据库中添加
-            ;
-            else
-            Toast.makeText(getContext(),"请输入内容再添加",Toast.LENGTH_SHORT).show();
-
     }
 
     @Override
@@ -604,14 +662,14 @@ public class Comments_Fragment extends Fragment implements CommentsContract.Comm
                 editLocalComment.setText("");
                 }
                 else
-                    Toast.makeText(getContext(),"Please enter sth",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(),"Please Enter sth",Toast.LENGTH_SHORT).show();
 
                 InputMethodManager immL = (InputMethodManager) getContext().getSystemService(INPUT_METHOD_SERVICE);
                 immL.hideSoftInputFromWindow(editLocalComment.getWindowToken(), 0);
                 break;
 
             case R.id.fake_add:
-                mPresenter.fakeShowPopUpwindow(contentView,editComment);
+                mPresenter.fakeShowPopUpwindow(editComment);
                 break;
 
             case R.id.comment_first:
@@ -620,6 +678,31 @@ public class Comments_Fragment extends Fragment implements CommentsContract.Comm
 
             case R.id.comment_second:
                 mPresenter.showPopUpWindow(contentView);
+                break;
+
+            case R.id.edit_comment:
+                mPresenter.showGlbC(editGlobalC);
+                break;
+
+            case R.id.add_final:
+                String content = editGlobalC.getText().toString();
+                if(content!=null){
+                    mPresenter.addGlobalComment(content);
+                    mPresenter.createAdapter();
+                    mPresenter.setTwoComments(date1,firstC,date2,secondC);
+                    editGlobalC.clearComposingText();
+                    editGlobalC.setText("");
+                }
+                else
+                    Toast.makeText(getContext(),"请输入内容再添加",Toast.LENGTH_SHORT).show();
+
+                break;
+
+                //点击分享图片
+            case R.id.share_photo:
+
+
+
                 break;
             default:
                 break;

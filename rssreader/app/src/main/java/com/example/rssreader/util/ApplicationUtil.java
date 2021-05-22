@@ -3,6 +3,12 @@ package com.example.rssreader.util;
 import android.app.Application;
 import android.content.Context;
 
+import skin.support.SkinCompatManager;
+import skin.support.app.SkinAppCompatViewInflater;
+import skin.support.app.SkinCardViewInflater;
+import skin.support.constraint.app.SkinConstraintViewInflater;
+import skin.support.design.app.SkinMaterialViewInflater;
+
 /**
  * @ClassName: ApplicationUtil
  * @Author: shiwei
@@ -17,7 +23,14 @@ public class ApplicationUtil extends Application {
     public void onCreate() {
         super.onCreate();
         context = getApplicationContext();
+        SkinCompatManager.withoutActivity(this)
+                .addInflater(new SkinAppCompatViewInflater())           // 基础控件换肤初始化
+                .addInflater(new SkinMaterialViewInflater())            // material design 控件换肤初始化[可选]
+                .addInflater(new SkinConstraintViewInflater())          // ConstraintLayout 控件换肤初始化[可选]
+                .addInflater(new SkinCardViewInflater())                // CardView v7 控件换肤初始化[可选]
+                .loadSkin();
     }
+
     public static Context getContext(){
         return context;
     }

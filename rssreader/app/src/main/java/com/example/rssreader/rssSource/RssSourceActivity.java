@@ -18,6 +18,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
+import androidx.appcompat.app.SkinAppCompatDelegateImpl;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
@@ -32,10 +33,12 @@ import com.example.rssreader.model.datamodel.DataBaseHelper;
 import com.example.rssreader.model.parse.AidlBinder;
 import com.example.rssreader.model.parse.DataCallback;
 import com.example.rssreader.util.ActivityUtil;
+import com.example.rssreader.util.AlarmUtil;
 import com.example.rssreader.util.ApplicationUtil;
 import com.example.rssreader.util.ConfigUtil;
 import com.google.android.material.navigation.NavigationView;
 
+import org.jetbrains.annotations.NotNull;
 import org.litepal.LitePal;
 
 import java.io.ByteArrayInputStream;
@@ -51,15 +54,17 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.List;
 
+import skin.support.SkinCompatManager;
+
 public class RssSourceActivity extends AppCompatActivity {
 
     private DrawerLayout mDrawerLayout; //侧滑菜单
     private NavigationView navView; //侧滑菜单的导航栏
-    private boolean isFirstLoad = true; //是否为第一次加载
-    private int count = 0;
     private RssSourceFragment rssSourceFragment;
     private RssSourcePresenterImpl rssSourcePresenter;
     private ConfigUtil configUtil;
+    private Toolbar toolbar;
+    private ActionBar actionBar;
     public IMyAidlInterface myAidlInterface;
 
 
@@ -69,24 +74,28 @@ public class RssSourceActivity extends AppCompatActivity {
      */
 //    public IMyAidlInterface myAidlInterface;
 
+
+    @NonNull
+    @NotNull
+    @Override
+    public AppCompatDelegate getDelegate() {
+        return SkinAppCompatDelegateImpl.get(this, this);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_rss_source);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.main_toolbar);
+        toolbar = (Toolbar) findViewById(R.id.main_toolbar);
         //为toolbar引入actionbar的功能
         setSupportActionBar(toolbar);
         //获取侧滑菜单
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         //获取标题栏
-        ActionBar actionBar = getSupportActionBar();
+        actionBar = getSupportActionBar();
         //设置导航按钮
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
-            //获取导航按钮图片
-            Drawable navBtnImg = ContextCompat.getDrawable(this, R.drawable.menu);
-            //显示导航按钮图片
-            actionBar.setHomeAsUpIndicator(navBtnImg);
         }
         //获取侧滑菜单的导航栏
         navView = (NavigationView) findViewById(R.id.nav_view);
@@ -96,10 +105,14 @@ public class RssSourceActivity extends AppCompatActivity {
         configUtil = ConfigUtil.getInstance(getApplicationContext());
         //判断用户设置为夜间/日间模式进行不同的初始化
         if(ApplicationUtil.getIsFirstLoad() == true){
-            if(configUtil.isDarkMode() == true)
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-            else
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+            if(configUtil.isDarkMode() == true) {
+                //切换为夜间模式
+                SkinCompatManager.getInstance().loadSkin("night", SkinCompatManager.SKIN_LOADER_STRATEGY_BUILD_IN);
+            }
+            else {
+                //切换为日间模式
+                SkinCompatManager.getInstance().restoreDefaultTheme();
+            }
             ApplicationUtil.setIsFirstLoad(false) ;
         }
 
@@ -152,6 +165,13 @@ public class RssSourceActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.toolbar, menu);
+        if(menu!= null){
+            MenuItem menuItem = menu.getItem(0);
+            if(configUtil.isDarkMode() == false)
+                menuItem.setIcon(ContextCompat.getDrawable(this, R.drawable.add_icon));
+            else
+                menuItem.setIcon(ContextCompat.getDrawable(this, R.drawable.add_icon_night));
+        }
         return true;
     }
 
@@ -169,6 +189,40 @@ public class RssSourceActivity extends AppCompatActivity {
                 break;
         }
         return true;
+    }
+
+    //转换为夜间模式时切换部分显示内容
+    public void convertToNightMode(){
+        //切换导航按钮图片
+        actionBar.setHomeAsUpIndicator(ContextCompat.getDrawable(this, R.drawable.menu_night));
+        //切换菜单项图片
+        Menu menu = toolbar.getMenu();
+        if(menu.size()!=0){
+            MenuItem menuItem = menu.getItem(0);
+            menuItem.setIcon(ContextCompat.getDrawable(this, R.drawable.add_icon_night));
+        }
+        //切换侧滑菜单图片
+        Menu subMenu = navView.getMenu().getItem(1).getSubMenu();
+        MenuItem modeConvert = subMenu.getItem(0);
+        modeConvert.setIcon(ContextCompat.getDrawable(this, R.drawable.nav_day));
+        modeConvert.setTitle("日间模式");
+    }
+
+    //转换为日间模式时切换部分显示内容
+    public void convertToDayMode(){
+        //切换导航按钮图片
+        actionBar.setHomeAsUpIndicator(ContextCompat.getDrawable(this, R.drawable.menu));
+        //切换菜单项图片
+        Menu menu = toolbar.getMenu();
+        if(menu.size() != 0){
+            MenuItem menuItem = menu.getItem(0);
+            menuItem.setIcon(ContextCompat.getDrawable(this, R.drawable.add_icon));
+        }
+        //切换侧滑菜单图片
+        Menu subMenu = navView.getMenu().getItem(1).getSubMenu();
+        MenuItem modeConvert = subMenu.getItem(0);
+        modeConvert.setIcon(ContextCompat.getDrawable(this, R.drawable.nav_mode));
+        modeConvert.setTitle("夜间模式");
     }
 
     public void closeNavView() {

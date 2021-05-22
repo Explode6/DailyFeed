@@ -2,6 +2,7 @@ package com.example.rssreader.rssSource;
 
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.ComponentName;
 import android.content.Intent;
@@ -10,18 +11,14 @@ import android.os.Build;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.util.Log;
-import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 
 import com.example.rssreader.IMyAidlInterface;
 import com.example.rssreader.R;
-import com.example.rssreader.model.datamodel.Channel;
 import com.example.rssreader.model.parse.AidlBinder;
-import com.example.rssreader.model.parse.XmlCallback;
-
-import java.util.List;
+import com.example.rssreader.util.AlarmUtil;
 
 public class NoticeService extends Service {
 
@@ -37,7 +34,6 @@ public class NoticeService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        Toast.makeText(this, "service创建成功",Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -71,33 +67,37 @@ public class NoticeService extends Service {
                 Log.d("NoticeService","update fail");
             }
         }
-        initNotification(intent);
+        initNotification(intent, "更新成功");
         showNotification();
         //关闭闹钟
         AlarmUtil.stopNoticeService(getApplicationContext(), ClockBroadcastReceiver.class,"com.example.rssreader.rssNoticeBroadcast");
-        //AlarmUtil.startNoticeService(getApplicationContext(), System.currentTimeMillis()+10*1000, NoticeService.class, "com.ryantang.service.PollingService");
+        long oneDaySec = 24*60*60*1000;
+        //一天之后重新通知
+        AlarmUtil.startNoticeService(getApplicationContext(), System.currentTimeMillis()+oneDaySec, ClockBroadcastReceiver.class, "com.example.rssreader.rssNoticeBroadcast");
         return super.onStartCommand(intent, flags, startId);
     }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        Toast.makeText(this, "service停止运行",Toast.LENGTH_SHORT).show();
-    }
+    
 
     //初始化通知内容
-    private void initNotification(Intent intent){
+    private void initNotification(Intent intent, String content){
+        Intent activityIntent = new Intent(this,RssSourceActivity.class);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this,0,activityIntent,0);
         notificationManager = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
+        //判断Android版本来进行不同的初始化
         if(Build.VERSION.SDK_INT>= Build.VERSION_CODES.O){
             NotificationChannel channel = new NotificationChannel("2222"
                     , "name", NotificationManager.IMPORTANCE_DEFAULT);
             notificationManager.createNotificationChannel(channel);
+            builder= new NotificationCompat.Builder(this,"2222");
+        }else{
+            builder= new NotificationCompat.Builder(this);
         }
-        builder= new NotificationCompat.Builder(this,"2222")
-                .setSmallIcon(R.drawable.add_icon)
+        builder.setSmallIcon(R.drawable.add_icon)
                 .setContentTitle("通知")
                 .setWhen(System.currentTimeMillis())
-                .setContentText(intent.getStringExtra("mykey"));
+                .setContentText(content)
+                .setContentIntent(pendingIntent)
+                .setAutoCancel(true);
     }
 
     private void showNotification(){

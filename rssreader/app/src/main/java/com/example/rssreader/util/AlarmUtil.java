@@ -1,4 +1,4 @@
-package com.example.rssreader.rssSource;
+package com.example.rssreader.util;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;

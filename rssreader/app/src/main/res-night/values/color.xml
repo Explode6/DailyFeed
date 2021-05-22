@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary_night">#000000</color>
+    <color name="colorPrimaryDark_night">#000000</color>
+    <color name="navItemTextColor_night">#FFFFFF</color>
+    <color name="toolbarTextColor_night">#FFFFFF</color>
+    <color name="navBackgroundColor_night">#000000</color>
+    <color name="rssSourceViewColor_night">#000000</color>
+    <color name="rssSourceItemColor_night">#696969</color>
+    <color name="rssSourceItemTextColor_night">#FFFFFF</color>
+    <color name="btnPressedBackgroundColor_night">#80F5F5F5</color>
+    <color name="listBtnSelected_night">#F5F5F5</color>
+    <color name="listBtnNotSelected_night">#808080</color>
+    <color name="btnTextColor_night">#FFFFFF</color>
+    <color name="progressBarColor_night">#F5F5F5</color>
+    <color name="dayWhiteNightTBlack_night">#80000000</color>
+    <color name="dayBlackNightWhite_night">#FFFFFF</color>
+    <color name="dayBlackNightGray_night">#F5F5F5</color>
+    <color name="dayWhiteNightBlack_night">#000000</color>
+    <color name="dayGrayNightBlack_night">#000000</color>
+    <color name="dayWhiteNightGray_night">#F5F5F5</color>
+</resources>

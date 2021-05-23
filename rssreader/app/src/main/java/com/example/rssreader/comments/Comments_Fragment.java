@@ -144,11 +144,16 @@ public class Comments_Fragment extends Fragment implements CommentsContract.Comm
     @SuppressLint("ResourceAsColor")
     @Override
     public void onResume() {
+
         super.onResume();
         mPresenter.fill_webview();
+
         mPresenter.createAdapter();
+
         mPresenter.createLocalAdapter();
+
         mPresenter.setTwoComments(date1,firstC,date2,secondC);
+
         try {
             mPresenter.start();
         } catch (RemoteException e) {
@@ -174,6 +179,7 @@ public class Comments_Fragment extends Fragment implements CommentsContract.Comm
     @Override
     public View onCreateView(@NotNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
         root = inflater.inflate(R.layout.comment_fragment, container, false);
 
         showArticleWebView = (ShowArticleWebView) root.findViewById(R.id.web_View);
@@ -242,6 +248,7 @@ public class Comments_Fragment extends Fragment implements CommentsContract.Comm
         add_global_comment = editView.findViewById(R.id.add_final);
         add_global_comment.setOnClickListener(this);
 
+
         add_local_comment = addLocalView.findViewById(R.id.add_local_comment);
 
         fakeAdd = root.findViewById(R.id.fake_add);
@@ -277,7 +284,7 @@ public class Comments_Fragment extends Fragment implements CommentsContract.Comm
         setting = navigatioinView.findViewById(R.id.n1);
         setting.setOnClickListener(this);
 
-        share_photo = navigatioinView.findViewById(R.id.share_photo);
+        share_photo = navigatioinView.findViewById(R.id.n2);
         share_photo.setOnClickListener(this);
 
         sizeIncrease = progressView.findViewById(R.id.size_increase);
@@ -319,7 +326,7 @@ public class Comments_Fragment extends Fragment implements CommentsContract.Comm
                 .setView(contentView)
                 .setFocusable(true)
 //                .setSoftInputMode(PopupWindow.INPUT_METHOD_NEEDED)
-                .setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING)//软键盘弹出不影响任何布局
+//                .setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING)//软键盘弹出不影响任何布局
                 .size(ViewGroup.LayoutParams.MATCH_PARENT,1600)//显示大小
                 .create();
 
@@ -360,7 +367,6 @@ public class Comments_Fragment extends Fragment implements CommentsContract.Comm
                 .setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING)
                 .size(ViewGroup.LayoutParams.MATCH_PARENT,960)//显示大小
                 .create();
-
 
         mView = root;
         return root;
@@ -416,7 +422,7 @@ public class Comments_Fragment extends Fragment implements CommentsContract.Comm
                 InputMethodManager inputManager =(InputMethodManager)editText.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
                 inputManager.showSoftInput(editText, 0);
             }
-        },1000);
+        },666);
     }
 
     //重新设置需要加载的globalcommentlist
@@ -699,11 +705,11 @@ public class Comments_Fragment extends Fragment implements CommentsContract.Comm
                 break;
 
                 //点击分享图片
-            case R.id.share_photo:
-
-
-
+            case R.id.n2:
+                Bitmap bmp =  showArticleWebView.getPicture();
+                ShareUtil.shareImg(getContext(),bmp, true);
                 break;
+
             default:
                 break;
         }

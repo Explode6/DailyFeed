@@ -1,7 +1,9 @@
 package com.example.rssreader.rssdetails.collectionlist;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
@@ -17,6 +19,7 @@ import com.example.rssreader.IMyAidlInterface;
 import com.example.rssreader.R;
 import com.example.rssreader.model.datamodel.Channel;
 import com.example.rssreader.model.parse.AidlBinder;
+import com.example.rssreader.rssSource.RssSourceActivity;
 import com.example.rssreader.util.ActivityUtil;
 
 /**
@@ -31,13 +34,11 @@ public class CollectionListActivity extends AppCompatActivity {
 
     private SearchListPresenter mSearchListPresenter;
 
+    private final String TAG = "CollectionListActivity";
     /**
      * 数据服务的引用
      */
     private IMyAidlInterface myAidlInterface;
-
-    String TAG = "CollectionListActivity";
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,12 +90,5 @@ public class CollectionListActivity extends AppCompatActivity {
         SearchListFragment searchListFragment = SearchListFragment.newInstance();
         mSearchListPresenter = new SearchListPresenter(AidlBinder.getInstance(), searchListFragment);
         ActivityUtil.replaceFragment(fragmentManager, searchListFragment, R.id.showlist_frag);
-//        SearchListFragment searchListFragment = (SearchListFragment)getSupportFragmentManager().findFragmentById(R.id.showlist_frag);
-//        if(searchListFragment == null){
-//            searchListFragment = SearchListFragment.newInstance();
-//        }
-//
-//        mSearchListPresenter = new SearchListPresenter(AidlBinder.getInstance(), searchListFragment);
-//        ActivityUtil.replaceFragment(getSupportFragmentManager(), searchListFragment, R.id.showlist_frag);
     }
 }

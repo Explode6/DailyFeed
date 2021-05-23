@@ -23,6 +23,7 @@ import java.util.List;
  */
 public class CollectionListPresenter extends ShowListPresenter {
 
+    private int limit = 10;
     /**
      * Instantiates a new Article list presenter.
      *
@@ -31,6 +32,11 @@ public class CollectionListPresenter extends ShowListPresenter {
      */
     public CollectionListPresenter(IMyAidlInterface model, ShowListContract.View collectionListView) {
         super(model, collectionListView);
+    }
+
+    @Override
+    public void start() {
+        reLoadArticle();
     }
 
     /**
@@ -62,6 +68,7 @@ public class CollectionListPresenter extends ShowListPresenter {
                 mShowListView.showArticleList(articleBriefList, showListBegin, size);
                 //mShowListView.giveNoteMessage("加载成功");
                 showListBegin += size;
+                limit += size;
             }
 
             isNotInLoading = true;
@@ -100,5 +107,33 @@ public class CollectionListPresenter extends ShowListPresenter {
         if(showListBegin < 3){
             loadArticle();
         }
+    }
+
+    public void reLoadArticle() {
+        //isNotInLoading防止同时有多个操作请求数据从而拿到了错误的数据
+        if(isNotInLoading) {
+            //把当前缓存的数据清空
+            reset();
+            List<ArticleBrief> articleBriefList = null;
+            try {
+                articleBriefList = model.getCollection(showListBegin, limit);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+            int size = articleBriefList.size();
+            if (size < 10) {
+                notHaveData = true;
+                mShowListView.changeFooterViewStyle();
+            }
+            mShowListView.refreshArticleList(articleBriefList);
+            showListBegin = size;
+            isNotInLoading = true;
+        }
+    }
+
+    //清空当前缓存的数据
+    private void reset(){
+        showListBegin = 0;
+        notHaveData = false;
     }
 }

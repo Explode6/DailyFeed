@@ -4,6 +4,7 @@ package com.example.rssreader.rssdetails.collectionlist;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,6 +35,10 @@ import java.util.List;
  * @Description
  */
 public class CollectionListFragment extends Fragment implements ShowListContract.View {
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        //super.onSaveInstanceState(outState);
+    }
 
     //presenter层
     CollectionListPresenter mPresent;
@@ -44,6 +49,8 @@ public class CollectionListFragment extends Fragment implements ShowListContract
     Context mContext;
 
     SwipeRefreshLayout mSwipeRefreshLayout;
+
+    private final String TAG = "CollectionListFragment";
 
     //单例模式获取fragment
     public static CollectionListFragment newInstance(){
@@ -146,6 +153,9 @@ public class CollectionListFragment extends Fragment implements ShowListContract
 
     @Override
     public void refreshArticleList(List<ArticleBrief> articleBriefList) {
+        mShowListAdapter.changeData(articleBriefList);
+        mShowListAdapter.notifyDataSetChanged();
+        mShowListAdapter.setLoadFirstly();
     }
 
     /**点击某一项从而进入对应的文章内容页

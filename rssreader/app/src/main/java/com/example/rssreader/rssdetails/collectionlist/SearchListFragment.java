@@ -3,6 +3,7 @@ package com.example.rssreader.rssdetails.collectionlist;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -45,6 +46,8 @@ public class SearchListFragment extends Fragment implements ShowListContract.Vie
     Context mContext;
 
     SwipeRefreshLayout mSwipeRefreshLayout;
+
+    private final String TAG = "SearchListFragment";
 
     EditText searchWord;
 
@@ -148,6 +151,8 @@ public class SearchListFragment extends Fragment implements ShowListContract.Vie
 
         return root;
     }
+
+
 
     /**把得到的新数据添加在原数据之后
      * @param articleBriefList 得到的新数据

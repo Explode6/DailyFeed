@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.rssreader.R;
 import com.example.rssreader.model.datamodel.GlobalComment;
 
+import java.text.SimpleDateFormat;
 import java.util.List;
 
 public class GlobalCommentsAdapter extends RecyclerView.Adapter<GlobalCommentsAdapter.MyViewHolder>  {
@@ -38,7 +39,9 @@ public class GlobalCommentsAdapter extends RecyclerView.Adapter<GlobalCommentsAd
 
             }
         });
-        holder.globe_date.setText(mList.get(position).getDate().toString());
+        //获得当前系统时间
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss");
+        holder.globe_date.setText(simpleDateFormat.format(mList.get(position).getDate()));
         holder.globe_comment.setText(mList.get(position).getComment());
 
 
@@ -87,14 +90,17 @@ public class GlobalCommentsAdapter extends RecyclerView.Adapter<GlobalCommentsAd
             comment2.setText("该评论空空如也，说点什么吧");
         }
         else if(mList.size()==1){
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss");
+            date1.setText(simpleDateFormat.format(mList.get(0).getDate()));
             comment1.setText(mList.get(0).getComment());
             date2.setText("ohhhhh");
             comment2.setText("该评论空空如也，说点什么吧");
         }
         else if(mList.size()>=2){
-            date1.setText(mList.get(0).getDate().toString());
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss");
+            date1.setText(simpleDateFormat.format(mList.get(0).getDate()));
             comment1.setText(mList.get(0).getComment());
-            date2.setText(mList.get(1).getDate().toString());
+            date2.setText(simpleDateFormat.format(mList.get(1).getDate()));
             comment2.setText(mList.get(1).getComment());
         }
     }

@@ -4,11 +4,11 @@
     android:id="@+id/nested"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
+
         <Button
             android:id="@+id/share_picture"
             android:text="分享图片"
@@ -24,9 +24,10 @@
 
 
         <EditText
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_width="200dp"
+            android:layout_height="35dp"
             android:hint="写下你的评论..."
+            android:background="@drawable/commentedit"
             android:id="@+id/fake_add"
             />
         <!--两条评论-->
@@ -38,11 +39,23 @@
                 android:id="@+id/date_first"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="2dp"
+                android:layout_marginTop="2dp"
+                android:layout_marginLeft="2dp"
+                android:layout_marginRight="2dp"
+                android:textColor="@color/dayBlackNightWhite"
                 android:text="ohhhh" />
             <TextView
                 android:id="@+id/comment_first"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:textColor="@color/minblack"
+                android:layout_marginBottom="2dp"
+                android:layout_marginTop="2dp"
+                android:layout_marginLeft="2dp"
+                android:layout_marginRight="2dp"
+                android:textStyle="italic"
+                android:textSize="48px"
                 android:text="该评论空空如也，说点什么吧" />
         </LinearLayout>
 
@@ -54,32 +67,55 @@
                 android:id="@+id/date_second"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="2dp"
+                android:layout_marginTop="2dp"
+                android:layout_marginLeft="2dp"
+                android:layout_marginRight="2dp"
+                android:textColor="@color/dayBlackNightWhite"
                 android:text="ohhhh" />
             <TextView
                 android:id="@+id/comment_second"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="2dp"
+                android:layout_marginTop="2dp"
+                android:layout_marginLeft="2dp"
+                android:layout_marginRight="2dp"
+                android:textColor="@color/minblack"
+                android:textStyle="italic"
+                android:textSize="48px"
                 android:text="该评论空空如也，说点什么吧" />
         </LinearLayout>
 
         <!--全部评论和局部评论打开按钮-->
         <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
             android:orientation="horizontal">
 
             <Button
                 android:id="@+id/show_allcomments"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                 android:layout_weight="1"
+                android:layout_marginBottom="2dp"
+                android:layout_marginTop="2dp"
+                android:layout_marginLeft="2dp"
+                android:layout_marginRight="2dp"
+                android:background="@drawable/commentsbutton"
                 android:text="SHOWALLCOMMENT" />
 
             <Button
                 android:id="@+id/show_partcomments"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
                 android:layout_weight="1"
+                android:layout_marginBottom="2dp"
+                android:layout_marginTop="2dp"
+                android:layout_marginLeft="2dp"
+                android:layout_marginRight="2dp"
+                android:textStyle="italic"
+                android:background="@drawable/commentsbutton"
                 android:text="PARTCOMMENT" />
         </LinearLayout>
     </LinearLayout>

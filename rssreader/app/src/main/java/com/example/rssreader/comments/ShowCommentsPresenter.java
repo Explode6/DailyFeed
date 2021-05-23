@@ -34,13 +34,15 @@ public class ShowCommentsPresenter implements CommentsContract.CommentsPresenter
 
     private  List<LocalComment> mLocalList;              //局部recyclerView展示的数据
 
+    private  androidx.appcompat.widget.Toolbar mToolbar;
 
      //创建ShowCommentsPresenter对象，将CommentsView 与fragment绑定
-    public ShowCommentsPresenter(IMyAidlInterface iMyAidlInterface,@NonNull CommentsContract.CommentsView commentsView, ArticleBrief articleBrief){
+    public ShowCommentsPresenter(IMyAidlInterface iMyAidlInterface,@NonNull CommentsContract.CommentsView commentsView, ArticleBrief articleBrief,androidx.appcompat.widget.Toolbar mToolbar){
          particleBrief = articleBrief;
          mCommentsView = commentsView;
          model = iMyAidlInterface;
          mCommentsView.setPresenter(this);
+         this.mToolbar = mToolbar;
     }
     @Override
     public void start() {
@@ -79,8 +81,8 @@ public class ShowCommentsPresenter implements CommentsContract.CommentsPresenter
     }
 
     @Override
-    public void fakeShowPopUpwindow(View contentView, EditText editText) {
-        mCommentsView.loadFakePopUpWindow(contentView,editText);
+    public void fakeShowPopUpwindow(EditText editText) {
+        mCommentsView.loadFakePopUpWindow(editText);
     }
 
 
@@ -126,8 +128,7 @@ public class ShowCommentsPresenter implements CommentsContract.CommentsPresenter
     //添加全局评论
     @Override
     public void addGlobalComment(String comment) {
-        //获得当前系统时间
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss");
+
 
         Date date = new Date(System.currentTimeMillis());
 
@@ -204,7 +205,7 @@ public class ShowCommentsPresenter implements CommentsContract.CommentsPresenter
     }
 
     public void decreaseSpaceSize() {
-        mCommentsView.increaseSpace();
+        mCommentsView.decreaseSpace();
     }
 
 
@@ -223,10 +224,7 @@ public class ShowCommentsPresenter implements CommentsContract.CommentsPresenter
     @Override
     public void addLocalComment(EditText editText,String localcomment, String content) {
         String localComment = editText.getText().toString();
-        mCommentsView.onAddlocalcomments(localComment);
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy年MM月dd日 hh:mm:ss", Locale.CHINA);
         Date date = new Date(System.currentTimeMillis());
-        Log.v("Local",simpleDateFormat.format(date)+" "+localComment +content);
         AidlDate aidlDate = new AidlDate(date);
         try {
             model.addLocalCommentToArticle(particleBrief, content, localcomment, aidlDate, new DataCallback.Stub() {
@@ -307,6 +305,21 @@ public class ShowCommentsPresenter implements CommentsContract.CommentsPresenter
     @Override
     public void deleteLocalCommentFromView(int position) {
         mCommentsView.onDeleteLocalCommentFromView(position);
+    }
+
+    @Override
+    public void testClose() {
+        mToolbar.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void testOpen() {
+        mToolbar.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void showGlbC(EditText editText) {
+        mCommentsView.showEditpop(editText);
     }
 
     //展示设置大小win以及关闭底部win

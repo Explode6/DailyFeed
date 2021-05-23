@@ -3,85 +3,123 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/dayWhiteNightBlack"
+    android:background="@drawable/popupstyle"
     android:orientation="vertical">
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="60dp"
+        android:layout_height="0dp"
+        android:layout_weight="1"
         android:orientation="vertical"
         >
         <TextView
             android:layout_width="match_parent"
-            android:layout_height="18dp"
+            android:layout_height="0dp"
             android:text="文本大小"
+            android:textColor="@color/dayBlackNightWhite"
+            android:textStyle="italic"
             android:layout_weight="1"
             />
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="40dp"
+            android:layout_height="0dp"
             android:orientation="horizontal"
             android:layout_weight="3">
 
             <Button
-                android:layout_width="wrap_content"
-                android:layout_height="40dp"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
+                android:layout_marginBottom="5dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginLeft="2dp"
+                android:layout_marginRight="2dp"
+                android:text="-"
+                android:textSize="20dp"
+                android:background="@drawable/commentsbutton"
+                android:textColor="@color/dayBlackNightWhite"
                 android:id="@+id/size_decrease"
                 />
             <ProgressBar
-                android:layout_width="match_parent"
-                android:layout_height="40dp"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
                 android:layout_weight="8"
                 style="?android:attr/progressBarStyleHorizontal"
                 android:id="@+id/size_progress"
                 android:max="100"
                 />
             <Button
-                android:layout_width="wrap_content"
-                android:layout_height="50dp"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
+                android:layout_marginBottom="5dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginLeft="2dp"
+                android:layout_marginRight="2dp"
+                android:text="+"
+                android:textSize="20dp"
+                android:background="@drawable/commentsbutton"
+                android:textColor="@color/dayBlackNightWhite"
                 android:id="@+id/size_increase"
                 />
         </LinearLayout>
     </LinearLayout>
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="60dp"
+        android:layout_height="0dp"
+        android:layout_weight="1"
         android:orientation="vertical"
         >
 
         <TextView
             android:layout_width="match_parent"
-            android:layout_height="18dp"
+            android:layout_height="0dp"
             android:text="行间距"
+            android:textColor="@color/dayBlackNightWhite"
+            android:textStyle="italic"
             android:layout_weight="1"
             />
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="40dp"
+            android:layout_height="0dp"
             android:orientation="horizontal"
             android:layout_weight="3"
             >
             <Button
-                android:layout_width="wrap_content"
-                android:layout_height="40dp"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
+                android:layout_marginBottom="5dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginLeft="2dp"
+                android:layout_marginRight="2dp"
+                android:text="-"
+                android:textSize="20dp"
+                android:background="@drawable/commentsbutton"
+                android:textColor="@color/dayBlackNightWhite"
                 android:id="@+id/space_decrease"
                 />
             <ProgressBar
-                android:layout_width="match_parent"
-                android:layout_height="40dp"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
                 android:layout_weight="8"
                 style="?android:attr/progressBarStyleHorizontal"
                 android:id="@+id/space_progress"
-                android:max="10"
+                android:max="100"
                 />
             <Button
-                android:layout_width="wrap_content"
-                android:layout_height="50dp"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
+                android:layout_marginBottom="5dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginLeft="2dp"
+                android:layout_marginRight="2dp"
+                android:text="+"
+                android:textSize="20dp"
+                android:background="@drawable/commentsbutton"
+                android:textColor="@color/dayBlackNightWhite"
                 android:id="@+id/space_increase"
                 />
         </LinearLayout>

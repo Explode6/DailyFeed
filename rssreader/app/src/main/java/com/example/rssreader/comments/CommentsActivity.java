@@ -2,6 +2,9 @@ package com.example.rssreader.comments;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Gravity;
+import android.view.View;
+import android.view.animation.AccelerateInterpolator;
 import android.widget.TextView;
 import android.widget.Toolbar;
 
@@ -33,6 +36,8 @@ public class CommentsActivity extends AppCompatActivity {
         textView.setText(articleBrief.getTitle());
 
 
+
+
         Comments_Fragment comments_fragment = (Comments_Fragment) getSupportFragmentManager().
                  findFragmentById(R.id.comments_content_Frame);
          if(comments_fragment==null){
@@ -41,7 +46,7 @@ public class CommentsActivity extends AppCompatActivity {
                      getSupportFragmentManager(), comments_fragment, R.id.comments_content_Frame);
          }
 
-        showCommentsPresentor = new ShowCommentsPresenter(AidlBinder.getInstance(), comments_fragment,articleBrief);
+        showCommentsPresentor = new ShowCommentsPresenter(AidlBinder.getInstance(), comments_fragment,articleBrief,toolbar);
 
     }
     @Override

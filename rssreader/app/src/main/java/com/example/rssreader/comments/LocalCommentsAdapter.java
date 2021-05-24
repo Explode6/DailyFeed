@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.rssreader.R;
 import com.example.rssreader.model.datamodel.LocalComment;
 
+import java.text.SimpleDateFormat;
 import java.util.List;
 
 public class LocalCommentsAdapter extends RecyclerView.Adapter<LocalCommentsAdapter.MyViewHolder>  {
@@ -38,7 +39,8 @@ public class LocalCommentsAdapter extends RecyclerView.Adapter<LocalCommentsAdap
 
             }
         });
-        holder.local_date.setText(mList.get(position).getDate().toString());
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss");
+        holder.local_date.setText( simpleDateFormat.format(mList.get(position).getDate()));
         holder.local_content.setText(mList.get(position).getLocalContent());
         holder.local_comment.setText(mList.get(position).getComment());
 

@@ -28,4 +28,5 @@
     <color name="red">#FF0000</color><!--红色 -->
     <color name="yellow">#FFFF00</color><!--黄色 -->
     <color name="colorAccent">#FFFF00</color><!--黄色 -->
+    <color name="minblack">#40403A</color>
 </resources>

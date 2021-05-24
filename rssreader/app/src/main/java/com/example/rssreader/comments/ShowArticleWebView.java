@@ -99,15 +99,15 @@ public class ShowArticleWebView extends WebView {
      * 用全局设置中的文字版式初始化对象
      *
      * @param textSize    文字大小
-     * @param textColor   文字颜色
      * @param lineHeight  行间距离
+     * @param isDark      夜间模式
      */
     @SuppressLint("SetJavaScriptEnabled")
-    public void initWebView(int textSize, int textColor, int lineHeight){
-
+    public void initWebView(int textSize, int lineHeight, boolean isDark){
         //用设置清单中的配置初始化WebView的文字效果
         this.textSize = textSize;
-        this.textColor = textColor;
+        if(isDark) this.textColor = 0xCECECE;
+        else this.textColor = 0x222222;
         this.lineHeight = lineHeight;
         //获取设置对象和JS工具对象
         webSettings = this.getSettings();
@@ -242,7 +242,7 @@ public class ShowArticleWebView extends WebView {
             Menu menu = actionMode.getMenu();
             //记录Web Search的id
             int id = menu.getItem(menu.size()-1).getItemId();
-           // 加入自定义的菜单, 设定order偏移量为6，在该页中从第4个开始展示
+            // 加入自定义的菜单, 设定order偏移量为6，在该页中从第4个开始展示
             for(int i =0; i<actionList.size(); ++i) menu.add(1, i, i+6, actionList.get(i));
             //设置点击事件
             for(int i = 3; i < actionList.size()+4; i++){
@@ -288,7 +288,8 @@ public class ShowArticleWebView extends WebView {
         Bitmap longImage = Bitmap.createBitmap(this.getMeasuredWidth(),
                 this.getMeasuredHeight(), Bitmap.Config.ARGB_8888);
         //填充背景色
-        longImage.eraseColor(R.color.dayWhiteNightBlack);
+        if(this.textColor==0xCECECE) longImage.eraseColor(0x373737);
+        else longImage.eraseColor(Color.WHITE);
         //创建Canvas对象作为作图工具
         Canvas canvas = new Canvas(longImage);
         Paint paint = new Paint();
@@ -297,7 +298,6 @@ public class ShowArticleWebView extends WebView {
         this.draw(canvas);
         return longImage;
     }
-
 
     //JavaScrip工具代码
     private class JS{
@@ -338,16 +338,15 @@ public class ShowArticleWebView extends WebView {
          *
          * @param textSize    文字大小
          * @param textColor   文字颜色
-         * @param lineHeight 文字间距
+         * @param lineHeight  文字间距
          * @return 设定样式的Html5代码
          */
         public String getStyle(int textSize,  int textColor , int lineHeight){
             //类型转换，注意int转颜色类型
             String stringTestColor = String.format("#%06X", 0xFFFFFF & textColor);
-            return "<style id=\"localStyle\"  type=\"text/css\">*{"
-                    //+"color: " + stringTestColor + " !important; "
+            return "<style id=\"localStyle\"  type=\"text/css\">p,h1,h2,h3,h4,h5{"
+                    +"color: " + stringTestColor + " !important; "
                     + "line-height:"+ lineHeight + "% !important;"
-                    //+ "font-size:" + textSize +"% !important;"
                     + "}</style>";
         }
 
@@ -367,17 +366,14 @@ public class ShowArticleWebView extends WebView {
         public String getHtml(ShowArticleWebView webView){
             String head = "<head>"
                     + "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0, user-scalable=no\"> "
-
                     + "<style text=\"text/css\">"
                     + "*{max-width:100% !important; width:auto !important; height:auto !important;}"
                     + "a{display:block !important; overflow:hidden !important; text-overflow:ellipsis !important;}"
-                    + "table{word-break:break-all !important;}"
                     + "</style>"
                     + getStyle(webView.textSize, webView.textColor, webView.lineHeight)
                     + "</head>";
-            String jquery = "<script src=\"https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js\"></script>";
             String body = "<body style = \"margin:5px;\">"
-                    + webView.text  + jquery
+                    + webView.text
                     + "</body>";
             return "<html>" + head + getTitle(webView.title, webView.author) + body + "</html>";
         }

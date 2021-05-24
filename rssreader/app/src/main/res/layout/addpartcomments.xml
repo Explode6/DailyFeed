@@ -2,7 +2,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/pop_up_part_window"
-    android:background="@color/dayWhiteNightBlack"
+   android:background="@drawable/popupstyle"
     android:orientation="vertical">
 
     <LinearLayout
@@ -12,10 +12,14 @@
 
      <EditText
       android:layout_width="match_parent"
-      android:layout_height="match_parent"
-      android:layout_weight="8"
+      android:layout_height="wrap_content"
       android:maxLines="2"
+      android:paddingLeft="2dp"
+      android:paddingRight="2dp"
+      android:paddingBottom="2dp"
+      android:paddingTop="2dp"
       android:id="@+id/edit_local_comment"
+      android:background="@drawable/commentedit"
       android:hint="What's your idea?"
       />
 
@@ -23,7 +27,12 @@
             android:id="@+id/add_local_comment"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_marginBottom="2dp"
+            android:layout_marginTop="2dp"
+            android:layout_marginLeft="2dp"
+            android:layout_marginRight="2dp"
             android:layout_weight="1"
+            android:background="@drawable/commentsbutton"
             android:text="ADD LOCAL COMMENT" />
     </LinearLayout>
 

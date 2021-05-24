@@ -1,26 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="horizontal"
-    android:background="@color/dayWhiteNightBlack"
+    android:background="@drawable/popupstyle"
     >
+
     <Button
-        android:layout_width="match_parent"
         android:id="@+id/n1"
-        android:layout_weight="1"
-        android:layout_height="50dp"/>
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:layout_alignParentLeft="true"
+        android:layout_marginLeft="50dp"
+        android:drawableTop="@drawable/text_size"
+        android:text="文字"
+        android:textColor="@color/btnTextColor"
+        android:background="@drawable/rss_bottomwin_btn"
+     />
+
     <Button
-        android:layout_width="match_parent"
         android:id="@+id/n2"
-        android:layout_weight="1"
-        android:layout_height="50dp"/>
-    <Button
-        android:layout_width="match_parent"
-        android:id="@+id/n3"
-        android:layout_weight="1"
-        android:layout_height="50dp"/>
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:layout_marginRight="50dp"
+        android:drawableTop="@drawable/share_photo1"
+        android:text="分享"
+        android:textColor="@color/btnTextColor"
+        android:background="@drawable/rss_bottomwin_btn"
+        />
 
-
-</LinearLayout>
+</RelativeLayout>

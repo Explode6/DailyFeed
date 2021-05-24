@@ -50,4 +50,7 @@ dependencies {
     implementation 'skin.support:skin-support-cardview:4.0.5'
     implementation 'skin.support:skin-support-constraint-layout:4.0.5'
 
+
+    compile 'com.android.support:appcompat-v7:23.0.1'
+    compile 'com.android.support:design:23.1.1'
 }

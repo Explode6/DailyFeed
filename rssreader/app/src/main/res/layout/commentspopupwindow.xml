@@ -2,45 +2,75 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/pop_up_window"
-    android:background="@color/dayWhiteNightBlack"
+    android:background="@drawable/popupstyle"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical">
 
+ <TextView
+     android:layout_width="match_parent"
+     android:layout_height="0dp"
+     android:layout_weight="1"
+     android:text="全部评论"
+     android:layout_gravity="top"
+     android:textColor="@color/dayBlackNightWhite"
+     android:gravity="center"
+     />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/globe_comments_recycler"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginBottom="2dp"
+        android:layout_marginTop="2dp"
+        android:layout_marginLeft="2dp"
+        android:layout_marginRight="2dp"
+        android:layout_weight="8"
+        app:layout_scrollFlags="scroll|enterAlways|snap">
+    </androidx.recyclerview.widget.RecyclerView>
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_gravity="bottom"
         android:orientation="horizontal">
 
         <EditText
             android:id="@+id/edit_comment"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="46dp"
             android:layout_weight="5"
+            android:layout_marginBottom="2dp"
+            android:layout_marginTop="2dp"
+            android:layout_marginLeft="2dp"
+            android:layout_marginRight="2dp"
+            android:background="@drawable/commentedit"
             android:hint="What's your idea?"
-            android:maxLines="2" />
+            android:maxLines="1" />
 
         <Button
             android:id="@+id/add_globe_comment"
             android:layout_width="wrap_content"
             android:layout_weight="2"
-            android:layout_height="38dp"
+            android:layout_marginBottom="2dp"
+            android:layout_marginTop="2dp"
+            android:layout_marginLeft="2dp"
+            android:layout_marginRight="2dp"
+            android:background="@drawable/commentsbutton"
+            android:layout_height="46dp"
             android:text="add" />
 
         <Button
             android:id="@+id/close_pop"
-            android:layout_width="38dp"
-            android:layout_weight="1"
-            android:layout_height="38dp"
+            android:layout_width="wrap_content"
+            android:layout_weight="2"
+            android:layout_marginBottom="2dp"
+            android:layout_marginTop="2dp"
+            android:layout_marginLeft="2dp"
+            android:layout_marginRight="2dp"
+            android:layout_height="46dp"
+            android:background="@drawable/commentsbutton"
             android:text="x" />
     </LinearLayout>
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/globe_comments_recycler"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_scrollFlags="scroll|enterAlways|snap">
-
-    </androidx.recyclerview.widget.RecyclerView>
 
 
 </LinearLayout>

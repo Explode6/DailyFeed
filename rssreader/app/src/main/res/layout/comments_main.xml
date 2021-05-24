@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:background="@color/dayWhiteNightBlack"
     tools:context=".comments.CommentsActivity">
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/comments_toolbar"
@@ -22,7 +23,6 @@
             android:ellipsize="end"
             android:textSize="18dp"
             android:textStyle="bold" />
-
     </androidx.appcompat.widget.Toolbar>
     <FrameLayout
         android:layout_width="match_parent"

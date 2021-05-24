@@ -37,6 +37,7 @@ import com.example.rssreader.R;
 import com.example.rssreader.model.datamodel.ArticleBrief;
 import com.example.rssreader.model.datamodel.GlobalComment;
 import com.example.rssreader.model.datamodel.LocalComment;
+import com.example.rssreader.util.ConfigUtil;
 import com.example.rssreader.util.ShareUtil;
 import com.example.zhouwei.library.CustomPopWindow;
 
@@ -98,7 +99,6 @@ public class Comments_Fragment extends Fragment implements CommentsContract.Comm
     private ArticleBrief mArticleBrief;
     private int textsize = 100;         //初始字体大小为100
     private int textspacing = 150;      //初始间距为0
-    private int textcolor = 0x000000; //白色
     private LinearLayoutManager manager;
     private LinearLayoutManager localmanager;
     private NestedScrollView mnestedScrollView;
@@ -430,7 +430,7 @@ public class Comments_Fragment extends Fragment implements CommentsContract.Comm
     //加载webView
     @Override
     public void showWebview(String title, String author, String html) {
-        showArticleWebView.initWebView(textsize,textcolor,textspacing);
+        showArticleWebView.initWebView(textsize,textspacing, ConfigUtil.getInstance(this.getContext()).isDarkMode());
         showArticleWebView.showContent(title, author, html);
     }
 

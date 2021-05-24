@@ -3,13 +3,13 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:background="@color/dayWhiteNightBlack"
+    android:orientation="vertical"
     android:layout_height="match_parent">
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="48dp"
         android:layout_gravity="top"
         android:orientation="horizontal">
-
         <EditText
             android:id="@+id/edit_global_comment"
             android:layout_width="0dp"
@@ -20,7 +20,7 @@
             android:layout_marginLeft="2dp"
             android:layout_marginRight="2dp"
             android:background="@drawable/commentedit"
-            android:hint="What's your idea?"
+            android:hint="评论千万条，友善第一条"
             android:maxLines="1" />
 
         <Button
@@ -32,6 +32,14 @@
             android:background="@drawable/commentsbutton"
             android:layout_height="46dp"
             android:text="add" />
-
+        
     </LinearLayout>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:text="点击空白处关闭"
+        android:gravity="center"
+        android:id="@+id/closeedit"
+        android:clickable="true"
+        />
 </LinearLayout>

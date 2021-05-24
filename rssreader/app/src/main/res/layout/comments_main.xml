@@ -15,7 +15,7 @@
 
         <TextView
             android:id="@+id/item_title"
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="23dp"
             android:textColor="@color/dayBlackNightGray"
             android:singleLine="true"
@@ -23,11 +23,6 @@
             android:ellipsize="end"
             android:textSize="18dp"
             android:textStyle="bold" />
-        <Button
-            android:layout_width="0dp"
-            android:layout_height="23dp"
-            android:id="@+id/share_photo"
-            />
     </androidx.appcompat.widget.Toolbar>
     <FrameLayout
         android:layout_width="match_parent"

@@ -36,11 +36,16 @@ public class ShowCommentsPresenter implements CommentsContract.CommentsPresenter
 
     private  androidx.appcompat.widget.Toolbar mToolbar;
 
+    private int windows_height;
+    private int windows_width;
+
      //创建ShowCommentsPresenter对象，将CommentsView 与fragment绑定
-    public ShowCommentsPresenter(IMyAidlInterface iMyAidlInterface,@NonNull CommentsContract.CommentsView commentsView, ArticleBrief articleBrief,androidx.appcompat.widget.Toolbar mToolbar){
+    public ShowCommentsPresenter(IMyAidlInterface iMyAidlInterface,@NonNull CommentsContract.CommentsView commentsView, ArticleBrief articleBrief,androidx.appcompat.widget.Toolbar mToolbar,int heigth,int width){
          particleBrief = articleBrief;
          mCommentsView = commentsView;
          model = iMyAidlInterface;
+         windows_height = heigth;
+         windows_width = width;
          mCommentsView.setPresenter(this);
          this.mToolbar = mToolbar;
     }
@@ -48,6 +53,16 @@ public class ShowCommentsPresenter implements CommentsContract.CommentsPresenter
     public void start() {
     }
 
+
+    @Override
+    public void showLocalAdd(String content) {
+        mCommentsView.loadLocalAdd(content);
+    }
+
+    @Override
+    public void setSecondEdit() {
+        mCommentsView.saveComment();
+    }
 
     @Override
     public void fill_webview() {
@@ -76,13 +91,13 @@ public class ShowCommentsPresenter implements CommentsContract.CommentsPresenter
     }
 
     @Override
-    public void showPopUpWindow(View contentView) {
-        mCommentsView.loadPopUpWindow(contentView);
+    public void showPopUpWindow() {
+        mCommentsView.loadPopUpWindow(windows_height-300);
     }
 
     @Override
-    public void fakeShowPopUpwindow(EditText editText) {
-        mCommentsView.loadFakePopUpWindow(editText);
+    public void fakeShowPopUpwindow() {
+        mCommentsView.loadFakePopUpWindow();
     }
 
 
@@ -318,8 +333,8 @@ public class ShowCommentsPresenter implements CommentsContract.CommentsPresenter
     }
 
     @Override
-    public void showGlbC(EditText editText) {
-        mCommentsView.showEditpop(editText);
+    public void showGlbC() {
+        mCommentsView.showEditpop();
     }
 
     //展示设置大小win以及关闭底部win

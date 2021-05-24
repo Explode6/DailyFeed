@@ -2,7 +2,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/pop_up_window"
-    android:background="@color/dayWhiteNightBlack"
+    android:background="@drawable/popupstyle"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical">
 
@@ -45,7 +45,7 @@
             android:layout_marginRight="2dp"
             android:background="@drawable/commentedit"
             android:hint="What's your idea?"
-            android:maxLines="2" />
+            android:maxLines="1" />
 
         <Button
             android:id="@+id/add_globe_comment"

@@ -9,12 +9,6 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <Button
-            android:id="@+id/share_picture"
-            android:text="分享图片"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-
         <!--WebView-->
         <com.example.rssreader.comments.ShowArticleWebView
             android:id="@+id/web_View"

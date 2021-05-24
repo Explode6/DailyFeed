@@ -2,8 +2,11 @@ package com.example.rssreader.comments;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
+import android.view.WindowManager;
 import android.view.animation.AccelerateInterpolator;
 import android.widget.TextView;
 import android.widget.Toolbar;
@@ -19,11 +22,18 @@ import com.example.rssreader.util.ActivityUtil;
 public class CommentsActivity extends AppCompatActivity {
 
     private ShowCommentsPresenter  showCommentsPresentor; //presenter
+    public static  CommentsActivity activity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.comments_main);
+
+        //获得屏幕的宽高
+        DisplayMetrics outMetrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(outMetrics);
+        int widthPixels = outMetrics.widthPixels;
+        int heightPixels = outMetrics.heightPixels;
 
         //获得articleBrief
         Intent intent = getIntent();
@@ -46,8 +56,10 @@ public class CommentsActivity extends AppCompatActivity {
                      getSupportFragmentManager(), comments_fragment, R.id.comments_content_Frame);
          }
 
-        showCommentsPresentor = new ShowCommentsPresenter(AidlBinder.getInstance(), comments_fragment,articleBrief,toolbar);
+        showCommentsPresentor = new ShowCommentsPresenter(AidlBinder.getInstance(), comments_fragment,articleBrief,toolbar,heightPixels,widthPixels);
 
+         //fragment使用activity
+         activity = this;
     }
     @Override
     public void onActionModeStarted(android.view.ActionMode mode){
@@ -55,6 +67,14 @@ public class CommentsActivity extends AppCompatActivity {
         android.view.ActionMode mode1 = mfragment.setData(mode);
         super.onActionModeStarted(mode);
     }
+
+    public void setBackgroundAlpha(float bgAlpha) {
+        WindowManager.LayoutParams lp = this.getWindow()
+                .getAttributes();
+        lp.alpha = bgAlpha;
+        this.getWindow().setAttributes(lp);
+    }
+
 
 
 

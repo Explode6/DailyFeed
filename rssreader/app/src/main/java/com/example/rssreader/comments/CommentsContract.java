@@ -17,16 +17,13 @@ public interface CommentsContract {
 
         void showWebview(String title, String author, String html);//根据html加载webview
 
-        void loadPopUpWindow(View contentView);//加载pupupwindow
+        void loadPopUpWindow(int height);//加载pupupwindow
 
-        void loadFakePopUpWindow( EditText editText);
+        void loadFakePopUpWindow();
 
         void initializeAdapter();//初始化全局评论的adapter
 
         void popWindowClose();//关闭全局
-
-
-        void loadLocalPopUpWindow(View contenView);//加载局部评论的popupwindow
 
         void showPwinAndDisNwin();
 
@@ -63,18 +60,28 @@ public interface CommentsContract {
 
 
         //测试添加全局评论窗口
-        public void showEditpop(EditText editText);
+         void showEditpop();
 
+         //关闭窗口的时候保留未添加评论
+        void saveComment();
 
+        //显示添加局部评论窗口
+        void loadLocalAdd(String content);
     }
     interface CommentsPresenter extends BasePresenter {
 
+        //显示添加局部评论窗口
+        void showLocalAdd(String content);
+
+        //展示第二个popupwindow
+        void setSecondEdit();
+
         void fill_webview();
 
-        void showPopUpWindow(View contentView);
+        void showPopUpWindow();
 
         //弹出有软键盘的popupwindow
-        void fakeShowPopUpwindow(EditText editText);
+        void fakeShowPopUpwindow();
 
         void createAdapter();
 
@@ -125,7 +132,7 @@ public interface CommentsContract {
         void testOpen();
 
         //测试添加全局评论窗口
-        void showGlbC(EditText editText);
+        void showGlbC();
 
 
     }

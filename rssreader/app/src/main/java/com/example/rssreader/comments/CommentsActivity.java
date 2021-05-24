@@ -2,6 +2,7 @@ package com.example.rssreader.comments;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.TextView;
 import android.widget.Toolbar;
 
@@ -10,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.rssreader.R;
 import com.example.rssreader.model.datamodel.ArticleBrief;
 import com.example.rssreader.model.parse.AidlBinder;
+import com.example.rssreader.rssSource.RssSourceActivity;
 import com.example.rssreader.util.ActivityUtil;
 
 //implements Comments_Fragment.CallBackInterface
@@ -19,9 +21,11 @@ public class CommentsActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        if(savedInstanceState != null){
+            finish();
+        }
         super.onCreate(savedInstanceState);
         setContentView(R.layout.comments_main);
-
         //获得articleBrief
         Intent intent = getIntent();
         ArticleBrief articleBrief = intent.getParcelableExtra("articleBrief");

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="colorPrimary">#FFFFFF</color>
-    <color name="colorPrimaryDark">#FFFFFF</color>
+    <color name="colorPrimaryDark">#00FFFFFF</color>
     <color name="navItemTextColor">#000000</color>
     <color name="toolbarTextColor">#000000</color>
     <color name="navBackgroundColor">#FFFFFF</color>

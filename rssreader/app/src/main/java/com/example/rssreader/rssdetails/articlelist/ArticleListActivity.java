@@ -2,6 +2,7 @@ package com.example.rssreader.rssdetails.articlelist;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -28,9 +29,11 @@ public class ArticleListActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        if(savedInstanceState != null){
+            finish();
+        }
         super.onCreate(savedInstanceState);
         setContentView(R.layout.article_list_act);
-
         //从第一个界面获取当前是需要展示哪一个RSS源的文章
         Channel channel = (Channel)getIntent().getParcelableExtra("channel");
 

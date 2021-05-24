@@ -3,6 +3,7 @@ package com.example.rssreader.rssSource;
 
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
 import android.content.ServiceConnection;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -84,6 +85,14 @@ public class RssSourceActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        //判断进程是否为系统回收，如果被系统回收就新建主活动再将当前活动销毁
+        if(savedInstanceState != null){
+            Intent intent = new Intent(this, RssSourceActivity.class);
+            startActivity(intent);
+            finish();
+        }
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_rss_source);
         toolbar = (Toolbar) findViewById(R.id.main_toolbar);
@@ -116,6 +125,7 @@ public class RssSourceActivity extends AppCompatActivity {
             ApplicationUtil.setIsFirstLoad(false) ;
         }
 
+        //如果后台连接还在，但是因为摁下返回键fragment被销毁，这时要重新初始化fragment和presenter
         if(AidlBinder.getInstance() != null){
             rssSourceFragment = (RssSourceFragment) getSupportFragmentManager().findFragmentById(R.id.contentFrame);
             if (rssSourceFragment == null) {
@@ -206,6 +216,10 @@ public class RssSourceActivity extends AppCompatActivity {
         MenuItem modeConvert = subMenu.getItem(0);
         modeConvert.setIcon(ContextCompat.getDrawable(this, R.drawable.nav_day));
         modeConvert.setTitle("日间模式");
+        //切换状态栏背景色
+        getWindow().setStatusBarColor(getResources().getColor(R.color.colorPrimaryDark_night));
+        //切换状态栏字体颜色
+        getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
     }
 
     //转换为日间模式时切换部分显示内容
@@ -223,6 +237,10 @@ public class RssSourceActivity extends AppCompatActivity {
         MenuItem modeConvert = subMenu.getItem(0);
         modeConvert.setIcon(ContextCompat.getDrawable(this, R.drawable.nav_mode));
         modeConvert.setTitle("夜间模式");
+        //切换状态栏背景色
+        getWindow().setStatusBarColor(getResources().getColor(R.color.colorPrimaryDark));
+        //切换状态栏字体颜色
+        getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
     }
 
     public void closeNavView() {

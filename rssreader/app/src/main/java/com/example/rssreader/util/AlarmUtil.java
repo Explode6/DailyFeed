@@ -4,6 +4,7 @@ import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 
 public class AlarmUtil {
     public static void startNoticeService(Context context, long seconds, Class<?> cls, String action) {
@@ -16,8 +17,17 @@ public class AlarmUtil {
         PendingIntent pendingIntent = PendingIntent.getBroadcast(context,0,intent, PendingIntent.FLAG_UPDATE_CURRENT);
         //service的开始时间
         long triggerAtTime = seconds;
-        //设置时钟
-        manager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, triggerAtTime, pendingIntent);
+        //根据不同的Android版本设置时钟
+        if(Build.VERSION.SDK_INT<Build.VERSION_CODES.KITKAT){
+            //Android4.4之前
+            manager.set(AlarmManager.RTC_WAKEUP, triggerAtTime, pendingIntent);
+        }else if(Build.VERSION.SDK_INT < Build.VERSION_CODES.M){
+            //Android4.4之后，6.0之前
+            manager.setExact(AlarmManager.RTC_WAKEUP, triggerAtTime, pendingIntent);
+        }else{
+            //Android6.0之后
+            manager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, triggerAtTime, pendingIntent);
+        }
     }
 
     public static void stopNoticeService(Context context, Class<?> cls, String action) {

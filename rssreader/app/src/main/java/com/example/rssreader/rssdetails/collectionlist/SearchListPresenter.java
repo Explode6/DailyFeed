@@ -54,6 +54,11 @@ class SearchListPresenter extends ShowListPresenter {
             isNotInLoading = true;
 
             int size = articleBriefList.size();
+            if(size == 0){
+                mShowListView.giveNoteMessage("什么都没有找到TaT");
+            }else{
+                mShowListView.giveNoteMessage("文章加载成功");
+            }
 
             mShowListView.refreshArticleList(articleBriefList);
         }

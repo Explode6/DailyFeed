@@ -10,6 +10,8 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
+import androidx.appcompat.app.SkinAppCompatDelegateImpl;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -21,6 +23,13 @@ import com.example.rssreader.model.datamodel.Channel;
 import com.example.rssreader.model.parse.AidlBinder;
 import com.example.rssreader.rssSource.RssSourceActivity;
 import com.example.rssreader.util.ActivityUtil;
+import com.example.rssreader.util.ConfigUtil;
+
+import org.jetbrains.annotations.NotNull;
+
+import skin.support.SkinCompatManager;
+
+import static com.example.rssreader.util.ConfigUtil.configUtil;
 
 /**
  * @ClassName CollectionListActivity
@@ -39,12 +48,29 @@ public class CollectionListActivity extends AppCompatActivity {
      * 数据服务的引用
      */
     private IMyAidlInterface myAidlInterface;
+    @NonNull
+    @NotNull
+    @Override
+    public AppCompatDelegate getDelegate() {
+        return SkinAppCompatDelegateImpl.get(this, this);
+    }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.collection_list_act);
 
+        configUtil = ConfigUtil.getInstance(getApplicationContext());
+        //判断用户设置为夜间/日间模式进行不同的初始化
+        if(configUtil.isDarkMode() == true) {
+            //切换为夜间模式
+            SkinCompatManager.getInstance().loadSkin("night", SkinCompatManager.SKIN_LOADER_STRATEGY_BUILD_IN);
+        }
+        else {
+            //切换为日间模式
+            SkinCompatManager.getInstance().restoreDefaultTheme();
+        }
 
         Toolbar toolbar = (Toolbar)findViewById(R.id.toolbar);
         //为toolbar引入actionbar的功能

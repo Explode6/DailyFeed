@@ -27,6 +27,7 @@
 
     <FrameLayout
         android:id="@+id/showlist_frag"
+        android:background="@color/dayWhiteNightBlack"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 

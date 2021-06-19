@@ -44,6 +44,7 @@
             android:layout_marginLeft="2dp"
             android:layout_marginRight="2dp"
             android:background="@drawable/commentedit"
+            android:textColorHint="@color/dayBlackNightWhite"
             android:hint="What's your idea?"
             android:maxLines="1" />
 
@@ -57,6 +58,7 @@
             android:layout_marginRight="2dp"
             android:background="@drawable/commentsbutton"
             android:layout_height="46dp"
+            android:textColor="@color/dayBlackNightWhite"
             android:text="add" />
 
         <Button
@@ -69,6 +71,7 @@
             android:layout_marginRight="2dp"
             android:layout_height="46dp"
             android:background="@drawable/commentsbutton"
+            android:textColor="@color/dayBlackNightWhite"
             android:text="x" />
     </LinearLayout>
 

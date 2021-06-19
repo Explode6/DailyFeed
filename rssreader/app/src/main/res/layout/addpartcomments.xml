@@ -21,6 +21,7 @@
       android:id="@+id/edit_local_comment"
       android:background="@drawable/commentedit"
       android:hint="What's your idea?"
+         android:textColorHint="@color/dayBlackNightWhite"
       />
 
         <Button
@@ -33,6 +34,7 @@
             android:layout_marginRight="2dp"
             android:layout_weight="1"
             android:background="@drawable/commentsbutton"
+            android:textColor="@color/dayBlackNightWhite"
             android:text="ADD LOCAL COMMENT" />
     </LinearLayout>
 

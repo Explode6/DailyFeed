@@ -19,4 +19,7 @@
     <color name="dayWhiteNightBlack_night">#000000</color>
     <color name="dayGrayNightBlack_night">#000000</color>
     <color name="dayWhiteNightGray_night">#F5F5F5</color>
+    <color name="dayGrayNightWhite_night">#000000</color><!--comment -->
+    <color name="dayMinBlackNightWhite_night">#FFFFFF</color><!--comment -->
+    <color name="dayDimgrayNightWhite_night">#FFFFFF</color><!--暗灰色 -->
 </resources>

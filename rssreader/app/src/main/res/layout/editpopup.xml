@@ -21,6 +21,8 @@
             android:layout_marginRight="2dp"
             android:background="@drawable/commentedit"
             android:hint="评论千万条，友善第一条"
+            android:textColorHint="@color/dayBlackNightWhite"
+            android:textColor="@color/dayBlackNightWhite"
             android:maxLines="1" />
 
         <Button
@@ -31,6 +33,7 @@
             android:layout_marginRight="2dp"
             android:background="@drawable/commentsbutton"
             android:layout_height="46dp"
+            android:textColor="@color/dayBlackNightWhite"
             android:text="add" />
         
     </LinearLayout>
@@ -38,6 +41,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:text="点击空白处关闭"
+        android:textColor="@color/dayBlackNightWhite"
         android:gravity="center"
         android:id="@+id/closeedit"
         android:clickable="true"

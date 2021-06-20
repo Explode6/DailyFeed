@@ -16,7 +16,7 @@
         android:layout_marginTop="5dp"
         android:background="@color/dayWhiteNightBlack"
         android:textSize="14dp"
-        android:textColor="@color/dimgray"
+        android:textColor="@color/dayDimgrayNightWhite"
         />
     <TextView
         android:id="@+id/local_comment_Item"
@@ -28,10 +28,10 @@
         android:layout_marginRight="2dp"
         android:textSize="18dp"
         android:textStyle="italic"
-        android:textColor="@color/minblack"
+        android:textColor="@color/dayMinBlackNightWhite"
         />
     <View
         android:layout_width="match_parent"
         android:layout_height="3dp"
-        android:background="#FFFFFF" />
+        android:background="@color/dayWhiteNightBlack" />
 </LinearLayout>

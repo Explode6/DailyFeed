@@ -31,4 +31,8 @@
     <color name="minblack">#40403A</color>
     <color name="showlistBackground">#FFFFFF</color><!--haohaoGe 日间背景白色 -->
     <color name="showlistWord">#000000</color><!--haohaoGe 日间字体黑色 -->
+    <color name="dayMinBlackNightWhite">#40403A</color>
+    <color name="dayGrayNightWhite">#DCDCDC</color><!--comment -->
+    <color name="dayDimgrayNightWhite">#696969</color><!--暗灰色 -->
 </resources>
+

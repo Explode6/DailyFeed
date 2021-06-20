@@ -2,7 +2,8 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:background="@color/dayWhiteNightBlack">
     <TextView
         android:id="@+id/globe_comment_date"
         android:layout_width="match_parent"
@@ -12,7 +13,6 @@
         android:layout_marginLeft="2dp"
         android:layout_marginRight="2dp"
         android:textColor="@color/dayBlackNightWhite"
-
         />
     <TextView
         android:id="@+id/globe_comment_Item"
@@ -23,12 +23,12 @@
         android:layout_marginLeft="2dp"
         android:layout_marginRight="2dp"
         android:textStyle="italic"
-        android:textColor="@color/minblack"
+        android:textColor="@color/dayMinBlackNightWhite"
         android:textSize="48px"
         android:background="@color/dayWhiteNightBlack"
     />
     <View
         android:layout_width="match_parent"
         android:layout_height="3dp"
-        android:background="#FFFFFF" />
+        android:background="@color/dayWhiteNightBlack" />
 </LinearLayout>

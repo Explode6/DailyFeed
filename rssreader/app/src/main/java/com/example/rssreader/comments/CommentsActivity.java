@@ -11,7 +11,10 @@ import android.view.animation.AccelerateInterpolator;
 import android.widget.TextView;
 import android.widget.Toolbar;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
+import androidx.appcompat.app.SkinAppCompatDelegateImpl;
 
 import com.example.rssreader.R;
 import com.example.rssreader.model.datamodel.ArticleBrief;
@@ -19,11 +22,21 @@ import com.example.rssreader.model.parse.AidlBinder;
 import com.example.rssreader.rssSource.RssSourceActivity;
 import com.example.rssreader.util.ActivityUtil;
 
+import org.jetbrains.annotations.NotNull;
+
 //implements Comments_Fragment.CallBackInterface
 public class CommentsActivity extends AppCompatActivity {
 
     private ShowCommentsPresenter  showCommentsPresentor; //presenter
     public static  CommentsActivity activity;
+
+
+    @NonNull
+    @NotNull
+    @Override
+    public AppCompatDelegate getDelegate() {
+        return SkinAppCompatDelegateImpl.get(this, this);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

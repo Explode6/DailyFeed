@@ -17,7 +17,8 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:background="@color/showlistBackground">
 
         <ImageView
             android:id="@+id/artitle_image"
@@ -32,6 +33,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="5dp"
+            android:textColor="@color/showlistWord"
             android:maxLines="2"
             android:ellipsize="end"
             android:textSize="25sp"/>

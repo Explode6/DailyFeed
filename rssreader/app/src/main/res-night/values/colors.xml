@@ -19,4 +19,10 @@
     <color name="dayWhiteNightBlack_night">#000000</color>
     <color name="dayGrayNightBlack_night">#000000</color>
     <color name="dayWhiteNightGray_night">#F5F5F5</color>
+    <color name="showlistBackground_night">#322E2E</color><!--haohaoGe 字体夜间灰色背景色 -->
+    <color name="showlistWord_night">#AAAAAA</color><!--haohaoGe 字体夜间灰色 -->
+    <color name="dayGrayNightWhite_night">#000000</color><!--comment -->
+    <color name="dayMinBlackNightWhite_night">#FFFFFF</color><!--comment -->
+    <color name="dayDimgrayNightWhite_night">#FFFFFF</color><!--暗灰色 -->
 </resources>
+

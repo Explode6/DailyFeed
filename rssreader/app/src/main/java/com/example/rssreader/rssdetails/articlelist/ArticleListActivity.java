@@ -5,7 +5,10 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
+import androidx.appcompat.app.SkinAppCompatDelegateImpl;
 import androidx.appcompat.widget.Toolbar;
 
 import com.example.rssreader.IMyAidlInterface;
@@ -13,6 +16,14 @@ import com.example.rssreader.R;
 import com.example.rssreader.model.datamodel.Channel;
 import com.example.rssreader.model.parse.AidlBinder;
 import com.example.rssreader.util.ActivityUtil;
+import com.example.rssreader.util.ApplicationUtil;
+import com.example.rssreader.util.ConfigUtil;
+
+import org.jetbrains.annotations.NotNull;
+
+import skin.support.SkinCompatManager;
+
+import static com.example.rssreader.util.ConfigUtil.configUtil;
 
 /**
  * 当前界面是点击RSS源之后进入的，能够查看该RSS源所有文章的界面
@@ -26,7 +37,14 @@ public class ArticleListActivity extends AppCompatActivity {
      */
     String TAG = "ArticleListActivity";
 
+    @NonNull
+    @NotNull
+    @Override
+    public AppCompatDelegate getDelegate() {
+        return SkinAppCompatDelegateImpl.get(this, this);
+    }
 
+    
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         if(savedInstanceState != null){
@@ -34,6 +52,19 @@ public class ArticleListActivity extends AppCompatActivity {
         }
         super.onCreate(savedInstanceState);
         setContentView(R.layout.article_list_act);
+
+        configUtil = ConfigUtil.getInstance(getApplicationContext());
+        //判断用户设置为夜间/日间模式进行不同的初始化
+        if(configUtil.isDarkMode() == true) {
+            //切换为夜间模式
+            SkinCompatManager.getInstance().loadSkin("night", SkinCompatManager.SKIN_LOADER_STRATEGY_BUILD_IN);
+        }
+        else {
+            //切换为日间模式
+            SkinCompatManager.getInstance().restoreDefaultTheme();
+        }
+
+
         //从第一个界面获取当前是需要展示哪一个RSS源的文章
         Channel channel = (Channel)getIntent().getParcelableExtra("channel");
 

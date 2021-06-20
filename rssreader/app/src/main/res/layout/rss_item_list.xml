@@ -12,39 +12,42 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:minHeight="35dp">
+        <ImageView
+            android:id="@+id/rss_source_img"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_margin="10dp"
+            />
         <LinearLayout
-            android:id="@+id/rss_item_list_left"
+            android:id="@+id/rss_item_list_right"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_marginLeft="10dp"
-            android:layout_marginTop="5dp"
+            android:layout_toRightOf="@+id/rss_source_img"
+            android:layout_marginTop="15dp"
+            android:layout_marginBottom="15dp"
+            android:layout_marginRight="10dp"
             android:orientation="vertical">
-            <ImageView
-                android:id="@+id/rss_source_img"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:layout_marginLeft="10dp"
-                />
+
             <TextView
                 android:id="@+id/rss_source_title"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="left"
+                android:maxLines="1"
                 android:textColor="@color/dayBlackNightGray"
                 android:textSize="20sp"
                 android:textStyle="bold"
-                android:gravity="center"/>
+                />
+            <TextView
+                android:id="@+id/rss_source_intro"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:maxLines="1"
+                android:textSize="13sp"
+                android:textColor="@color/rssSourceItemTextColor"
+                android:ellipsize="end"/>
         </LinearLayout>
-        <TextView
-            android:id="@+id/rss_source_intro"
-            android:textSize="15sp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_toRightOf="@+id/rss_item_list_left"
-            android:layout_marginLeft="30dp"
-            android:layout_centerVertical="true"
-            android:maxLines="2"
-            android:textColor="@color/rssSourceItemTextColor"/>
         <ImageView
             android:id="@+id/rss_checkbox"
             android:layout_width="15dp"

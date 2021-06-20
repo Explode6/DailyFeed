@@ -115,7 +115,7 @@ public class Comments_Fragment extends Fragment implements CommentsContract.Comm
     //拦截事件 由于需要在activity重载又需要用到fragment的数据，先从fragment获得数据再返回给activity  同时fragment层调用presenter操作
     public  android.view.ActionMode setData(android.view.ActionMode mode){
         List<String> actionList = new ArrayList<String>();
-        actionList.add("comment");
+        actionList.add("评论");
         mode  = showArticleWebView.getActionMode(mode, actionList, new ShowArticleWebView.onActionClickListener() {
             @Override
             public void onActionClick(String title, String text) {

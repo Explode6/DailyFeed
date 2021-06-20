@@ -120,7 +120,7 @@ public class Comments_Fragment extends Fragment implements CommentsContract.Comm
             @Override
             public void onActionClick(String title, String text) {
                 switch (title){
-                    case "comment":
+                    case "评论":
                         mPresenter.showLocalAdd(text);
                         break;
                     default:

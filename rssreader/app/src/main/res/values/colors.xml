@@ -29,4 +29,6 @@
     <color name="yellow">#FFFF00</color><!--黄色 -->
     <color name="colorAccent">#FFFF00</color><!--黄色 -->
     <color name="minblack">#40403A</color>
+    <color name="showlistBackground">#FFFFFF</color><!--haohaoGe 日间背景白色 -->
+    <color name="showlistWord">#000000</color><!--haohaoGe 日间字体黑色 -->
 </resources>

@@ -112,9 +112,11 @@ public class CollectionListActivity extends AppCompatActivity {
 
     private void replaceFragment(){
         FragmentManager fragmentManager = getSupportFragmentManager();
-        FragmentTransaction transaction = fragmentManager.beginTransaction();
-        SearchListFragment searchListFragment = SearchListFragment.newInstance();
-        mSearchListPresenter = new SearchListPresenter(AidlBinder.getInstance(), searchListFragment);
-        ActivityUtil.replaceFragment(fragmentManager, searchListFragment, R.id.showlist_frag);
+        if(fragmentManager.getBackStackEntryCount() == 0) {
+            FragmentTransaction transaction = fragmentManager.beginTransaction();
+            SearchListFragment searchListFragment = SearchListFragment.newInstance();
+            mSearchListPresenter = new SearchListPresenter(AidlBinder.getInstance(), searchListFragment);
+            ActivityUtil.replaceFragment(fragmentManager, searchListFragment, R.id.showlist_frag);
+        }
     }
 }

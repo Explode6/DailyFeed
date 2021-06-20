@@ -68,14 +68,6 @@ public class RssSourceActivity extends AppCompatActivity {
     private ActionBar actionBar;
     public IMyAidlInterface myAidlInterface;
 
-
-    String TAG = "RssSourceActivity";
-    /*
-     * 以下代码是和model有关，从澍豪代码迁移过来
-     */
-//    public IMyAidlInterface myAidlInterface;
-
-
     @NonNull
     @NotNull
     @Override
@@ -216,10 +208,7 @@ public class RssSourceActivity extends AppCompatActivity {
         MenuItem modeConvert = subMenu.getItem(0);
         modeConvert.setIcon(ContextCompat.getDrawable(this, R.drawable.nav_day));
         modeConvert.setTitle("日间模式");
-        //切换状态栏背景色
-        getWindow().setStatusBarColor(getResources().getColor(R.color.colorPrimaryDark_night));
-        //切换状态栏字体颜色
-        getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
+        ApplicationUtil.setStatusBarMode(getWindow(),getResources(),true);
     }
 
     //转换为日间模式时切换部分显示内容
@@ -237,10 +226,7 @@ public class RssSourceActivity extends AppCompatActivity {
         MenuItem modeConvert = subMenu.getItem(0);
         modeConvert.setIcon(ContextCompat.getDrawable(this, R.drawable.nav_mode));
         modeConvert.setTitle("夜间模式");
-        //切换状态栏背景色
-        getWindow().setStatusBarColor(getResources().getColor(R.color.colorPrimaryDark));
-        //切换状态栏字体颜色
-        getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+        ApplicationUtil.setStatusBarMode(getWindow(),getResources(),false);
     }
 
     public void closeNavView() {

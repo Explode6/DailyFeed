@@ -2,6 +2,11 @@ package com.example.rssreader.util;
 
 import android.app.Application;
 import android.content.Context;
+import android.content.res.Resources;
+import android.view.View;
+import android.view.Window;
+
+import com.example.rssreader.R;
 
 import skin.support.SkinCompatManager;
 import skin.support.app.SkinAppCompatViewInflater;
@@ -39,6 +44,25 @@ public class ApplicationUtil extends Application {
         isFirstLoad = is;
     }
 
+    /**
+     * 设置状态栏背景
+     * @param window 当前窗口
+     * @param resources 应用资源
+     * @param isNight   当前是否为夜间模式
+     */
+    public static void setStatusBarMode(Window window, Resources resources, boolean isNight){
+        if(isNight == true){
+            //切换状态栏背景色
+            window.setStatusBarColor(resources.getColor(R.color.colorPrimaryDark_night));
+            //切换状态栏字体颜色
+            window.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
+        }else{
+            //切换状态栏背景色
+            window.setStatusBarColor(resources.getColor(R.color.colorPrimaryDark));
+            //切换状态栏字体颜色
+            window.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+        }
+    }
     public static boolean getIsFirstLoad(){
         return isFirstLoad;
     }

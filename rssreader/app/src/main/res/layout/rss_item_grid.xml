@@ -51,7 +51,8 @@
             android:layout_marginBottom="10dp"
             android:gravity="center_horizontal"
             android:maxLines="2"
-            android:textColor="@color/rssSourceItemTextColor"/>
+            android:textColor="@color/rssSourceItemTextColor"
+            android:ellipsize="end"/>
 
     </LinearLayout>
 </androidx.cardview.widget.CardView>

@@ -51,7 +51,7 @@ public class CommentsActivity extends AppCompatActivity {
         getWindowManager().getDefaultDisplay().getMetrics(outMetrics);
         int widthPixels = outMetrics.widthPixels;
         int heightPixels = outMetrics.heightPixels;
-        
+
         //获得articleBrief
         Intent intent = getIntent();
         ArticleBrief articleBrief = intent.getParcelableExtra("articleBrief");

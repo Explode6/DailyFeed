@@ -20,7 +20,7 @@
       android:paddingTop="2dp"
       android:id="@+id/edit_local_comment"
       android:background="@drawable/commentedit"
-      android:hint="What's your idea?"
+      android:hint="写下你的见解吧"
          android:textColorHint="@color/dayBlackNightWhite"
       />
 
@@ -35,7 +35,7 @@
             android:layout_weight="1"
             android:background="@drawable/commentsbutton"
             android:textColor="@color/dayBlackNightWhite"
-            android:text="ADD LOCAL COMMENT" />
+            android:text="添加局部评论" />
     </LinearLayout>
 
 

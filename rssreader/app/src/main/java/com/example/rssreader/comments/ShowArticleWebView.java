@@ -344,7 +344,7 @@ public class ShowArticleWebView extends WebView {
         public String getStyle(int textSize,  int textColor , int lineHeight){
             //类型转换，注意int转颜色类型
             String stringTestColor = String.format("#%06X", 0xFFFFFF & textColor);
-            return "<style id=\"localStyle\"  type=\"text/css\">p,h1,h2,h3,h4,h5{"
+            return "<style id=\"localStyle\"  type=\"text/css\">*{"
                     +"color: " + stringTestColor + " !important; "
                     + "line-height:"+ lineHeight + "% !important;"
                     + "}</style>";
@@ -368,7 +368,7 @@ public class ShowArticleWebView extends WebView {
                     + "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0, user-scalable=no\"> "
                     + "<style text=\"text/css\">"
                     + "*{max-width:100% !important; width:auto !important; height:auto !important;}"
-                    + "a{display:block !important; overflow:hidden !important; text-overflow:ellipsis !important;}"
+                    + "a{color:blue !important; display:block !important; overflow:hidden !important; text-overflow:ellipsis !important;}"
                     + "</style>"
                     + getStyle(webView.textSize, webView.textColor, webView.lineHeight)
                     + "</head>";

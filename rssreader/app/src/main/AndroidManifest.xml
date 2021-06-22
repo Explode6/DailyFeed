@@ -34,9 +34,9 @@
         <activity android:name="com.example.rssreader.comments.CommentsActivity"
             android:windowSoftInputMode="adjustPan"></activity>
         <activity android:name="com.example.rssreader.rssdetails.articlelist.ArticleListActivity"
-            android:theme="@style/RssSourceTheme"></activity>
+            ></activity>
         <activity android:name="com.example.rssreader.rssdetails.collectionlist.CollectionListActivity"
-            android:theme="@style/RssSourceTheme"></activity>
+           ></activity>
         <service android:name=".rssSource.NoticeService">
             <intent-filter>
                 <action android:name="com.example.rssreader.rssNoticeService"/>

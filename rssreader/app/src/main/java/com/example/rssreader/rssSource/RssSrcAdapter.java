@@ -146,48 +146,7 @@ public class RssSrcAdapter extends RecyclerView.Adapter<RssSrcAdapter.ViewHolder
     public int getItemCount() {
         return rssSourceList.size();
     }
-
-    /**
-     * 添加子项
-     * @param pos   添加的位置
-     * @param item  添加的子项
-     */
-    public void addItem(int pos, RssSource item){
-        rssSourceList.add(pos, item);
-        //通知插入子项
-        this.notifyItemInserted(pos);
-        //通知界面重新和数据进行绑定
-        this.notifyItemRangeChanged(pos, rssSourceList.size()-pos);
-    }
-
-    /**
-     * 删除子项
-     * @param pos   删除的位置
-     */
-    public void removeItem(int pos){
-        rssSourceList.remove(pos);
-        //通知删除子项
-        this.notifyItemRemoved(pos);
-        //刷新recyclerview
-        this.notifyDataSetChanged();
-    }
-
-    /**
-     * 删除所选子项
-     */
-    public void delSelectedItems(){
-        //遍历迭代器，从列表中删除被选中的子项
-        Iterator<RssSource>iterator = rssSourceList.iterator();
-        while(iterator.hasNext()){
-            RssSource rssSource = iterator.next();
-            if(rssSource.getSelected() == true){
-                iterator.remove();
-                continue;
-            }
-        }
-        //通知删除选中的子项，刷新recyclerview
-        this.notifyDataSetChanged();
-    }
+    
     public void setCanEdit(boolean canEdit){
         this.canEdit = canEdit;
     }

@@ -21,8 +21,12 @@ import com.example.rssreader.model.datamodel.ArticleBrief;
 import com.example.rssreader.model.parse.AidlBinder;
 import com.example.rssreader.rssSource.RssSourceActivity;
 import com.example.rssreader.util.ActivityUtil;
+import com.example.rssreader.util.ApplicationUtil;
+import com.example.rssreader.util.ConfigUtil;
 
 import org.jetbrains.annotations.NotNull;
+
+import static com.example.rssreader.util.ConfigUtil.configUtil;
 
 //implements Comments_Fragment.CallBackInterface
 public class CommentsActivity extends AppCompatActivity {
@@ -45,7 +49,16 @@ public class CommentsActivity extends AppCompatActivity {
         }
         super.onCreate(savedInstanceState);
         setContentView(R.layout.comments_main);
-
+        configUtil = ConfigUtil.getInstance(getApplicationContext());
+        //判断用户设置为夜间/日间模式进行不同的初始化
+        if(configUtil.isDarkMode() == true) {
+            //状态栏切换为夜间模式
+            ApplicationUtil.setStatusBarMode(getWindow(),getResources(),true);
+        }
+        else {
+            //状态栏切换为日间模式
+            ApplicationUtil.setStatusBarMode(getWindow(),getResources(),false);
+        }
         //获得屏幕的宽高
         DisplayMetrics outMetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(outMetrics);

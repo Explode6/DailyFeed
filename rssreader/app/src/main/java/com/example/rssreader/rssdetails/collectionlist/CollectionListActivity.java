@@ -23,6 +23,7 @@ import com.example.rssreader.model.datamodel.Channel;
 import com.example.rssreader.model.parse.AidlBinder;
 import com.example.rssreader.rssSource.RssSourceActivity;
 import com.example.rssreader.util.ActivityUtil;
+import com.example.rssreader.util.ApplicationUtil;
 import com.example.rssreader.util.ConfigUtil;
 
 import org.jetbrains.annotations.NotNull;
@@ -64,12 +65,12 @@ public class CollectionListActivity extends AppCompatActivity {
         configUtil = ConfigUtil.getInstance(getApplicationContext());
         //判断用户设置为夜间/日间模式进行不同的初始化
         if(configUtil.isDarkMode() == true) {
-            //切换为夜间模式
-            SkinCompatManager.getInstance().loadSkin("night", SkinCompatManager.SKIN_LOADER_STRATEGY_BUILD_IN);
+            //状态栏切换为夜间模式
+            ApplicationUtil.setStatusBarMode(getWindow(),getResources(),true);
         }
         else {
-            //切换为日间模式
-            SkinCompatManager.getInstance().restoreDefaultTheme();
+            //状态栏切换为日间模式
+            ApplicationUtil.setStatusBarMode(getWindow(),getResources(),false);
         }
 
         Toolbar toolbar = (Toolbar)findViewById(R.id.toolbar);
